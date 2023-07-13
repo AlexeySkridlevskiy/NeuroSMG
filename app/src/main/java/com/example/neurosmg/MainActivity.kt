@@ -3,6 +3,7 @@ package com.example.neurosmg
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.neurosmg.databinding.ActivityMainBinding
+import com.example.neurosmg.login.LoginFragment
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
