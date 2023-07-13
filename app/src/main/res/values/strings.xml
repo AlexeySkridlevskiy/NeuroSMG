@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">NeuroSMG</string>
+    <string name="hello_user">Добро пожаловать в NeuroSMG!</string>
+    <string name="welcome_user">Добро пожаловать!</string>
+    <string name="info_about_app">Наше приложение помогает алкозависимым людям...</string>
+    <string name="go_to_testing_button">Перейти к тестированию</string>
+    <string name="login_text_info">Для того, чтобы воспользоваться приложением войдите в аккаунт.</string>
+    <string name="enter_login">Введите логин</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="button_enter">Войти</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
