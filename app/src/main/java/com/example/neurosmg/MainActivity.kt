@@ -1,8 +1,13 @@
 package com.example.neurosmg
 
+import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.neurosmg.databinding.ActivityMainBinding
+import com.example.neurosmg.login.LoginFragment
+import android.content.DialogInterface
+import android.content.Context
+
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -15,7 +20,5 @@ class MainActivity : AppCompatActivity() {
             .beginTransaction()
             .replace(R.id.loginFragment, LoginFragment.newInstance())
             .commit()
-
-
     }
 }
