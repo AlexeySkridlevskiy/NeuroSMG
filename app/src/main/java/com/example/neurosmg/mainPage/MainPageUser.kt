@@ -6,13 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
+import com.example.neurosmg.MainActivity
+import com.example.neurosmg.MainActivityInterface
 import com.example.neurosmg.R
 import com.example.neurosmg.databinding.FragmentLoginBinding
 import com.example.neurosmg.databinding.FragmentMainPageUserBinding
+import com.example.neurosmg.testsPage.TestsPage
 
 class MainPageUser : Fragment() {
     lateinit var binding: FragmentMainPageUserBinding
-
+    private lateinit var mainActivityInterface: MainActivityInterface
     private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +29,14 @@ class MainPageUser : Fragment() {
         binding = FragmentMainPageUserBinding.inflate(inflater)
         toolbar = activity?.findViewById(R.id.toolbar)!!
         toolbar.setNavigationOnClickListener{
-            toolbar.title = "Click"
+            mainActivityInterface.openDrawer()
+        }
+        binding.btnGoTesting.setOnClickListener{
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.loginFragment, TestsPage.newInstance())
+                .addToBackStack("MainPageUser")
+                .commit()
         }
         return binding.root
     }

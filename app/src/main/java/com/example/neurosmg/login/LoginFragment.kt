@@ -68,6 +68,12 @@ class LoginFragment : Fragment(){
         toolbar.setNavigationIcon(R.drawable.info_icon)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        toolbar.setNavigationOnClickListener(null)
+    }
+
     companion object {
 
         @JvmStatic
