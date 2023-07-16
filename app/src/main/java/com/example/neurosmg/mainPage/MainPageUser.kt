@@ -6,17 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
-import com.example.neurosmg.MainActivity
-import com.example.neurosmg.MainActivityInterface
 import com.example.neurosmg.R
-import com.example.neurosmg.databinding.FragmentLoginBinding
+import com.example.neurosmg.Screen
 import com.example.neurosmg.databinding.FragmentMainPageUserBinding
 import com.example.neurosmg.testsPage.TestsPage
 
 class MainPageUser : Fragment() {
     lateinit var binding: FragmentMainPageUserBinding
-    private lateinit var mainActivityInterface: MainActivityInterface
-    private lateinit var toolbar: Toolbar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,15 +23,12 @@ class MainPageUser : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainPageUserBinding.inflate(inflater)
-        toolbar = activity?.findViewById(R.id.toolbar)!!
-        toolbar.setNavigationOnClickListener{
-            mainActivityInterface.openDrawer()
-        }
+
         binding.btnGoTesting.setOnClickListener{
             parentFragmentManager
                 .beginTransaction()
                 .replace(R.id.loginFragment, TestsPage.newInstance())
-                .addToBackStack("MainPageUser")
+                .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }
         return binding.root
@@ -44,8 +37,6 @@ class MainPageUser : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbar.title = "Главная"
-        toolbar.setNavigationIcon(R.drawable.burger_icon)
     }
 
     companion object {
