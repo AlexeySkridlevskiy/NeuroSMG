@@ -22,10 +22,10 @@ class PatientTestList : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPatientTestListBinding.inflate(inflater)
-        val test = requireActivity().intent.getParcelableExtra<TestItem>("test")
-        if(test != null){
-            binding.tvTest.text = test.title
-        }
+        // val test = requireActivity().intent.getParcelableExtra<TestItem>("test")
+       // if(test != null){
+       //     binding.tvTest.text = test.title
+       // }
         return binding.root
     }
 

@@ -5,11 +5,5 @@
     android:layout_height="match_parent"
     tools:context=".patientTestList.PatientTestList">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/tvTest"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-
+    
 </FrameLayout>
