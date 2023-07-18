@@ -31,6 +31,6 @@ class PatientTestList : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(intent: Intent) = PatientTestList()
+        fun newInstance() = PatientTestList()
     }
 }

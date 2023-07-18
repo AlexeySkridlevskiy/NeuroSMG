@@ -1,6 +1,7 @@
 package com.example.neurosmg.testsPage
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,9 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.neurosmg.R
 import com.example.neurosmg.databinding.ListItemBinding
 
-class TestAdapter: RecyclerView.Adapter<TestAdapter.ViewHolder>() {
+class TestAdapter (private val itemOnClickListener: ItemOnClickListener): RecyclerView.Adapter<TestAdapter.ViewHolder>() {
 
     private val testsList = ArrayList<TestItem>()
+    var onItemClick : ((TestItem) -> Unit)? = null
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = ListItemBinding.bind(itemView)
         fun bind(testItem: TestItem) = with(binding){
@@ -26,6 +28,12 @@ class TestAdapter: RecyclerView.Adapter<TestAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(testsList[position])
+
+        val tests = testsList[position]
+        holder.itemView.setOnClickListener{
+            onItemClick?.invoke(tests)
+            itemOnClickListener.onItemClick(testsList[position])
+        }
     }
 
     override fun getItemCount(): Int {
