@@ -26,6 +26,8 @@ class PatientTestList : Fragment() {
        // if(test != null){
        //     binding.tvTest.text = test.title
        // }
+        val value = arguments?.getString("test_title")
+        binding.tvTest.text = value
         return binding.root
     }
 

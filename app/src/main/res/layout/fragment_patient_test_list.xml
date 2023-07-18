@@ -5,5 +5,10 @@
     android:layout_height="match_parent"
     tools:context=".patientTestList.PatientTestList">
 
-    
+
+    <TextView
+        android:id="@+id/tvTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView" />
 </FrameLayout>

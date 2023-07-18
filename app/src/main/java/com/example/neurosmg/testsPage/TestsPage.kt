@@ -14,6 +14,8 @@ import com.example.neurosmg.patientTestList.PatientTestList
 
 class TestsPage : Fragment(), ItemOnClickListener {
     lateinit var binding: FragmentTestsPageBinding
+    val fragment = PatientTestList.newInstance()
+    val bundle = Bundle()
     private val adapter = TestAdapter(this)
     private val testTitleList = listOf(
         "FOT",
@@ -45,7 +47,7 @@ class TestsPage : Fragment(), ItemOnClickListener {
     }
 
     private fun init() = with(binding){
-        
+
         rcView.layoutManager = LinearLayoutManager(requireContext())
         rcView.adapter = adapter
         testTitleList.forEach{el->
@@ -56,9 +58,11 @@ class TestsPage : Fragment(), ItemOnClickListener {
 
     override fun onItemClick(item: TestItem) {
         Log.d("MyLog", "Click item ${item.title}")
+        bundle.putString("test_title", item.title)
+        fragment.arguments = bundle
         parentFragmentManager
             .beginTransaction()
-            .replace(R.id.loginFragment, PatientTestList.newInstance())
+            .replace(R.id.loginFragment, fragment)
             .addToBackStack(Screen.MAIN_PAGE)
             .commit()
     }
