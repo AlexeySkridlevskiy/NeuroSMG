@@ -4,17 +4,20 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.neurosmg.R
 import com.example.neurosmg.databinding.ListItemBinding
 
-class TestAdapter: RecyclerView.Adapter<TestAdapter.ViewHolder>() {
+class TestAdapter(
+    private val itemOnClickListener: ItemOnClickListener
+) : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
 
-    private val testsList = ArrayList<TestItem>()
+    private val testsList = mutableListOf<TestItem>()
+    var onItemClick: ((TestItem) -> Unit)? = null
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = ListItemBinding.bind(itemView)
-        fun bind(testItem: TestItem) = with(binding){
+        fun bind(testItem: TestItem) = with(binding) {
             tvTitle.text = testItem.title
         }
     }
@@ -26,6 +29,12 @@ class TestAdapter: RecyclerView.Adapter<TestAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(testsList[position])
+
+        val tests = testsList[position]
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(tests)
+            itemOnClickListener.onItemClick(testsList[position])
+        }
     }
 
     override fun getItemCount(): Int {
@@ -33,8 +42,9 @@ class TestAdapter: RecyclerView.Adapter<TestAdapter.ViewHolder>() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addTest(testItem: TestItem){
-        testsList.add(testItem)
+    fun addTest(testItem: List<TestItem>) {
+        testsList.clear()
+        testsList.addAll(testItem)
         notifyDataSetChanged()
     }
 }
