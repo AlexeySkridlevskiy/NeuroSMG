@@ -8,13 +8,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.neurosmg.R
 import com.example.neurosmg.databinding.ListItemBinding
 
-class TestAdapter (private val itemOnClickListener: ItemOnClickListener): RecyclerView.Adapter<TestAdapter.ViewHolder>() {
+class TestAdapter(
+    private val itemOnClickListener: ItemOnClickListener
+) : RecyclerView.Adapter<TestAdapter.ViewHolder>() {
 
-    private val testsList = ArrayList<TestItem>()
-    var onItemClick : ((TestItem) -> Unit)? = null
+    private val testsList = mutableListOf<TestItem>()
+    var onItemClick: ((TestItem) -> Unit)? = null
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = ListItemBinding.bind(itemView)
-        fun bind(testItem: TestItem) = with(binding){
+        fun bind(testItem: TestItem) = with(binding) {
             tvTitle.text = testItem.title
         }
     }
@@ -28,7 +31,7 @@ class TestAdapter (private val itemOnClickListener: ItemOnClickListener): Recycl
         holder.bind(testsList[position])
 
         val tests = testsList[position]
-        holder.itemView.setOnClickListener{
+        holder.itemView.setOnClickListener {
             onItemClick?.invoke(tests)
             itemOnClickListener.onItemClick(testsList[position])
         }
@@ -39,8 +42,9 @@ class TestAdapter (private val itemOnClickListener: ItemOnClickListener): Recycl
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addTest(testItem: TestItem){
-        testsList.add(testItem)
+    fun addTest(testItem: List<TestItem>) {
+        testsList.clear()
+        testsList.addAll(testItem)
         notifyDataSetChanged()
     }
 }

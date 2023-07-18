@@ -11,20 +11,21 @@ import com.example.neurosmg.testsPage.TestItem
 
 class PatientAdapter : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
 
-    private val patientList = ArrayList<Patient>()
+    private val patientList = mutableListOf<Patient>()
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val binding = ListItemBinding.bind(itemView)
-        fun bind(patient: Patient) = with(binding){
+        private val binding = ListItemBinding.bind(itemView)
+        fun bind(patient: Patient) = with(binding) {
             tvTitle.text = patient.id
         }
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false)
-        return PatientAdapter.ViewHolder(view)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: PatientAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(patientList[position])
     }
 
@@ -33,8 +34,9 @@ class PatientAdapter : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addPatient(patient: Patient){
-        patientList.add(patient)
+    fun addPatient(patient: List<Patient>) {
+        patientList.clear()
+        patientList.addAll(patient)
         notifyDataSetChanged()
     }
 }
