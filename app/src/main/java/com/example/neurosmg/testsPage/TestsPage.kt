@@ -6,64 +6,59 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.databinding.FragmentTestsPageBinding
+import com.example.neurosmg.login.LoginViewModel
 import com.example.neurosmg.patientTestList.PatientTestList
 
 class TestsPage : Fragment(), ItemOnClickListener {
-    lateinit var binding: FragmentTestsPageBinding
-    val fragment = PatientTestList.newInstance()
-    val bundle = Bundle()
-    private val adapter = TestAdapter(this)
-    private val testTitleList = listOf(
-        "FOT",
-        "RAT",
-        "IAT",
-        "GNG",
-        "SCT",
-        "TMT",
-        "CBT",
-        "MRT",
-    )
-    private var index = 0
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+
+    private lateinit var binding: FragmentTestsPageBinding
+    private val fragment = PatientTestList.newInstance()
+
+    private val viewModel by lazy {
+        ViewModelProvider(requireActivity())[TestPageViewModel::class.java]
     }
+
+    private val bundle = Bundle()
+    private val adapter = TestAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTestsPageBinding.inflate(inflater)
-        init()
         return binding.root
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = TestsPage()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
     }
 
-    private fun init() = with(binding){
+    private fun init() = with(binding) {
 
         rcView.layoutManager = LinearLayoutManager(requireContext())
+        adapter.addTest(testItem = viewModel.getTests())
         rcView.adapter = adapter
-        testTitleList.forEach{el->
-            val test = TestItem(el)
-            adapter.addTest(test)
-        }
     }
 
     override fun onItemClick(item: TestItem) {
-        Log.d("MyLog", "Click item ${item.title}")
-        bundle.putString("test_title", item.title)
+        bundle.putString(KeyOfArgument.KEY_OF_TEST_NAME, item.title)
         fragment.arguments = bundle
         parentFragmentManager
             .beginTransaction()
             .replace(R.id.loginFragment, fragment)
             .addToBackStack(Screen.MAIN_PAGE)
             .commit()
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = TestsPage()
     }
 }

@@ -1,7 +1,5 @@
 package com.example.neurosmg.login
 
-import android.app.AlertDialog
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModel
 
 class LoginViewModel : ViewModel() {
@@ -15,7 +13,4 @@ class LoginViewModel : ViewModel() {
 
     }
 
-    fun createAlertDialog(){
-
-    }
 }
