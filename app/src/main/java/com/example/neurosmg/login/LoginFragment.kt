@@ -1,6 +1,7 @@
 package com.example.neurosmg.login
 
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -17,7 +18,9 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContentProviderCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
+import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentLoginBinding
 import com.example.neurosmg.mainPage.MainPageUser
 
@@ -25,6 +28,19 @@ class LoginFragment : Fragment(){
     lateinit var binding: FragmentLoginBinding
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[LoginViewModel::class.java]
+    }
+
+    private var mainActivityListener: MainActivityListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is MainActivityListener) {
+            mainActivityListener = context
+        } else {
+            throw RuntimeException("$context must implement MainActivityListener")
+        }
+
+        mainActivityListener?.updateToolbarState(ToolbarState.Initial)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +90,7 @@ class LoginFragment : Fragment(){
                 val alertDialogBuilder = AlertDialog.Builder(requireContext())
                 alertDialogBuilder.setTitle("Вход")
                 alertDialogBuilder.setMessage("Данные для входа вы можете запросить у человечка.")
-                alertDialogBuilder.setPositiveButton("Окей") { dialog, which ->
+                alertDialogBuilder.setPositiveButton("Окей") { dialog, _ ->
                     dialog.dismiss()
                 }
 

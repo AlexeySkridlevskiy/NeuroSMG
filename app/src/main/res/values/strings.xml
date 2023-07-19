@@ -12,4 +12,5 @@
 
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
+    <string name="lbl_title_main">Главная</string>
 </resources>

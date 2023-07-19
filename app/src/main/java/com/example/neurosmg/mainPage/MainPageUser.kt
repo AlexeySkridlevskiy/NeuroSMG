@@ -1,18 +1,33 @@
 package com.example.neurosmg.mainPage
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.Toolbar
+import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
+import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentMainPageUserBinding
 import com.example.neurosmg.testsPage.TestsPage
 
 class MainPageUser : Fragment() {
     lateinit var binding: FragmentMainPageUserBinding
+
+    private var mainActivityListener: MainActivityListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is MainActivityListener) {
+            mainActivityListener = context
+        } else {
+            throw RuntimeException("$context must implement MainActivityListener")
+        }
+
+        mainActivityListener?.updateToolbarState(ToolbarState.MainPage)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +39,7 @@ class MainPageUser : Fragment() {
     ): View {
         binding = FragmentMainPageUserBinding.inflate(inflater)
 
-        binding.btnGoTesting.setOnClickListener{
+        binding.btnGoTesting.setOnClickListener {
             parentFragmentManager
                 .beginTransaction()
                 .replace(R.id.loginFragment, TestsPage.newInstance())
@@ -34,9 +49,9 @@ class MainPageUser : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onDetach() {
+        super.onDetach()
+        mainActivityListener = null
     }
 
     companion object {
