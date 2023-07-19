@@ -6,4 +6,16 @@
     </style>
 
     <style name="Theme.NeuroSMG" parent="Base.Theme.NeuroSMG" />
+
+    <style name="ToolBarTheme">
+        <item name="titleTextColor">@color/white</item>
+        <item name="actionMenuTextColor">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="textAllCaps">false</item>
+        <item name="actionOverflowMenuStyle">@style/PopupMenu.Overflow</item>
+    </style>
+
+    <style name="PopupMenu.Overflow" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
+        <item name="overlapAnchor">false</item>
+    </style>
 </resources>

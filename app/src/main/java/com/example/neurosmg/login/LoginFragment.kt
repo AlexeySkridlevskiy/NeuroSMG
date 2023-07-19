@@ -1,6 +1,7 @@
 package com.example.neurosmg.login
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,7 +11,9 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
+import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentLoginBinding
 import com.example.neurosmg.mainPage.MainPageUser
 
@@ -19,6 +22,20 @@ class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[LoginViewModel::class.java]
+    }
+
+
+    private var mainActivityListener: MainActivityListener? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is MainActivityListener) {
+            mainActivityListener = context
+        } else {
+            throw RuntimeException("$context must implement MainActivityListener")
+        }
+
+        mainActivityListener?.updateToolbarState(ToolbarState.Initial)
     }
 
     override fun onCreateView(
