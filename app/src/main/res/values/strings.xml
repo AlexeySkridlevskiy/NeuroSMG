@@ -9,6 +9,7 @@
     <string name="enter_password">Введите пароль</string>
     <string name="button_enter">Войти</string>
     <string name="title_main">Главная</string>
+    <string name="button_start">Начать</string>
 
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>

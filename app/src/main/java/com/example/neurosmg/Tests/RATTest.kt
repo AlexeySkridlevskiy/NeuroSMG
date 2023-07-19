@@ -5,14 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.R
-import com.example.neurosmg.databinding.FragmentFOTTestBinding
+import com.example.neurosmg.databinding.FragmentRATTestBinding
 
-class FOTTest : Fragment() {
-
-    lateinit var binding: FragmentFOTTestBinding
-
+class RATTest : Fragment() {
+    lateinit var binding: FragmentRATTestBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -21,12 +18,13 @@ class FOTTest : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFOTTestBinding.inflate(inflater)
+        binding = FragmentRATTestBinding.inflate(inflater)
         return binding.root
     }
 
     companion object {
+
         @JvmStatic
-        fun newInstance() = FOTTest()
+        fun newInstance() = RATTest()
     }
 }

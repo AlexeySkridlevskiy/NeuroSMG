@@ -1,17 +1,18 @@
 package com.example.neurosmg.patientTestList
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.neurosmg.R
 import com.example.neurosmg.databinding.ListItemBinding
-import com.example.neurosmg.testsPage.TestItem
 
-class PatientAdapter : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
+class PatientAdapter(private val patientOnClickListener: PatientOnClickListener) : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
 
     private val patientList = mutableListOf<Patient>()
+    var onItemClick: ((Patient) -> Unit)? = null
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ListItemBinding.bind(itemView)
@@ -27,6 +28,13 @@ class PatientAdapter : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(patientList[position])
+
+        val patient = patientList[position]
+        holder.itemView.setOnClickListener {
+            onItemClick?.invoke(patient)
+            patientOnClickListener.onItemClick(patientList[position])
+            Log.d("MyLog", "Click ${patientList[position]}")
+        }
     }
 
     override fun getItemCount(): Int {
