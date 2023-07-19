@@ -1,6 +1,5 @@
 package com.example.neurosmg.patientTestList
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,16 +9,18 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.R
+import com.example.neurosmg.Screen
+import com.example.neurosmg.Tests.FOTTest
+import com.example.neurosmg.Tests.RATTest
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.testsPage.TestAdapter
-import com.example.neurosmg.testsPage.TestItem
-import com.example.neurosmg.testsPage.TestPageViewModel
 
-class PatientTestList : Fragment() {
+class PatientTestList : Fragment(), PatientOnClickListener {
 
     lateinit var binding: FragmentPatientTestListBinding
-    private val adapter = PatientAdapter()
-
+    private val bundle = Bundle()
+    private lateinit var fragment: Fragment
+    private val adapter = PatientAdapter(this)
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[PatientsViewModel::class.java]
     }
@@ -48,5 +49,24 @@ class PatientTestList : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = PatientTestList()
+    }
+
+    override fun onItemClick(patient: Patient) {
+        when (arguments?.getString(KeyOfArgument.KEY_OF_TEST_NAME)){
+            "FOT" ->  {
+                fragment = FOTTest.newInstance()
+            }
+            "RAT" -> {
+                fragment = RATTest.newInstance()
+            }
+        }
+        bundle.putString(KeyOfArgument.KEY_OF_ID_PATIENT, patient.id)
+        bundle.putString(KeyOfArgument.KEY_OF_TEST_NAME, arguments?.getString(KeyOfArgument.KEY_OF_TEST_NAME))
+        fragment.arguments = bundle
+        parentFragmentManager
+            .beginTransaction()
+            .replace(R.id.loginFragment, fragment)
+            .addToBackStack(Screen.MAIN_PAGE)
+            .commit()
     }
 }
