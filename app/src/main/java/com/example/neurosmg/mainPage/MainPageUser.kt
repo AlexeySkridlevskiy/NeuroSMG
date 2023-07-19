@@ -25,8 +25,6 @@ class MainPageUser : Fragment() {
         } else {
             throw RuntimeException("$context must implement MainActivityListener")
         }
-
-        mainActivityListener?.updateToolbarState(ToolbarState.MainPage)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +45,11 @@ class MainPageUser : Fragment() {
                 .commit()
         }
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mainActivityListener?.updateToolbarState(ToolbarState.MainPage)
     }
 
     override fun onDetach() {

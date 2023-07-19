@@ -83,6 +83,14 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                     onBackPressed()
                 }
             }
+
+            ToolbarState.TestPage -> {
+
+            }
+
+            ToolbarState.PatientList -> {
+
+            }
         }
     }
 }

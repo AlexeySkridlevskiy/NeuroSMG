@@ -22,12 +22,11 @@ class DoctorProfile : Fragment() {
         } else {
             throw RuntimeException("$context must implement MainActivityListener")
         }
-
-        mainActivityListener?.updateToolbarState(ToolbarState.DoctorProfile)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainActivityListener?.updateToolbarState(ToolbarState.DoctorProfile)
     }
 
     override fun onCreateView(
