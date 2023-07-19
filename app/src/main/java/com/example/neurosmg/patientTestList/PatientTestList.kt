@@ -11,6 +11,7 @@ import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.Tests.FOTTest
+import com.example.neurosmg.Tests.IATTest
 import com.example.neurosmg.Tests.RATTest
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.testsPage.TestAdapter
@@ -58,6 +59,9 @@ class PatientTestList : Fragment(), PatientOnClickListener {
             }
             "RAT" -> {
                 fragment = RATTest.newInstance()
+            }
+            "IAT" -> {
+                fragment = IATTest.newInstance()
             }
         }
         bundle.putString(KeyOfArgument.KEY_OF_ID_PATIENT, patient.id)

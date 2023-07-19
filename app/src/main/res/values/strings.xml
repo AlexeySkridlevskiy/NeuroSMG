@@ -14,4 +14,13 @@
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
     <string name="lbl_title_main">Главная</string>
+    <string name="title_doctor_profile">Профиль врача</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="tests">Тесты</string>
+    <string name="questionnaires">Опросники</string>
+    <string name="patients">Пациенты</string>
+    <string name="archive">Архив</string>
+    <string name="about_program">О программе</string>
 </resources>
