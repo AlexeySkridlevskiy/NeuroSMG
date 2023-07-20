@@ -8,10 +8,13 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.neurosmg.KeyOfArgument
+import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.Tests.FOTTest
+import com.example.neurosmg.Tests.IATTest
 import com.example.neurosmg.Tests.RATTest
+import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.testsPage.TestAdapter
 
@@ -24,6 +27,8 @@ class PatientTestList : Fragment(), PatientOnClickListener {
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[PatientsViewModel::class.java]
     }
+
+    private var mainActivityListener: MainActivityListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,18 +51,22 @@ class PatientTestList : Fragment(), PatientOnClickListener {
         rcView.adapter = adapter
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = PatientTestList()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mainActivityListener?.updateToolbarState(ToolbarState.PatientList)
     }
 
     override fun onItemClick(patient: Patient) {
         when (arguments?.getString(KeyOfArgument.KEY_OF_TEST_NAME)){
-            "FOT" ->  {
+            "FOT" ->  { //todo: лучше вынести это в companionObject тут в классе под ключами.
+                // А лучше одинаковые ключи вынести в отдельное место и использовать их там.
                 fragment = FOTTest.newInstance()
             }
             "RAT" -> {
                 fragment = RATTest.newInstance()
+            }
+            "IAT" -> {
+                fragment = IATTest.newInstance()
             }
         }
         bundle.putString(KeyOfArgument.KEY_OF_ID_PATIENT, patient.id)
@@ -68,5 +77,10 @@ class PatientTestList : Fragment(), PatientOnClickListener {
             .replace(R.id.loginFragment, fragment)
             .addToBackStack(Screen.MAIN_PAGE)
             .commit()
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = PatientTestList()
     }
 }

@@ -8,10 +8,13 @@ import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.login.LoginFragment
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.doctorProfile.DoctorProfile
 import com.example.neurosmg.login.LoginViewModel
+import com.example.neurosmg.testsPage.TestsPage
 
 class MainActivity : AppCompatActivity(), MainActivityListener {
 
@@ -43,21 +46,50 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         return actionBarDrawerToggle.onOptionsItemSelected(item)
     }
 
-    override fun updateToolbarState(toolbarState: ToolbarState) {
+    override fun updateToolbarState(toolbarState: ToolbarState) = with(binding){
         when (toolbarState) {
             ToolbarState.Initial -> {
                 supportActionBar?.setDisplayHomeAsUpEnabled(true)
                 setSupportActionBar(binding.includeToolbar.toolbar)
-                binding.includeToolbar.toolbar.navigationIcon = null
-                binding.includeToolbar.idSettings.isVisible = false
+                includeToolbar.toolbar.navigationIcon = null
+                includeToolbar.idSettings.isVisible = false
             }
             ToolbarState.MainPage -> {
-                binding.includeToolbar.toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
-                binding.includeToolbar.toolbarTitleCenter.text = getString(R.string.lbl_title_main)
-                binding.includeToolbar.toolbarTitleCenter.isVisible = true
-                binding.includeToolbar.toolbar.title = null
-                binding.includeToolbar.toolbar.inflateMenu(R.menu.main_menu)
-                binding.includeToolbar.idSettings.isVisible = true
+                includeToolbar.toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
+                includeToolbar.toolbarTitleCenter.text = getString(R.string.lbl_title_main)
+                includeToolbar.toolbarTitleCenter.isVisible = true
+                includeToolbar.toolbar.title = null
+                includeToolbar.toolbar.inflateMenu(R.menu.main_menu)
+                includeToolbar.idSettings.isVisible = true
+
+                includeToolbar.toolbar.setNavigationOnClickListener {
+                    drawerLayout.openDrawer(GravityCompat.START)
+                }
+
+                includeToolbar.idSettings.setOnClickListener {
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.loginFragment, DoctorProfile.newInstance())
+                        .addToBackStack(Screen.MAIN_PAGE)
+                        .commit()
+                }
+            }
+            ToolbarState.DoctorProfile -> {
+                includeToolbar.toolbarTitleCenter.text = getString(R.string.title_doctor_profile)
+                includeToolbar.idSettings.isVisible = false
+                includeToolbar.toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+
+                includeToolbar.toolbar.setNavigationOnClickListener {
+                    onBackPressed()
+                }
+            }
+
+            ToolbarState.TestPage -> {
+
+            }
+
+            ToolbarState.PatientList -> {
+
             }
         }
     }

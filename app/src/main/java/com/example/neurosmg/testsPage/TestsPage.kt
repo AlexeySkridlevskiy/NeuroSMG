@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.neurosmg.KeyOfArgument
+import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
+import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentTestsPageBinding
 import com.example.neurosmg.login.LoginViewModel
 import com.example.neurosmg.patientTestList.PatientTestList
@@ -27,6 +29,8 @@ class TestsPage : Fragment(), ItemOnClickListener {
     private val bundle = Bundle()
     private val adapter = TestAdapter(this)
 
+    private var mainActivityListener: MainActivityListener? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,6 +41,7 @@ class TestsPage : Fragment(), ItemOnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mainActivityListener?.updateToolbarState(ToolbarState.TestPage)
         init()
     }
 

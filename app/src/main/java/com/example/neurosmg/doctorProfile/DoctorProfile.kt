@@ -1,4 +1,4 @@
-package com.example.neurosmg.mainPage
+package com.example.neurosmg.doctorProfile
 
 import android.content.Context
 import android.os.Bundle
@@ -8,14 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
-import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
-import com.example.neurosmg.databinding.FragmentMainPageUserBinding
-import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.databinding.FragmentDoctorProfileBinding
 
-class MainPageUser : Fragment() {
-    lateinit var binding: FragmentMainPageUserBinding
-
+class DoctorProfile : Fragment() {
+    lateinit var binding: FragmentDoctorProfileBinding
     private var mainActivityListener: MainActivityListener? = null
 
     override fun onAttach(context: Context) {
@@ -29,27 +26,15 @@ class MainPageUser : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mainActivityListener?.updateToolbarState(ToolbarState.DoctorProfile)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMainPageUserBinding.inflate(inflater)
-
-        binding.btnGoTesting.setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.loginFragment, TestsPage.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
-        }
+        binding = FragmentDoctorProfileBinding.inflate(inflater)
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mainActivityListener?.updateToolbarState(ToolbarState.MainPage)
     }
 
     override fun onDetach() {
@@ -59,6 +44,6 @@ class MainPageUser : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = MainPageUser()
+        fun newInstance() = DoctorProfile()
     }
 }

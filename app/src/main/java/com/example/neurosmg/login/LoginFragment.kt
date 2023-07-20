@@ -34,8 +34,6 @@ class LoginFragment : Fragment() {
         } else {
             throw RuntimeException("$context must implement MainActivityListener")
         }
-
-        mainActivityListener?.updateToolbarState(ToolbarState.Initial)
     }
 
     override fun onCreateView(
@@ -54,7 +52,7 @@ class LoginFragment : Fragment() {
             ) {
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.loginFragment, MainPageUser.newInstance())
-                    .addToBackStack("LoginFragment").commit()
+                    .addToBackStack("LoginFragment").commit() // TODO тут скорее всего не нужен будет backStack
             } else {
                 binding.etLogin.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
                 binding.etPassword.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
@@ -62,6 +60,11 @@ class LoginFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mainActivityListener?.updateToolbarState(ToolbarState.Initial)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
