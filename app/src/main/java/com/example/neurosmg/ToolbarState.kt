@@ -16,4 +16,5 @@ sealed class ToolbarState {
     object MRTTest: ToolbarState()
     object PatientProfile: ToolbarState()
     object Archive: ToolbarState()
+    object AboutProgramPage: ToolbarState()
 }

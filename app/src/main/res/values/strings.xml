@@ -44,4 +44,9 @@
 
     <string name="info_about_patient">Информация о пациенте</string>
     <string name="profile_of_patient">Профиль пациента</string>
+
+    <string name="program_version">NeuroSMG ver 1.004</string>
+    <string name="about_program_text1">Настоящее приложение выполнено при содействии сотрудников:</string>
+    <string name="about_program_text2">Кафедры психиатрии и наркологии с курсом ФПК и ПК.</string>
+    <string name="about_program_text3">Кафедры общей и клинической биохимии ФПК и ПК.</string>
 </resources>

@@ -86,7 +86,6 @@ class PatientTestList : Fragment(), PatientOnClickListener {
         } else {
             mainActivityListener?.updateToolbarState(ToolbarState.PatientList)
         }
-
     }
 
     override fun onItemClick(patient: Patient) {
@@ -152,6 +151,7 @@ class PatientTestList : Fragment(), PatientOnClickListener {
 
     override fun onDetach() {
         super.onDetach()
+        arguments?.clear()
         mainActivityListener = null
     }
 

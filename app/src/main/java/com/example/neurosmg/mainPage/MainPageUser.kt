@@ -12,6 +12,7 @@ import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.aboutProgramPage.AboutProgramPage
 import com.example.neurosmg.databinding.FragmentMainPageUserBinding
 import com.example.neurosmg.patientTestList.PatientTestList
 import com.example.neurosmg.testsPage.TestsPage
@@ -66,6 +67,14 @@ class MainPageUser : Fragment() {
             parentFragmentManager
                 .beginTransaction()
                 .replace(R.id.loginFragment, fragment)
+                .addToBackStack(Screen.MAIN_PAGE)
+                .commit()
+        }
+
+        binding.btnAboutProgram.setOnClickListener {
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.loginFragment, AboutProgramPage.newInstance())
                 .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }

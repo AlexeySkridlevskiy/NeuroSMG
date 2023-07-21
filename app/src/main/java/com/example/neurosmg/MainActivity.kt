@@ -67,6 +67,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                 ToolbarState.MRTTest -> setupToolbarForMRTTest()
                 ToolbarState.PatientProfile -> setupToolbarForPatientProfile()
                 ToolbarState.Archive -> setupToolbarForArchive()
+                ToolbarState.AboutProgramPage -> setupToolbarForAboutProgramPage()
             }
         }
     }
@@ -103,6 +104,22 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                     .replace(R.id.loginFragment, DoctorProfile.newInstance())
                     .addToBackStack(Screen.MAIN_PAGE)
                     .commit()
+            }
+        }
+    }
+
+    private fun setupToolbarForAboutProgramPage() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.about_program)
+            toolbarSubtitle.isVisible = false
+            idSettings.isVisible = false
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
             }
         }
     }
