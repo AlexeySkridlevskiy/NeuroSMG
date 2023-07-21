@@ -112,7 +112,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.about_program)
             toolbarSubtitle.isVisible = false
             idSettings.isVisible = false
