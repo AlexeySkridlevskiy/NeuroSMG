@@ -1,7 +1,9 @@
 package com.example.neurosmg
 
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -55,6 +57,17 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                 ToolbarState.DoctorProfile -> setupToolbarForDoctorProfile()
                 ToolbarState.TestPage -> setupToolbarForTestPage()
                 ToolbarState.PatientList -> setupToolbarForPatientList()
+                ToolbarState.FOTTest -> setupToolbarForFOTTest()
+                ToolbarState.RATTest -> setupToolbarForRATTest()
+                ToolbarState.IATTest -> setupToolbarForIATTest()
+                ToolbarState.GNGTest -> setupToolbarForGNGTest()
+                ToolbarState.SCTTest -> setupToolbarForSCTTest()
+                ToolbarState.TMTTest -> setupToolbarForTMTTest()
+                ToolbarState.CBTTest -> setupToolbarForCBTTest()
+                ToolbarState.MRTTest -> setupToolbarForMRTTest()
+                ToolbarState.PatientProfile -> setupToolbarForPatientProfile()
+                ToolbarState.Archive -> setupToolbarForArchive()
+                ToolbarState.AboutProgramPage -> setupToolbarForAboutProgramPage()
             }
         }
     }
@@ -64,6 +77,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.navigationIcon = null
             toolbarTitleCenter.isVisible = false
+            toolbarSubtitle.isVisible = false
             idSettings.isVisible = false
         }
     }
@@ -72,8 +86,10 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         with(binding.includeToolbar) {
             setSupportActionBar(toolbar)
             toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
+            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.lbl_title_main)
             toolbarTitleCenter.isVisible = true
+            toolbarSubtitle.isVisible = false
             toolbar.title = null
             toolbar.inflateMenu(R.menu.main_menu)
             idSettings.isVisible = true
@@ -92,11 +108,30 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         }
     }
 
+    private fun setupToolbarForAboutProgramPage() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.about_program)
+            toolbarSubtitle.isVisible = false
+            idSettings.isVisible = false
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
     private fun setupToolbarForDoctorProfile() {
         with(binding.includeToolbar) {
             setSupportActionBar(toolbar)
+            toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.title_doctor_profile)
+            toolbarSubtitle.isVisible = false
             idSettings.isVisible = false
 
             toolbar.setNavigationOnClickListener {
@@ -106,10 +141,202 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
 
     private fun setupToolbarForTestPage() {
-        // Add code here for TestPage state
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.tests)
+            toolbarSubtitle.isVisible = false
+            idSettings.isVisible = false
+
+            toolbar.setNavigationOnClickListener {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
+        }
     }
 
     private fun setupToolbarForPatientList() {
-        // Add code here for PatientList state
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarSubtitle.isVisible = false
+            toolbarTitleCenter.text = getString(R.string.list_of_patients)
+            idSettings.isVisible = false
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForPatientProfile() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarSubtitle.isVisible = false
+            toolbarTitleCenter.text = getString(R.string.profile_of_patient)
+            idSettings.isVisible = false
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForArchive() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarSubtitle.isVisible = false
+            toolbarTitleCenter.text = getString(R.string.archive)
+            idSettings.isVisible = false
+
+            toolbar.setNavigationOnClickListener {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
+        }
+    }
+
+    private fun setupToolbarForFOTTest() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.fot_test)
+            toolbarSubtitle.text = getString(R.string.fot_test_subtitle)
+            idSettings.isVisible = false
+            toolbarSubtitle.isVisible = true
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForRATTest() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.rat_test)
+            toolbarSubtitle.text = getString(R.string.rat_test_subtitle)
+            idSettings.isVisible = false
+            toolbarSubtitle.isVisible = true
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForIATTest() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.iat_test)
+            toolbarSubtitle.text = getString(R.string.iat_test_subtitle)
+            idSettings.isVisible = false
+            toolbarSubtitle.isVisible = true
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForGNGTest() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.gng_test)
+            toolbarSubtitle.text = getString(R.string.gng_test_subtitle)
+            idSettings.isVisible = false
+            toolbarSubtitle.isVisible = true
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForSCTTest() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.sct_test)
+            toolbarSubtitle.text = getString(R.string.sct_test_subtitle)
+            idSettings.isVisible = false
+            toolbarSubtitle.isVisible = true
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForTMTTest() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.tmt_test)
+            toolbarSubtitle.text = getString(R.string.tmt_test_subtitle)
+            idSettings.isVisible = false
+            toolbarSubtitle.isVisible = true
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForCBTTest() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.cbt_test)
+            toolbarSubtitle.text = getString(R.string.cbt_test_subtitle)
+            idSettings.isVisible = false
+            toolbarSubtitle.isVisible = true
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForMRTTest() {
+        with(binding.includeToolbar) {
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            linearToolbar.visibility = View.VISIBLE
+            toolbarTitleCenter.text = getString(R.string.mrt_test)
+            toolbarSubtitle.text = getString(R.string.mrt_test_subtitle)
+            idSettings.isVisible = false
+            toolbarSubtitle.isVisible = true
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
     }
 }

@@ -33,7 +33,6 @@ class PatientAdapter(private val patientOnClickListener: PatientOnClickListener)
         holder.itemView.setOnClickListener {
             onItemClick?.invoke(patient)
             patientOnClickListener.onItemClick(patientList[position])
-            Log.d("MyLog", "Click ${patientList[position]}")
         }
     }
 
