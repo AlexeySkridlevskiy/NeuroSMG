@@ -1,5 +1,6 @@
 package com.example.neurosmg.testsPage
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -31,6 +32,14 @@ class TestsPage : Fragment(), ItemOnClickListener {
 
     private var mainActivityListener: MainActivityListener? = null
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is MainActivityListener) {
+            mainActivityListener = context
+        } else {
+            throw RuntimeException("$context must implement MainActivityListener")
+        }
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,6 +69,11 @@ class TestsPage : Fragment(), ItemOnClickListener {
             .replace(R.id.loginFragment, fragment)
             .addToBackStack(Screen.MAIN_PAGE)
             .commit()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mainActivityListener = null
     }
 
     companion object {

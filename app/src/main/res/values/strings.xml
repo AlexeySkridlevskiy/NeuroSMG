@@ -18,9 +18,30 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="list_of_patients">Список пациентов</string>
     <string name="tests">Тесты</string>
     <string name="questionnaires">Опросники</string>
     <string name="patients">Пациенты</string>
     <string name="archive">Архив</string>
     <string name="about_program">О программе</string>
+
+    <string name="fot_test">FOT</string>
+    <string name="fot_test_subtitle">Finger oscillation test</string>
+    <string name="rat_test">RAT</string>
+    <string name="rat_test_subtitle">Risk appetite test</string>
+    <string name="iat_test">IAT</string>
+    <string name="iat_test_subtitle">Implicit association test</string>
+    <string name="gng_test">GNG</string>
+    <string name="gng_test_subtitle">Go/No go test</string>
+    <string name="sct_test">SCT</string>
+    <string name="sct_test_subtitle">Stroop color test</string>
+    <string name="tmt_test">TMT</string>
+    <string name="tmt_test_subtitle">Trail making test</string>
+    <string name="cbt_test">CBT</string>
+    <string name="cbt_test_subtitle">Corsi block test</string>
+    <string name="mrt_test">MRT</string>
+    <string name="mrt_test_subtitle">Mental rotation task</string>
+
+    <string name="info_about_patient">Информация о пациенте</string>
+    <string name="profile_of_patient">Профиль пациента</string>
 </resources>

@@ -16,16 +16,35 @@
         app:title="@string/app_name"
         app:titleTextColor="@color/white" >
 
-        <TextView
-            android:id="@+id/toolbar_title_center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Toolbar Title"
-            android:textSize="22dp"
-            android:textColor="@color/white"
-            android:layout_gravity="center"
-            android:visibility="gone"
-            />
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/toolbar_title_center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Toolbar Title"
+                android:textColor="@color/white"
+                android:textSize="22dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/toolbar_subtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Toolbar Subtitle"
+                android:textColor="@color/subtext_color"
+                android:visibility="gone" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         <ImageView
             android:id="@+id/id_settings"
