@@ -85,7 +85,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         with(binding.includeToolbar) {
             setSupportActionBar(toolbar)
             toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.lbl_title_main)
             toolbarTitleCenter.isVisible = true
             toolbarSubtitle.isVisible = false
@@ -112,7 +111,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.title_doctor_profile)
             toolbarSubtitle.isVisible = false
             idSettings.isVisible = false
@@ -128,7 +126,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.tests)
             toolbarSubtitle.isVisible = false
             idSettings.isVisible = false
@@ -144,7 +141,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarSubtitle.isVisible = false
             toolbarTitleCenter.text = getString(R.string.list_of_patients)
             idSettings.isVisible = false
@@ -160,7 +156,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarSubtitle.isVisible = false
             toolbarTitleCenter.text = getString(R.string.profile_of_patient)
             idSettings.isVisible = false
@@ -176,7 +171,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
-            linearToolbar.visibility = View.VISIBLE
             toolbarSubtitle.isVisible = false
             toolbarTitleCenter.text = getString(R.string.archive)
             idSettings.isVisible = false
@@ -192,7 +186,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.fot_test)
             toolbarSubtitle.text = getString(R.string.fot_test_subtitle)
             idSettings.isVisible = false
@@ -209,7 +202,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.rat_test)
             toolbarSubtitle.text = getString(R.string.rat_test_subtitle)
             idSettings.isVisible = false
@@ -226,7 +218,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.iat_test)
             toolbarSubtitle.text = getString(R.string.iat_test_subtitle)
             idSettings.isVisible = false
@@ -243,7 +234,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.gng_test)
             toolbarSubtitle.text = getString(R.string.gng_test_subtitle)
             idSettings.isVisible = false
@@ -260,7 +250,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.sct_test)
             toolbarSubtitle.text = getString(R.string.sct_test_subtitle)
             idSettings.isVisible = false
@@ -277,7 +266,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.tmt_test)
             toolbarSubtitle.text = getString(R.string.tmt_test_subtitle)
             idSettings.isVisible = false
@@ -294,7 +282,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.cbt_test)
             toolbarSubtitle.text = getString(R.string.cbt_test_subtitle)
             idSettings.isVisible = false
@@ -311,7 +298,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
-            linearToolbar.visibility = View.VISIBLE
             toolbarTitleCenter.text = getString(R.string.mrt_test)
             toolbarSubtitle.text = getString(R.string.mrt_test_subtitle)
             idSettings.isVisible = false
