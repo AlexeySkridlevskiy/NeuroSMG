@@ -1,12 +1,15 @@
 package com.example.neurosmg.Tests.FOT
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -16,17 +19,20 @@ import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentFOTTestBinding
 import java.util.Random
 
-class FOTTest : Fragment() {
+class FOTTest : Fragment(), CanvasViewCallback {
 
     lateinit var binding: FragmentFOTTestBinding
 
     private var mainActivityListener: MainActivityListener? = null
 
     private lateinit var instructionsTextView: TextView
+    private lateinit var countDownTimer: CountDownTimer
     private lateinit var startButton: Button
+    private lateinit var canvasView: CanvasView
     private var startTime: Long = 0
     private var endTime: Long = 0
-    private val random = Random()
+    private var touchCount: Int = 0
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is MainActivityListener) {
@@ -46,6 +52,8 @@ class FOTTest : Fragment() {
         binding = FragmentFOTTestBinding.inflate(inflater)
         instructionsTextView = binding.textView8
         startButton = binding.button
+        canvasView = binding.canvasView
+        canvasView.setCanvasViewCallback(this)
         startButton.setOnClickListener {
             startTest()
         }
@@ -53,23 +61,37 @@ class FOTTest : Fragment() {
     }
 
     private fun startTest() {
-        instructionsTextView.text = "Нажимайте как можно быстрее!"
-        Log.d("MyLog", "Start test")
-        // Запускаем таймер
-        startTime = System.currentTimeMillis()
+        TestActive.KEY_ACTIVE_FOT_TEST = true
+        touchCount = 0
+        canvasView.clearPoints()
 
         // Отложенное завершение теста через 30 секунд
-        Handler(Looper.getMainLooper()).postDelayed({
-            endTest()
-        }, 3000) // 30 секунд в миллисекундах
+        countDownTimer = object : CountDownTimer(30000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsRemaining = millisUntilFinished / 1000
+                binding.tvTime.text = secondsRemaining.toString()
+            }
+
+            override fun onFinish() {
+                endTest()
+            }
+        }.start()
     }
 
     private fun endTest() {
+        TestActive.KEY_ACTIVE_FOT_TEST = false
         endTime = System.currentTimeMillis()
-        Log.d("MyLog", "End test")
-        val timeTaken = endTime - startTime
 
-        instructionsTextView.text = "Время выполнения: $timeTaken мс"
+        val touchesPerSecond = touchCount.toDouble() / 30
+        binding.tvClicks.text = touchCount.toString()
+
+        instructionsTextView.text = "Частота нажатий: $touchesPerSecond нажатий/сек"
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        canvasView.clearPoints()
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -82,5 +104,16 @@ class FOTTest : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = FOTTest()
+    }
+
+    override fun onCanvasViewTouch() {
+        if(TestActive.KEY_ACTIVE_FOT_TEST){
+            touchCount++
+            updateTouchCountTextView()
+        }
+    }
+
+    private fun updateTouchCountTextView() {
+        binding.tvClicks.text = touchCount.toString()
     }
 }

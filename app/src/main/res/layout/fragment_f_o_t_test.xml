@@ -38,7 +38,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView14"
+            android:id="@+id/tvTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -54,11 +54,11 @@
             android:layout_marginStart="32dp"
             android:text="Нажатия:"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView14"
+            app:layout_constraintStart_toEndOf="@+id/tvTime"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView16"
+            android:id="@+id/tvClicks"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -68,6 +68,17 @@
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.example.neurosmg.Tests.FOT.CanvasView
+        android:id="@+id/canvasView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+    </com.example.neurosmg.Tests.FOT.CanvasView>
 
     <Button
         android:id="@+id/button"
