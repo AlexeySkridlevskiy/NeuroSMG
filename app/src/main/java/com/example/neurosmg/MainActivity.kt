@@ -4,14 +4,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.neurosmg.aboutProgramPage.AboutProgramPage
 import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.doctorProfile.DoctorProfile
 import com.example.neurosmg.login.LoginFragment
+import com.example.neurosmg.patientTestList.Patient
+import com.example.neurosmg.patientTestList.PatientTestList
+import com.example.neurosmg.testsPage.TestsPage
 
 class MainActivity : AppCompatActivity(), MainActivityListener {
 
@@ -43,10 +48,56 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return actionBarDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item)
+        binding.navigationView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.tests -> {
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.loginFragment, TestsPage.newInstance())
+                        .addToBackStack(Screen.MAIN_PAGE)
+                        .commit()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.questionnaires -> {
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.loginFragment, TestsPage.newInstance())
+                        .addToBackStack(Screen.MAIN_PAGE)
+                        .commit()
+                    Toast.makeText(this, "Тут нужен опросник", Toast.LENGTH_SHORT).show()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.patients -> {
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.loginFragment, PatientTestList.newInstance())
+                        .addToBackStack(Screen.MAIN_PAGE)
+                        .commit()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.archive -> {
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.loginFragment, PatientTestList.newInstance())
+                        .addToBackStack(Screen.MAIN_PAGE)
+                        .commit()
+                    Toast.makeText(this, "Тут нужен архив", Toast.LENGTH_SHORT).show()
+                    return@setNavigationItemSelectedListener true
+                }
+                R.id.about_program -> {
+                    supportFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.loginFragment, AboutProgramPage.newInstance())
+                        .addToBackStack(Screen.MAIN_PAGE)
+                        .commit()
+                    return@setNavigationItemSelectedListener true
+                }
+                else -> {
+                    return@setNavigationItemSelectedListener false
+                }
+            }
+        }
     }
 
     override fun updateToolbarState(toolbarState: ToolbarState) {
