@@ -2,6 +2,7 @@ package com.example.neurosmg
 
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -10,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import com.example.neurosmg.aboutProgramPage.AboutProgramPage
 import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.doctorProfile.DoctorProfile
@@ -25,6 +27,26 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+
+    private val menuActions = mapOf(
+        R.id.tests to {
+            replaceFragment(TestsPage.newInstance(), Screen.MAIN_PAGE)
+        },
+        R.id.questionnaires to {
+            replaceFragment(TestsPage.newInstance(), Screen.MAIN_PAGE)
+            Toast.makeText(this, "Тут нужен опросник", Toast.LENGTH_SHORT).show()
+        },
+        R.id.patients to {
+            replaceFragment(PatientTestList.newInstance(), Screen.MAIN_PAGE)
+        },
+        R.id.archive to {
+            replaceFragment(PatientTestList.newInstance(), Screen.MAIN_PAGE)
+            Toast.makeText(this, "Тут нужен архив", Toast.LENGTH_SHORT).show()
+        },
+        R.id.about_program to {
+            replaceFragment(AboutProgramPage.newInstance(), Screen.MAIN_PAGE)
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,58 +72,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         actionBarDrawerToggle.syncState()
 
         binding.navigationView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.tests -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.loginFragment, TestsPage.newInstance())
-                        .addToBackStack(Screen.MAIN_PAGE)
-                        .commit()
-                    return@setNavigationItemSelectedListener true
-                }
-
-                R.id.questionnaires -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.loginFragment, TestsPage.newInstance())
-                        .addToBackStack(Screen.MAIN_PAGE)
-                        .commit()
-                    Toast.makeText(this, "Тут нужен опросник", Toast.LENGTH_SHORT).show()
-                    return@setNavigationItemSelectedListener true
-                }
-
-                R.id.patients -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.loginFragment, PatientTestList.newInstance())
-                        .addToBackStack(Screen.MAIN_PAGE)
-                        .commit()
-                    return@setNavigationItemSelectedListener true
-                }
-
-                R.id.archive -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.loginFragment, PatientTestList.newInstance())
-                        .addToBackStack(Screen.MAIN_PAGE)
-                        .commit()
-                    Toast.makeText(this, "Тут нужен архив", Toast.LENGTH_SHORT).show()
-                    return@setNavigationItemSelectedListener true
-                }
-
-                R.id.about_program -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.loginFragment, AboutProgramPage.newInstance())
-                        .addToBackStack(Screen.MAIN_PAGE)
-                        .commit()
-                    return@setNavigationItemSelectedListener true
-                }
-
-                else -> {
-                    return@setNavigationItemSelectedListener false
-                }
-            }
+            menuActions[menuItem.itemId]?.invoke()
+            binding.drawer.closeDrawer(GravityCompat.START)
+            true
         }
     }
 
@@ -380,5 +353,12 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                 onBackPressed()
             }
         }
+    }
+
+    private fun replaceFragment(fragment: Fragment, tagBackStack: String) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.loginFragment, fragment)
+            .addToBackStack(tagBackStack)
+            .commit()
     }
 }
