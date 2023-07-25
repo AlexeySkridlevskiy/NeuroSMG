@@ -9,8 +9,8 @@ class LoginViewModel : ViewModel() {
         password: String
     ): Boolean {
 //        repository.login()
-        return login == "1111" && password=="1111"
-
+//        return login == "1111" && password=="1111"
+        return true
     }
 
 }

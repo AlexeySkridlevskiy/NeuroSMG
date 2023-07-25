@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                         .commit()
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.questionnaires -> {
                     supportFragmentManager
                         .beginTransaction()
@@ -68,6 +69,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                     Toast.makeText(this, "Тут нужен опросник", Toast.LENGTH_SHORT).show()
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.patients -> {
                     supportFragmentManager
                         .beginTransaction()
@@ -76,6 +78,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                         .commit()
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.archive -> {
                     supportFragmentManager
                         .beginTransaction()
@@ -85,6 +88,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                     Toast.makeText(this, "Тут нужен архив", Toast.LENGTH_SHORT).show()
                     return@setNavigationItemSelectedListener true
                 }
+
                 R.id.about_program -> {
                     supportFragmentManager
                         .beginTransaction()
@@ -93,6 +97,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
                         .commit()
                     return@setNavigationItemSelectedListener true
                 }
+
                 else -> {
                     return@setNavigationItemSelectedListener false
                 }
@@ -101,25 +106,23 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
 
     override fun updateToolbarState(toolbarState: ToolbarState) {
-        with(binding.includeToolbar) {
-            when (toolbarState) {
-                ToolbarState.Initial -> setupToolbarForInitial()
-                ToolbarState.MainPage -> setupToolbarForMainPage()
-                ToolbarState.DoctorProfile -> setupToolbarForDoctorProfile()
-                ToolbarState.TestPage -> setupToolbarForTestPage()
-                ToolbarState.PatientList -> setupToolbarForPatientList()
-                ToolbarState.FOTTest -> setupToolbarForFOTTest()
-                ToolbarState.RATTest -> setupToolbarForRATTest()
-                ToolbarState.IATTest -> setupToolbarForIATTest()
-                ToolbarState.GNGTest -> setupToolbarForGNGTest()
-                ToolbarState.SCTTest -> setupToolbarForSCTTest()
-                ToolbarState.TMTTest -> setupToolbarForTMTTest()
-                ToolbarState.CBTTest -> setupToolbarForCBTTest()
-                ToolbarState.MRTTest -> setupToolbarForMRTTest()
-                ToolbarState.PatientProfile -> setupToolbarForPatientProfile()
-                ToolbarState.Archive -> setupToolbarForArchive()
-                ToolbarState.AboutProgramPage -> setupToolbarForAboutProgramPage()
-            }
+        when (toolbarState) {
+            ToolbarState.Initial -> setupToolbarForInitial()
+            ToolbarState.MainPage -> setupToolbarForMainPage()
+            ToolbarState.DoctorProfile -> setupToolbarForDoctorProfile()
+            ToolbarState.TestPage -> setupToolbarForTestPage()
+            ToolbarState.PatientList -> setupToolbarForPatientList()
+            ToolbarState.FOTTest -> setupToolbarForFOTTest()
+            ToolbarState.RATTest -> setupToolbarForRATTest()
+            ToolbarState.IATTest -> setupToolbarForIATTest()
+            ToolbarState.GNGTest -> setupToolbarForGNGTest()
+            ToolbarState.SCTTest -> setupToolbarForSCTTest()
+            ToolbarState.TMTTest -> setupToolbarForTMTTest()
+            ToolbarState.CBTTest -> setupToolbarForCBTTest()
+            ToolbarState.MRTTest -> setupToolbarForMRTTest()
+            ToolbarState.PatientProfile -> setupToolbarForPatientProfile()
+            ToolbarState.Archive -> setupToolbarForArchive()
+            ToolbarState.AboutProgramPage -> setupToolbarForAboutProgramPage()
         }
     }
 
@@ -129,6 +132,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.navigationIcon = null
             toolbarTitleCenter.isVisible = false
             toolbarSubtitle.isVisible = false
+            subtitle.isVisible = false
             idSettings.isVisible = false
         }
     }
@@ -143,6 +147,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.inflateMenu(R.menu.main_menu)
             idSettings.isVisible = true
+            subtitle.isVisible = false
 
             toolbar.setNavigationOnClickListener {
                 drawerLayout.openDrawer(GravityCompat.START)
@@ -166,6 +171,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbarTitleCenter.text = getString(R.string.about_program)
             toolbarSubtitle.isVisible = false
             idSettings.isVisible = false
+            subtitle.isVisible = false
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -181,7 +187,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbarTitleCenter.text = getString(R.string.title_doctor_profile)
             toolbarSubtitle.isVisible = false
             idSettings.isVisible = false
-
+            subtitle.isVisible = false
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
             }
@@ -196,7 +202,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbarTitleCenter.text = getString(R.string.tests)
             toolbarSubtitle.isVisible = false
             idSettings.isVisible = false
-
+            subtitle.isVisible = false
             toolbar.setNavigationOnClickListener {
                 drawerLayout.openDrawer(GravityCompat.START)
             }
@@ -211,7 +217,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbarSubtitle.isVisible = false
             toolbarTitleCenter.text = getString(R.string.list_of_patients)
             idSettings.isVisible = false
-
+            subtitle.isVisible = false
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
             }
@@ -226,7 +232,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbarSubtitle.isVisible = false
             toolbarTitleCenter.text = getString(R.string.profile_of_patient)
             idSettings.isVisible = false
-
+            subtitle.isVisible = false
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
             }
@@ -241,7 +247,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbarSubtitle.isVisible = false
             toolbarTitleCenter.text = getString(R.string.archive)
             idSettings.isVisible = false
-
+            subtitle.isVisible = false
             toolbar.setNavigationOnClickListener {
                 drawerLayout.openDrawer(GravityCompat.START)
             }
@@ -254,9 +260,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
             toolbarTitleCenter.text = getString(R.string.fot_test)
-            toolbarSubtitle.text = getString(R.string.fot_test_subtitle)
+            subtitle.text = getString(R.string.fot_test_subtitle)
+            subtitle.isVisible = true
             idSettings.isVisible = false
-            toolbarSubtitle.isVisible = true
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -270,9 +276,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
             toolbarTitleCenter.text = getString(R.string.rat_test)
-            toolbarSubtitle.text = getString(R.string.rat_test_subtitle)
+            subtitle.text = getString(R.string.rat_test_subtitle)
+            subtitle.isVisible = true
             idSettings.isVisible = false
-            toolbarSubtitle.isVisible = true
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -286,9 +292,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
             toolbarTitleCenter.text = getString(R.string.iat_test)
-            toolbarSubtitle.text = getString(R.string.iat_test_subtitle)
+            subtitle.text = getString(R.string.iat_test_subtitle)
+            subtitle.isVisible = true
             idSettings.isVisible = false
-            toolbarSubtitle.isVisible = true
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -302,9 +308,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
             toolbarTitleCenter.text = getString(R.string.gng_test)
-            toolbarSubtitle.text = getString(R.string.gng_test_subtitle)
+            subtitle.text = getString(R.string.gng_test_subtitle)
+            subtitle.isVisible = true
             idSettings.isVisible = false
-            toolbarSubtitle.isVisible = true
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -318,9 +324,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
             toolbarTitleCenter.text = getString(R.string.sct_test)
-            toolbarSubtitle.text = getString(R.string.sct_test_subtitle)
+            subtitle.text = getString(R.string.sct_test_subtitle)
+            subtitle.isVisible = true
             idSettings.isVisible = false
-            toolbarSubtitle.isVisible = true
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -334,9 +340,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
             toolbarTitleCenter.text = getString(R.string.tmt_test)
-            toolbarSubtitle.text = getString(R.string.tmt_test_subtitle)
+            subtitle.text = getString(R.string.tmt_test_subtitle)
+            subtitle.isVisible = true
             idSettings.isVisible = false
-            toolbarSubtitle.isVisible = true
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -350,9 +356,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
             toolbarTitleCenter.text = getString(R.string.cbt_test)
-            toolbarSubtitle.text = getString(R.string.cbt_test_subtitle)
+            subtitle.text = getString(R.string.cbt_test_subtitle)
+            subtitle.isVisible = true
             idSettings.isVisible = false
-            toolbarSubtitle.isVisible = true
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
@@ -366,9 +372,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
             toolbarTitleCenter.text = getString(R.string.mrt_test)
-            toolbarSubtitle.text = getString(R.string.mrt_test_subtitle)
+            subtitle.text = getString(R.string.mrt_test_subtitle)
+            subtitle.isVisible = true
             idSettings.isVisible = false
-            toolbarSubtitle.isVisible = true
 
             toolbar.setNavigationOnClickListener {
                 onBackPressed()
