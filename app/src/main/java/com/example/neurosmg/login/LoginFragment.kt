@@ -24,7 +24,6 @@ class LoginFragment : Fragment() {
         ViewModelProvider(requireActivity())[LoginViewModel::class.java]
     }
 
-
     private var mainActivityListener: MainActivityListener? = null
 
     override fun onAttach(context: Context) {
