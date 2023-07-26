@@ -1,9 +1,11 @@
 package com.example.neurosmg.Tests.SCT
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,8 +14,10 @@ import android.widget.Button
 import android.widget.TextView
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
+import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentSCTTestBinding
+import com.example.neurosmg.testsPage.TestsPage
 import kotlin.random.Random
 
 class SCTTest : Fragment() {
@@ -49,6 +53,7 @@ class SCTTest : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSCTTestBinding.inflate(inflater)
+        infoDialogStartTest()
         return binding.root
     }
 
@@ -59,7 +64,9 @@ class SCTTest : Fragment() {
         buttonRed = binding.button5
         buttonBlue = binding.button6
 
-        setupTest()
+        binding.layoutSCT.setOnClickListener {
+            infoDialogReady()
+        }
         setupButtonClickListeners()
     }
 
@@ -84,7 +91,14 @@ class SCTTest : Fragment() {
     private fun showRandomWord() {
         val randomIndex = Random.nextInt(0, words.size)
         val randomWord = words[randomIndex]
-        val randomColor = colors[Random.nextInt(0, colors.size)]
+        var randomColor = colors[Random.nextInt(0, colors.size)]
+        if(totalAttempts<10){
+            if (randomWord=="Красный"){
+                randomColor = Color.RED
+            }else{
+                randomColor = Color.BLUE
+            }
+        }
 
         handler.postDelayed({
             textView.visibility = View.VISIBLE
@@ -101,7 +115,7 @@ class SCTTest : Fragment() {
             score++
         }
 
-        if (totalAttempts < 10) {
+        if (totalAttempts < 50) {
             showRandomWord()
         } else {
             showTestResult()
@@ -109,10 +123,11 @@ class SCTTest : Fragment() {
     }
 
     private fun showTestResult() {
-        textView.visibility = View.VISIBLE
+//        textView.visibility = View.VISIBLE
         val accuracy = score * 100 / totalAttempts
-        val resultText = "Тест завершен!\n\nТочность: $accuracy%"
-        textView.text = resultText
+//        val resultText = "Тест завершен!\n\nТочность: $accuracy%"
+//        textView.text = resultText
+        infoDialogEndTest()
         buttonRed.isEnabled = false
         buttonBlue.isEnabled = false
     }
@@ -123,5 +138,50 @@ class SCTTest : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = SCTTest()
+    }
+
+    private fun infoDialogStartTest() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Для начала тестирования коснитесь экрана") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun infoDialogReady() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Исследование начато") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Приготовьтесь") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+            setupTest()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun infoDialogEndTest() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Тестирование пройдено, спасибо!") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.loginFragment, TestsPage.newInstance())
+                .addToBackStack(Screen.MAIN_PAGE)
+                .commit()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
     }
 }
