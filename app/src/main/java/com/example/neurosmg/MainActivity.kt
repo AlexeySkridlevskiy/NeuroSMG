@@ -27,21 +27,28 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+    private val bundle = Bundle()
+    private lateinit var fragment: Fragment
 
     private val menuActions = mapOf(
         R.id.tests to {
             replaceFragment(TestsPage.newInstance(), Screen.MAIN_PAGE)
         },
         R.id.questionnaires to {
-            replaceFragment(TestsPage.newInstance(), Screen.MAIN_PAGE)
-            Toast.makeText(this, "Тут нужен опросник", Toast.LENGTH_SHORT).show()
+//            replaceFragment(TestsPage.newInstance(), Screen.MAIN_PAGE)
+            Toast.makeText(this, "Страница 'Опросники' находится в разработке", Toast.LENGTH_SHORT).show()
         },
         R.id.patients to {
-            replaceFragment(PatientTestList.newInstance(), Screen.MAIN_PAGE)
+            bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT, true)
+            fragment = PatientTestList.newInstance()
+            fragment.arguments = bundle
+            replaceFragment(fragment, Screen.MAIN_PAGE)
         },
         R.id.archive to {
-            replaceFragment(PatientTestList.newInstance(), Screen.MAIN_PAGE)
-            Toast.makeText(this, "Тут нужен архив", Toast.LENGTH_SHORT).show()
+            bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE, true)
+            fragment = PatientTestList.newInstance()
+            fragment.arguments = bundle
+            replaceFragment(fragment, Screen.MAIN_PAGE)
         },
         R.id.about_program to {
             replaceFragment(AboutProgramPage.newInstance(), Screen.MAIN_PAGE)

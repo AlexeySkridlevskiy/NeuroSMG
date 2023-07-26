@@ -167,6 +167,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogStartTest() {
@@ -179,6 +180,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogToLeft() {
@@ -191,6 +193,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogEndAllTest() {
@@ -203,5 +206,6 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
     }
 }
