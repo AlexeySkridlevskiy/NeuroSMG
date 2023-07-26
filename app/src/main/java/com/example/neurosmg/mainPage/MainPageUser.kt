@@ -21,8 +21,6 @@ class MainPageUser : Fragment() {
     lateinit var binding: FragmentMainPageUserBinding
 
     private var mainActivityListener: MainActivityListener? = null
-    private val bundle = Bundle()
-    private val fragment = PatientTestList.newInstance()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -47,34 +45,6 @@ class MainPageUser : Fragment() {
             parentFragmentManager
                 .beginTransaction()
                 .replace(R.id.loginFragment, TestsPage.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
-        }
-
-        binding.btnArchive.setOnClickListener {
-            bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE, true)
-            fragment.arguments = bundle
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.loginFragment, fragment)
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
-        }
-
-        binding.btnPatients.setOnClickListener {
-            bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT, true)
-            fragment.arguments = bundle
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.loginFragment, fragment)
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
-        }
-
-        binding.btnAboutProgram.setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.loginFragment, AboutProgramPage.newInstance())
                 .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }

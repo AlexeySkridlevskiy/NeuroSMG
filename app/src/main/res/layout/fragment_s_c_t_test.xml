@@ -46,4 +46,16 @@
             app:cornerRadius="0dp" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvColorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:text="Color"
+        android:textSize="36sp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="@+id/textView17"
+        app:layout_constraintStart_toStartOf="@+id/textView17"
+        app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
