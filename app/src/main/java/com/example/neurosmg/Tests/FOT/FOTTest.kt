@@ -101,11 +101,6 @@ class FOTTest : Fragment(), CanvasViewCallback {
         }else if (testRound!=0){
             TestActive.KEY_ACTIVE_FOT_TEST = false
             infoDialogEndAllTest()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.loginFragment, TestsPage.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
         }
 
     }
@@ -202,6 +197,11 @@ class FOTTest : Fragment(), CanvasViewCallback {
         alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.loginFragment, TestsPage.newInstance())
+                .addToBackStack(Screen.MAIN_PAGE)
+                .commit()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
