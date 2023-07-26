@@ -1,6 +1,7 @@
 package com.example.neurosmg.Tests.FOT
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
@@ -15,10 +16,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.example.neurosmg.MainActivityListener
+import com.example.neurosmg.R
+import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentFOTTestBinding
+import com.example.neurosmg.testsPage.TestsPage
 import java.util.Random
-
 class FOTTest : Fragment(), CanvasViewCallback {
 
     lateinit var binding: FragmentFOTTestBinding
@@ -32,6 +35,9 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private var startTime: Long = 0
     private var endTime: Long = 0
     private var touchCount: Int = 0
+    private var viewDialog: Int = 0
+    private var testRound: Int = 0
+    private var isStartTimer: Boolean = false
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -55,7 +61,10 @@ class FOTTest : Fragment(), CanvasViewCallback {
         canvasView = binding.canvasView
         canvasView.setCanvasViewCallback(this)
         startButton.setOnClickListener {
-            startTest()
+            if (!TestActive.KEY_ACTIVE_FOT_TEST){
+                onPause()
+                infoDialog()
+            }
         }
         return binding.root
     }
@@ -64,8 +73,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
         TestActive.KEY_ACTIVE_FOT_TEST = true
         touchCount = 0
         canvasView.clearPoints()
-
-        // Отложенное завершение теста через 30 секунд
+        isStartTimer = true
         countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsRemaining = millisUntilFinished / 1000
@@ -79,13 +87,26 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     private fun endTest() {
-        TestActive.KEY_ACTIVE_FOT_TEST = false
-        endTime = System.currentTimeMillis()
+        if(testRound == 0){
+            TestActive.KEY_ACTIVE_FOT_TEST = false
+            endTime = System.currentTimeMillis()
 
-        val touchesPerSecond = touchCount.toDouble() / 30
-        binding.tvClicks.text = touchCount.toString()
+            val touchesPerSecond = touchCount.toDouble() / 30 //todo: тут частота нажатий
+            binding.tvClicks.text = touchCount.toString()
 
-        instructionsTextView.text = "Частота нажатий: $touchesPerSecond нажатий/сек"
+            instructionsTextView.text = "Левая рука"
+            onPause()
+            infoDialogToLeft()
+            testRound++
+        }else if (testRound!=0){
+            TestActive.KEY_ACTIVE_FOT_TEST = false
+            infoDialogEndAllTest()
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.loginFragment, TestsPage.newInstance())
+                .addToBackStack(Screen.MAIN_PAGE)
+                .commit()
+        }
 
     }
 
@@ -99,6 +120,10 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
     override fun onDetach() {
         super.onDetach()
+        TestActive.KEY_ACTIVE_FOT_TEST = false
+        if(isStartTimer){
+            countDownTimer.cancel()
+        }
         mainActivityListener = null
     }
     companion object {
@@ -113,7 +138,70 @@ class FOTTest : Fragment(), CanvasViewCallback {
         }
     }
 
+    override fun onCanvasFirstTouch() {
+        startTest()
+    }
+
+    override fun onCanvasClickNoTest() {
+        if (!TestActive.KEY_ACTIVE_FOT_TEST){
+            if (viewDialog==0){
+                viewDialog++
+                infoDialogStartTest()
+            }else{
+                viewDialog=0
+            }
+        }
+    }
+
     private fun updateTouchCountTextView() {
         binding.tvClicks.text = touchCount.toString()
+    }
+
+    private fun infoDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Для начала тестирования коснитесь экрана") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+
+    private fun infoDialogStartTest() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Предупреждение") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Перед началом теста нажмите кнопку начать") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+
+    private fun infoDialogToLeft() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Время вышло") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Продолжите исследование для левой руки") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+    }
+
+    private fun infoDialogEndAllTest() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 }
