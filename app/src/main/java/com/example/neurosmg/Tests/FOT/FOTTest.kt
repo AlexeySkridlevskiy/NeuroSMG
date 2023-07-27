@@ -70,6 +70,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     private fun startTest() {
+        binding.button.visibility = View.INVISIBLE
         TestActive.KEY_ACTIVE_FOT_TEST = true
         touchCount = 0
         canvasView.clearPoints()
@@ -100,6 +101,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
             testRound++
         }else if (testRound!=0){
             TestActive.KEY_ACTIVE_FOT_TEST = false
+            binding.button.visibility = View.VISIBLE
             infoDialogEndAllTest()
         }
 
@@ -142,8 +144,6 @@ class FOTTest : Fragment(), CanvasViewCallback {
             if (viewDialog==0){
                 viewDialog++
                 infoDialogStartTest()
-            }else{
-                viewDialog=0
             }
         }
     }
@@ -171,6 +171,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
         alertDialogBuilder.setMessage("Перед началом теста нажмите кнопку начать") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()
+            viewDialog=0
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()

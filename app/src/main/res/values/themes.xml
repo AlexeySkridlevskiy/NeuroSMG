@@ -18,4 +18,5 @@
     <style name="PopupMenu.Overflow" parent="Widget.AppCompat.Light.PopupMenu.Overflow">
         <item name="overlapAnchor">false</item>
     </style>
+    <dimen name="ball_size">10dp</dimen>
 </resources>
