@@ -6,6 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".Tests.FOT.FOTTest">
 
+    <include
+        android:id="@+id/lottie_layout"
+        layout="@layout/education_animation_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        android:elevation="10dp" />
+
     <com.example.neurosmg.Tests.FOT.CanvasView
         android:id="@+id/canvasView"
         android:layout_width="0dp"
@@ -13,12 +25,10 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-    </com.example.neurosmg.Tests.FOT.CanvasView>
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
-        android:id="@+id/textView8"
+        android:id="@+id/lbl_hand_tv"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -37,7 +47,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView8">
+        app:layout_constraintTop_toBottomOf="@+id/lbl_hand_tv">
 
         <TextView
             android:id="@+id/textView10"
@@ -81,13 +91,13 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/start_btn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="38dp"
         android:text="@string/button_start"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textView8"
-        app:layout_constraintStart_toStartOf="@+id/textView8" />
+        app:layout_constraintEnd_toEndOf="@+id/lbl_hand_tv"
+        app:layout_constraintStart_toStartOf="@+id/lbl_hand_tv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
