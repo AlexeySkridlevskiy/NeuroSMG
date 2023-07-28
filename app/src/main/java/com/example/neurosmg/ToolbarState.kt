@@ -17,4 +17,5 @@ sealed class ToolbarState {
     object PatientProfile: ToolbarState()
     object Archive: ToolbarState()
     object AboutProgramPage: ToolbarState()
+    object HideToolbar: ToolbarState()
 }

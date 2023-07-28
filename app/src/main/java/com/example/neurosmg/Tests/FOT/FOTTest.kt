@@ -1,36 +1,34 @@
 package com.example.neurosmg.Tests.FOT
 
-import android.annotation.SuppressLint
+import android.animation.Animator
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentFOTTestBinding
 import com.example.neurosmg.testsPage.TestsPage
-import java.util.Random
+import com.example.neurosmg.utils.enterFullScreenMode
+import com.example.neurosmg.utils.exitFullScreenMode
+
 class FOTTest : Fragment(), CanvasViewCallback {
 
     lateinit var binding: FragmentFOTTestBinding
 
     private var mainActivityListener: MainActivityListener? = null
 
-    private lateinit var instructionsTextView: TextView
     private lateinit var countDownTimer: CountDownTimer
-    private lateinit var startButton: Button
     private lateinit var canvasView: CanvasView
     private var startTime: Long = 0
     private var endTime: Long = 0
@@ -47,33 +45,31 @@ class FOTTest : Fragment(), CanvasViewCallback {
             throw RuntimeException("$context must implement MainActivityListener")
         }
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFOTTestBinding.inflate(inflater)
-        instructionsTextView = binding.textView8
-        startButton = binding.button
         canvasView = binding.canvasView
+
         canvasView.setCanvasViewCallback(this)
-        startButton.setOnClickListener {
-            if (!TestActive.KEY_ACTIVE_FOT_TEST){
+        binding.startBtn.setOnClickListener {
+            if (!TestActive.KEY_ACTIVE_FOT_TEST) {
                 onPause()
                 infoDialog()
             }
         }
+
+        educationAnimation()
         return binding.root
     }
 
     private fun startTest() {
-        binding.button.visibility = View.INVISIBLE
+        binding.startBtn.visibility = View.INVISIBLE
         TestActive.KEY_ACTIVE_FOT_TEST = true
         touchCount = 0
-        canvasView.clearPoints()
+        binding.canvasView.clearPoints()
         isStartTimer = true
         countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -88,20 +84,19 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     private fun endTest() {
-        if(testRound == 0){
+        if (testRound == 0) {
             TestActive.KEY_ACTIVE_FOT_TEST = false
             endTime = System.currentTimeMillis()
 
             val touchesPerSecond = touchCount.toDouble() / 30 //todo: тут частота нажатий
             binding.tvClicks.text = touchCount.toString()
-
-            instructionsTextView.text = "Левая рука"
+            binding.lblHandTv.text = "Левая рука"
             onPause()
             infoDialogToLeft()
             testRound++
-        }else if (testRound!=0){
+        } else if (testRound != 0) {
             TestActive.KEY_ACTIVE_FOT_TEST = false
-            binding.button.visibility = View.VISIBLE
+            binding.startBtn.visibility = View.VISIBLE
             infoDialogEndAllTest()
         }
 
@@ -109,27 +104,25 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
     override fun onPause() {
         super.onPause()
-        canvasView.clearPoints()
+        binding.canvasView.clearPoints()
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
-    }
+
     override fun onDetach() {
         super.onDetach()
         TestActive.KEY_ACTIVE_FOT_TEST = false
-        if(isStartTimer){
+        if (isStartTimer) {
             countDownTimer.cancel()
         }
         mainActivityListener = null
     }
+
     companion object {
         @JvmStatic
         fun newInstance() = FOTTest()
     }
 
     override fun onCanvasViewTouch() {
-        if(TestActive.KEY_ACTIVE_FOT_TEST){
+        if (TestActive.KEY_ACTIVE_FOT_TEST) {
             touchCount++
             updateTouchCountTextView()
         }
@@ -140,8 +133,8 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     override fun onCanvasClickNoTest() {
-        if (!TestActive.KEY_ACTIVE_FOT_TEST){
-            if (viewDialog==0){
+        if (!TestActive.KEY_ACTIVE_FOT_TEST) {
+            if (viewDialog == 0) {
                 viewDialog++
                 infoDialogStartTest()
             }
@@ -171,7 +164,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
         alertDialogBuilder.setMessage("Перед началом теста нажмите кнопку начать") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()
-            viewDialog=0
+            viewDialog = 0
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -208,5 +201,29 @@ class FOTTest : Fragment(), CanvasViewCallback {
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
         alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun educationAnimation() {
+        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
+        binding.apply {
+            activity?.enterFullScreenMode()
+            lottieLayout.run {
+                root.isVisible = true
+                animationLottie.setAnimation(R.raw.fot)
+                okBtn.setOnClickListener {
+                    root.isVisible = false
+                    activity?.exitFullScreenMode()
+                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
+                    startBtn.isVisible = true
+                    canvasView.isVisible = true
+                    lblHandTv.isVisible = true
+                    constraintLayout.isVisible = true
+                }
+            }
+            startBtn.isVisible = false
+            canvasView.isVisible = false
+            lblHandTv.isVisible = false
+            constraintLayout.isVisible = false
+        }
     }
 }

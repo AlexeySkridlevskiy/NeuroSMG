@@ -103,11 +103,17 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             ToolbarState.PatientProfile -> setupToolbarForPatientProfile()
             ToolbarState.Archive -> setupToolbarForArchive()
             ToolbarState.AboutProgramPage -> setupToolbarForAboutProgramPage()
+            ToolbarState.HideToolbar -> visibilityToolbar(false)
         }
+    }
+
+    private fun visibilityToolbar(isVisible: Boolean) {
+        binding.includeToolbar.root.isVisible = isVisible
     }
 
     private fun setupToolbarForInitial() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.navigationIcon = null
             toolbarTitleCenter.isVisible = false
@@ -119,6 +125,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForMainPage() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
             toolbarTitleCenter.text = getString(R.string.lbl_title_main)
@@ -145,6 +152,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForAboutProgramPage() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -161,6 +169,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForDoctorProfile() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -176,6 +185,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForTestPage() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
@@ -191,6 +201,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForPatientList() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -206,6 +217,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForPatientProfile() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -221,6 +233,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForArchive() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
@@ -236,6 +249,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForFOTTest() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -252,6 +266,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForRATTest() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -268,6 +283,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForIATTest() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -284,6 +300,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForGNGTest() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -300,6 +317,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForSCTTest() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -316,6 +334,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForTMTTest() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -332,6 +351,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForCBTTest() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
@@ -348,6 +368,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private fun setupToolbarForMRTTest() {
         with(binding.includeToolbar) {
+            visibilityToolbar(true)
             setSupportActionBar(toolbar)
             toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
