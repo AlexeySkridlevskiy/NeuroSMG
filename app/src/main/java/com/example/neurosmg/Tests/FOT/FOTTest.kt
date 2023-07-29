@@ -204,16 +204,16 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     private fun educationAnimation() {
-        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
+//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
-            activity?.enterFullScreenMode()
+//            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.fot)
                 okBtn.setOnClickListener {
                     root.isVisible = false
                     activity?.exitFullScreenMode()
-                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
+//                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
                     startBtn.isVisible = true
                     canvasView.isVisible = true
                     lblHandTv.isVisible = true

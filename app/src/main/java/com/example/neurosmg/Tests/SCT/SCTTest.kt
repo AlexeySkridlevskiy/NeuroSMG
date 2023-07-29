@@ -12,12 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.view.isVisible
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentSCTTestBinding
 import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.utils.exitFullScreenMode
 import kotlin.random.Random
 
 class SCTTest : Fragment() {
@@ -53,7 +55,7 @@ class SCTTest : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSCTTestBinding.inflate(inflater)
-        infoDialogStartTest()
+        educationAnimation()
         return binding.root
     }
 
@@ -61,8 +63,8 @@ class SCTTest : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.SCTTest)
         textView = binding.tvColorText
-        buttonRed = binding.button5
-        buttonBlue = binding.button6
+        buttonRed = binding.btnRed
+        buttonBlue = binding.btnBlue
 
         binding.layoutSCT.setOnClickListener {
             infoDialogReady()
@@ -183,5 +185,30 @@ class SCTTest : Fragment() {
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
         alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun educationAnimation() {
+//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
+        binding.apply {
+//            activity?.enterFullScreenMode()
+            lottieLayout.run {
+                root.isVisible = true
+                animationLottie.setAnimation(R.raw.sct)
+                okBtn.setOnClickListener {
+                    infoDialogStartTest()
+                    root.isVisible = false
+                    activity?.exitFullScreenMode()
+//                    mainActivityListener?.updateToolbarState(ToolbarState.SCTTest)
+                    textView17.isVisible = true
+                    btnRed.isVisible = true
+                    btnBlue.isVisible = true
+//                    line.isVisible = true
+                }
+            }
+            textView17.isVisible = false
+            btnRed.isVisible = false
+            btnBlue.isVisible = false
+//            constraintLayout.isVisible = false
+        }
     }
 }
