@@ -12,12 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentRATTestBinding
 import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.utils.exitFullScreenMode
 import kotlin.random.Random
 
 class RATTest : Fragment() {
@@ -52,7 +54,7 @@ class RATTest : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.RATTest)
-        infoDialog()
+        educationAnimation()
         binding.btnStart.setOnClickListener {
             infoDialogAttempt1()
             binding.btnStart.visibility = View.INVISIBLE
@@ -295,5 +297,26 @@ class RATTest : Fragment() {
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
         alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun educationAnimation() {
+//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
+        binding.apply {
+//            activity?.enterFullScreenMode()
+            lottieLayout.run {
+                root.isVisible = true
+                animationLottie.setAnimation(R.raw.rat)
+                okBtn.setOnClickListener {
+                    infoDialog()
+                    root.isVisible = false
+                    activity?.exitFullScreenMode()
+//                    mainActivityListener?.updateToolbarState(ToolbarState.SCTTest)
+                    constraintLayout2.isVisible = true
+                    btnStart.isVisible = true
+                }
+            }
+            constraintLayout2.isVisible = false
+            btnStart.isVisible = false
+        }
     }
 }
