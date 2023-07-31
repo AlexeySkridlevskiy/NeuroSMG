@@ -51,6 +51,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentFOTTestBinding.inflate(inflater)
+        mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
         canvasView = binding.canvasView
 
         canvasView.setCanvasViewCallback(this)
