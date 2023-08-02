@@ -3,6 +3,7 @@ package com.example.neurosmg.login
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -15,7 +16,14 @@ import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentLoginBinding
+import com.example.neurosmg.login.api.ApiService
+import com.example.neurosmg.login.api.UserData
 import com.example.neurosmg.mainPage.MainPageUser
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class LoginFragment : Fragment() {
 
@@ -40,8 +48,35 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentLoginBinding.inflate(inflater)
-
         setHasOptionsMenu(true)
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://neuro.fdev.by/api/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val apiService = retrofit.create(ApiService::class.java)
+
+        apiService.getUsers().enqueue(object : Callback<List<UserData>> {
+            override fun onResponse(call: Call<List<UserData>>, response: Response<List<UserData>>) {
+                if (response.isSuccessful) {
+                    Log.d("MyLog", "isSuccessful")
+                    val userList = response.body()
+//                    userList?.let {
+//                        for (user in userList) {
+//                            Log.d("MyLog", user.login)
+//                            Log.d("MyLog", user.password)
+//                        }
+//                    }
+                    // Делайте что-то с полученными данными
+                } else {
+                    Log.d("MyLog", "not isSuccessful")
+                }
+            }
+
+            override fun onFailure(call: Call<List<UserData>>, t: Throwable) {
+                Log.d("MyLog", "Failure")
+            }
+        })
 
         binding.btnLogin.setOnClickListener {
             if (viewModel.canEnter(
@@ -100,4 +135,5 @@ class LoginFragment : Fragment() {
         @JvmStatic
         fun newInstance() = LoginFragment();
     }
+
 }
