@@ -78,15 +78,21 @@ class LoginFragment : Fragment() {
             }
         })
 
+        if (viewModel.isUserLoggedIn()) {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.loginFragment, MainPageUser.newInstance())
+                .commit()
+        }
+
         binding.btnLogin.setOnClickListener {
-            if (viewModel.canEnter(
-                    binding.etLogin.text.toString(),
-                    binding.etPassword.text.toString()
-                )
-            ) {
+            val userFounded = viewModel.tryToFindUser(
+                binding.etLogin.text.toString(),
+                binding.etPassword.text.toString()
+            )
+            if (userFounded) {
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.loginFragment, MainPageUser.newInstance())
-                    .addToBackStack("LoginFragment").commit() // TODO тут скорее всего не нужен будет backStack
+                    .commit()
             } else {
                 binding.etLogin.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
                 binding.etPassword.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы

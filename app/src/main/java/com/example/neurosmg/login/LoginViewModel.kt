@@ -1,16 +1,27 @@
 package com.example.neurosmg.login
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
-    fun canEnter(
+    private val userSessionManager = UserSessionManager(application.baseContext)
+    private val repository = LoginRepository()
+
+    fun tryToFindUser(
         login: String,
         password: String
     ): Boolean {
-//        repository.login()
-//        return login == "1111" && password=="1111"
-        return true
+        val userFound = repository.login(login, password)
+
+        if (userFound) {
+            userSessionManager.saveUserLoggedIn(true)
+            return true
+        }
+        return false
     }
 
+    fun isUserLoggedIn(): Boolean {
+        return userSessionManager.isUserLoggedIn()
+    }
 }
