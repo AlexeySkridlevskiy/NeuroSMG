@@ -1,8 +1,6 @@
 package com.example.neurosmg.login.api
 
-data class UserData(
-    val id: Int,
-    val login: String,
+data class AuthData(
+    val identifier: String,
     val password: String
 )
-
