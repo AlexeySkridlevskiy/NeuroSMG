@@ -1,9 +1,10 @@
 package com.example.neurosmg.login.api
 
 import retrofit2.Call
-import retrofit2.http.GET
+import retrofit2.http.Body
+import retrofit2.http.*
 
 interface ApiService {
-    @GET("doctors") // Замените "users" на ваше конкретное API endpoint для получения данных пользователей
-    fun getUsers(): Call<List<UserData>>
+    @POST("/api/auth/local")
+    fun login(@Body authData: AuthData): Call<AuthResponse>
 }

@@ -17,13 +17,17 @@ import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentLoginBinding
 import com.example.neurosmg.login.api.ApiService
-import com.example.neurosmg.login.api.UserData
+import com.example.neurosmg.login.api.AuthData
+import com.example.neurosmg.login.api.AuthResponse
+import com.example.neurosmg.login.api.DoctorResponse
 import com.example.neurosmg.mainPage.MainPageUser
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.HttpException
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 
 class LoginFragment : Fragment() {
 
@@ -49,34 +53,48 @@ class LoginFragment : Fragment() {
     ): View {
         binding = FragmentLoginBinding.inflate(inflater)
         setHasOptionsMenu(true)
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://neuro.fdev.by/api/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val apiService = retrofit.create(ApiService::class.java)
-
-        apiService.getUsers().enqueue(object : Callback<List<UserData>> {
-            override fun onResponse(call: Call<List<UserData>>, response: Response<List<UserData>>) {
-                if (response.isSuccessful) {
-                    Log.d("MyLog", "isSuccessful")
-                    val userList = response.body()
-//                    userList?.let {
-//                        for (user in userList) {
-//                            Log.d("MyLog", user.login)
-//                            Log.d("MyLog", user.password)
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl("https://neuro.fdev.by/api/")
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//
+//        val apiService = retrofit.create(ApiService::class.java)
+//
+//        apiService.getDoctors().enqueue(object : Callback<DoctorResponse> {
+//            override fun onResponse(call: Call<DoctorResponse>, response: Response<DoctorResponse>) {
+//                if (response.isSuccessful) {
+//                    val doctorResponse = response.body()
+//                    val doctors = doctorResponse?.data
+//                    // Обработка списка докторов в объекте "doctors"
+//                    if (doctors != null) {
+//                        for (doctor in doctors){
+//                            Log.d("MyLog", "${doctor.attributes.Login}")
+//                            Log.d("MyLog", "${doctor.attributes.Firstname}")
 //                        }
 //                    }
-                    // Делайте что-то с полученными данными
-                } else {
-                    Log.d("MyLog", "not isSuccessful")
-                }
-            }
-
-            override fun onFailure(call: Call<List<UserData>>, t: Throwable) {
-                Log.d("MyLog", "Failure")
-            }
-        })
+//                } else {
+//                    // Обработка ошибки при получении данных
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<DoctorResponse>, t: Throwable) {
+//                when (t) {
+//                    is IOException -> {
+//                        // Ошибка ввода-вывода (например, проблема с сетью)
+//                        Log.d("MyLog", "I/O error: ${t.message}")
+//                    }
+//                    is HttpException -> {
+//                        // Ошибка HTTP (код ответа сервера не в диапазоне 200-299)
+//                        val responseCode = t.code()
+//                        Log.d("MyLog", "HTTP error: $responseCode")
+//                    }
+//                    else -> {
+//                        // Другая ошибка
+//                        Log.d("MyLog", "Error: ${t.message}")
+//                    }
+//                }
+//            }
+//        })
 
         if (viewModel.isUserLoggedIn()) {
             parentFragmentManager.beginTransaction()
