@@ -11,10 +11,12 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.common.State
 import com.example.neurosmg.databinding.FragmentLoginBinding
 import com.example.neurosmg.login.api.ApiService
 import com.example.neurosmg.login.api.AuthData
@@ -61,18 +63,10 @@ class LoginFragment : Fragment() {
         }
 
         binding.btnLogin.setOnClickListener {
-            val userFounded = viewModel.tryToFindUser(
+            viewModel.login(
                 binding.etLogin.text.toString(),
                 binding.etPassword.text.toString()
             )
-            if (userFounded) {
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.loginFragment, MainPageUser.newInstance())
-                    .commit()
-            } else {
-                binding.etLogin.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
-                binding.etPassword.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
-            }
         }
 
         return binding.root
@@ -81,6 +75,35 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.Initial)
+
+        if (viewModel.isUserLoggedIn()) {
+            goToMainScreen()
+        }
+
+        viewModel.loginLD.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                State.Error -> {
+                    binding.etLogin.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
+                    binding.etPassword.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
+                    binding.progressBar.isVisible = false
+                }
+
+                State.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                State.Success -> {
+                    binding.progressBar.isVisible = false
+                    goToMainScreen()
+                }
+            }
+        }
+    }
+
+    private fun goToMainScreen() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.loginFragment, MainPageUser.newInstance())
+            .commit()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
