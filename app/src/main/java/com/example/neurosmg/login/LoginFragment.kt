@@ -53,48 +53,6 @@ class LoginFragment : Fragment() {
     ): View {
         binding = FragmentLoginBinding.inflate(inflater)
         setHasOptionsMenu(true)
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl("https://neuro.fdev.by/api/")
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//
-//        val apiService = retrofit.create(ApiService::class.java)
-//
-//        apiService.getDoctors().enqueue(object : Callback<DoctorResponse> {
-//            override fun onResponse(call: Call<DoctorResponse>, response: Response<DoctorResponse>) {
-//                if (response.isSuccessful) {
-//                    val doctorResponse = response.body()
-//                    val doctors = doctorResponse?.data
-//                    // Обработка списка докторов в объекте "doctors"
-//                    if (doctors != null) {
-//                        for (doctor in doctors){
-//                            Log.d("MyLog", "${doctor.attributes.Login}")
-//                            Log.d("MyLog", "${doctor.attributes.Firstname}")
-//                        }
-//                    }
-//                } else {
-//                    // Обработка ошибки при получении данных
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<DoctorResponse>, t: Throwable) {
-//                when (t) {
-//                    is IOException -> {
-//                        // Ошибка ввода-вывода (например, проблема с сетью)
-//                        Log.d("MyLog", "I/O error: ${t.message}")
-//                    }
-//                    is HttpException -> {
-//                        // Ошибка HTTP (код ответа сервера не в диапазоне 200-299)
-//                        val responseCode = t.code()
-//                        Log.d("MyLog", "HTTP error: $responseCode")
-//                    }
-//                    else -> {
-//                        // Другая ошибка
-//                        Log.d("MyLog", "Error: ${t.message}")
-//                    }
-//                }
-//            }
-//        })
 
         if (viewModel.isUserLoggedIn()) {
             parentFragmentManager.beginTransaction()
