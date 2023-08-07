@@ -98,6 +98,7 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+
     }
 
     private fun goToMainScreen() {

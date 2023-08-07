@@ -127,11 +127,11 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         with(binding.includeToolbar) {
             visibilityToolbar(true)
             setSupportActionBar(toolbar)
+            toolbar.title = null
             toolbar.navigationIcon = getDrawable(R.drawable.ic_menu)
             toolbarTitleCenter.text = getString(R.string.lbl_title_main)
             toolbarTitleCenter.isVisible = true
             toolbarSubtitle.isVisible = false
-            toolbar.title = null
             toolbar.inflateMenu(R.menu.main_menu)
             idSettings.isVisible = true
             subtitle.isVisible = false

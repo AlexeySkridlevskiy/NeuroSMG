@@ -1,33 +1,39 @@
 package com.example.neurosmg.Tests.CBT
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.view.isVisible
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
+import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
+import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.utils.exitFullScreenMode
 
 class CBTTest : Fragment() {
     lateinit var binding: FragmentCBTTestBinding
     private var mainActivityListener: MainActivityListener? = null
 
     private lateinit var allSquares: List<TextView>
-    private lateinit var randomSquares: List<TextView>
     private lateinit var sequenceSquares: List<TextView>
     private lateinit var visibleSquares: List<TextView>
     private lateinit var timer: CountDownTimer
 
     private var currentSequenceLength = 3
-    private val maxSequenceLength = 9
+    private val maxSequenceLength = 5
     private var sequence: List<Int> = emptyList()
     private var isShowingSequence = false
+    private var expectedIndex = 0
+    private var stepsIndex = 1
+    private val maxStepsIndex = 20
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -50,6 +56,7 @@ class CBTTest : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        infoDialogStartTest()
         mainActivityListener?.updateToolbarState(ToolbarState.CBTTest)
         allSquares = listOf(
             binding.square1, binding.square2, binding.square3, binding.square4,
@@ -58,7 +65,6 @@ class CBTTest : Fragment() {
             binding.square13, binding.square14, binding.square15, binding.square16,
             binding.square17, binding.square18, binding.square19, binding.square20,
             binding.square21, binding.square22, binding.square23, binding.square24
-            // Добавьте square5 - square24
         )
 
         allSquares.forEach { square ->
@@ -66,63 +72,81 @@ class CBTTest : Fragment() {
         }
 
         binding.btnStart.setOnClickListener {
-            startTest()
+            infoDialogInstruction()
         }
     }
 
     private fun startTest() {
-        // Show 9 random squares
+        if(stepsIndex==maxStepsIndex){
+            finishTest()
+        }
+        binding.tvSteps.text = stepsIndex.toString()
+        stepsIndex++
+        expectedIndex = 0
         visibleSquares = allSquares.shuffled().take(9)
         visibleSquares.forEach { square ->
-            square.setBackgroundResource(R.color.black) // Set your square color here
+            square.setBackgroundResource(R.color.cbt_color_square)
             square.visibility = View.VISIBLE
         }
 
-        // Generate the sequence for the visible squares
-        sequence = (0 until currentSequenceLength).map { visibleSquares.indices.random() }
+        sequence = visibleSquares.shuffled().take(currentSequenceLength).map { visibleSquares.indexOf(it) }
         sequenceSquares = sequence.map { visibleSquares[it] }
 
-        // Show the sequence
-        showSequence()
+        // Add a delay before showing the sequence
+        binding.root.postDelayed({
+            showSequence()
+        }, 1000L) // Adjust the delay time as needed
     }
 
     private fun showSequence() {
         isShowingSequence = true
-        sequence.forEachIndexed { index, squareIndex ->
-            val square = visibleSquares[squareIndex]
-            Log.d("MyLog", "$squareIndex")
-            val delay = (index + 1) * 1000L
-            square.postDelayed({
-                square.setBackgroundResource(R.drawable.green_ball) // Set your highlighted square color here
-            }, delay)
+        showNextSquare(0)
+    }
+
+    private fun showNextSquare(index: Int) {
+        if (index >= sequence.size) {
+            resetSquares()
+            isShowingSequence = false
+            return
         }
 
-        // Allow user to click squares after showing the sequence
+        val squareIndex = sequence[index]
+        val square = visibleSquares[squareIndex]
+        square.setBackgroundResource(R.color.cbt_color_square_user)
+
         binding.root.postDelayed({
-            visibleSquares.forEach { square ->
-                square.setBackgroundResource(R.color.black) // Set your square color here
-                square.setOnClickListener {
-                    if (isShowingSequence) return@setOnClickListener // Disable clicks during sequence display
-                    onSquareClick(square)
-                }
+            square.setBackgroundResource(R.color.cbt_color_square)
+            showNextSquare(index + 1)
+        }, 1000L)
+    }
+
+    private fun resetSquares() {
+        visibleSquares.forEach { square ->
+            square.setBackgroundResource(R.color.cbt_color_square)
+            square.setOnClickListener {
+                if (isShowingSequence) return@setOnClickListener
+                onSquareClick(square)
             }
-            isShowingSequence = false
-        }, (currentSequenceLength + 1) * 1000L)
+        }
     }
 
     private fun showNextRandomSquares() {
         visibleSquares.forEach { square ->
             square.visibility = View.INVISIBLE
         }
+
         startTest()
     }
 
     private fun onSquareClick(square: TextView) {
         if (!isShowingSequence) {
-            if (square in sequenceSquares) {
-                sequenceSquares = sequenceSquares.drop(1)
-                square.setBackgroundResource(R.drawable.green_ball) // Set your highlighted square color here
-                if (sequenceSquares.isEmpty()) {
+            if (square == sequenceSquares[expectedIndex]) {
+                square.setBackgroundResource(R.color.cbt_color_square_user)
+                expectedIndex++
+                if (expectedIndex == sequenceSquares.size) {
+                    sequenceSquares = emptyList()
+                    expectedIndex = 0
+
                     currentSequenceLength++
                     if (currentSequenceLength > maxSequenceLength) {
                         finishTest()
@@ -131,15 +155,20 @@ class CBTTest : Fragment() {
                     }
                 }
             } else {
-                // User made a mistake, restart the test
+                if (currentSequenceLength > 5) {
+                    currentSequenceLength = 5
+                    sequenceSquares = emptyList()
+                    expectedIndex = 0
+                }
                 showNextRandomSquares()
             }
         }
     }
 
     private fun finishTest() {
-        // Test finished, handle the result
-        // TODO: Implement your finish test logic here
+        binding.gridLayout.visibility = View.INVISIBLE
+        binding.linearLayout.visibility = View.INVISIBLE
+        infoDialogFinishTest()
     }
 
     override fun onDetach() {
@@ -153,5 +182,73 @@ class CBTTest : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = CBTTest()
+    }
+
+    private fun infoDialogStartTest() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Перед началом тестирования нажмите на кнопку старт.") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun infoDialogInstruction() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Инструкция") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Длина последовательности - 3") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+            startTest()
+            binding.btnStart.visibility = View.INVISIBLE
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun infoDialogFinishTest() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.loginFragment, TestsPage.newInstance())
+                .addToBackStack(Screen.MAIN_PAGE)
+                .commit()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun educationAnimation() {
+//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
+        binding.apply {
+//            activity?.enterFullScreenMode()
+            lottieLayout.run {
+                root.isVisible = true
+                animationLottie.setAnimation(R.raw.fot)
+                okBtn.setOnClickListener {
+                    root.isVisible = false
+                    activity?.exitFullScreenMode()
+//                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
+                    linearLayout.isVisible = true
+                    gridLayout.isVisible = true
+                    btnStart.isVisible = true
+                }
+            }
+            linearLayout.isVisible = false
+            gridLayout.isVisible = false
+            btnStart.isVisible = false
+        }
     }
 }

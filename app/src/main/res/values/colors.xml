@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="text_color">#605D64</color>
     <color name="subtext_color">#CCC2DC</color>
+    <color name="cbt_color_square">#2260FF</color>
+    <color name="cbt_color_square_user">#FFCD29</color>
 </resources>
