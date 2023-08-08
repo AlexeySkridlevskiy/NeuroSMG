@@ -1,6 +1,6 @@
 package com.example.neurosmg.login
 
-import com.example.neurosmg.login.api.ApiService
+import com.example.neurosmg.api.ApiService
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

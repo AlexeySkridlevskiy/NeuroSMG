@@ -3,7 +3,6 @@ package com.example.neurosmg.login
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -18,18 +17,7 @@ import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.State
 import com.example.neurosmg.databinding.FragmentLoginBinding
-import com.example.neurosmg.login.api.ApiService
-import com.example.neurosmg.login.api.AuthData
-import com.example.neurosmg.login.api.AuthResponse
-import com.example.neurosmg.login.api.DoctorResponse
 import com.example.neurosmg.mainPage.MainPageUser
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.HttpException
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
 
 class LoginFragment : Fragment() {
 
