@@ -13,6 +13,7 @@ import com.example.neurosmg.aboutProgramPage.AboutProgramPage
 import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.doctorProfile.DoctorProfile
 import com.example.neurosmg.login.LoginFragment
+import com.example.neurosmg.mainPage.MainPageUser
 import com.example.neurosmg.patientTestList.PatientTestList
 import com.example.neurosmg.testsPage.TestsPage
 

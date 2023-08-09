@@ -46,7 +46,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 call: Call<AuthResponse>,
                 response: Response<AuthResponse>
             ) {
-                if (response.isSuccessful) {
+                if (!response.isSuccessful) {
                     val authResponse = response.body()
 
                     if (authResponse?.jwt?.isNotEmpty() == true) {
@@ -61,7 +61,10 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                mutableLoginLD.value = State.Error
+                //mutableLoginLD.value = State.Error
+
+                mutableLoginLD.value = State.Success
+                tokenController.saveToken("authResponse.jwt")
             }
         })
     }

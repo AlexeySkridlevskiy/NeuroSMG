@@ -44,12 +44,6 @@ class LoginFragment : Fragment() {
         binding = FragmentLoginBinding.inflate(inflater)
         setHasOptionsMenu(true)
 
-        if (viewModel.isUserLoggedIn()) {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.container, MainPageUser.newInstance())
-                .commit()
-        }
-
         binding.btnLogin.setOnClickListener {
             viewModel.login(
                 binding.etLogin.text.toString(),
