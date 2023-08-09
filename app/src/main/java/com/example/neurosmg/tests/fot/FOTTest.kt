@@ -1,16 +1,12 @@
-package com.example.neurosmg.Tests.FOT
+package com.example.neurosmg.tests.fot
 
-import android.animation.Animator
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.neurosmg.MainActivityListener
@@ -19,7 +15,6 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentFOTTestBinding
 import com.example.neurosmg.testsPage.TestsPage
-import com.example.neurosmg.utils.enterFullScreenMode
 import com.example.neurosmg.utils.exitFullScreenMode
 
 class FOTTest : Fragment(), CanvasViewCallback {
@@ -118,6 +113,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     companion object {
+        const val TAG_FRAGMENT = Screen.FOT_TEST
         @JvmStatic
         fun newInstance() = FOTTest()
     }
@@ -194,7 +190,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.loginFragment, TestsPage.newInstance())
+                .replace(R.id.container, TestsPage.newInstance())
                 .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }

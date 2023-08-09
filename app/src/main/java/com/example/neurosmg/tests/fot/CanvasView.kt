@@ -1,4 +1,4 @@
-package com.example.neurosmg.Tests.FOT
+package com.example.neurosmg.tests.fot
 
 import android.annotation.SuppressLint
 import android.content.Context

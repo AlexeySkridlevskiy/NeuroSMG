@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Tests.FOT.FOTTest">
+    tools:context=".tests.fot.FOTTest">
 
     <include
         android:id="@+id/lottie_layout"
@@ -18,7 +18,7 @@
         android:visibility="gone"
         android:elevation="10dp" />
 
-    <com.example.neurosmg.Tests.FOT.CanvasView
+    <com.example.neurosmg.tests.fot.CanvasView
         android:id="@+id/canvasView"
         android:layout_width="0dp"
         android:layout_height="0dp"

@@ -1,4 +1,4 @@
-package com.example.neurosmg.Tests.CBT
+package com.example.neurosmg.tests.cbt
 
 import android.app.AlertDialog
 import android.content.Context
@@ -220,7 +220,7 @@ class CBTTest : Fragment() {
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.loginFragment, TestsPage.newInstance())
+                .replace(R.id.container, TestsPage.newInstance())
                 .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }

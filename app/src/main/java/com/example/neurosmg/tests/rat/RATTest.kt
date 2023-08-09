@@ -1,4 +1,4 @@
-package com.example.neurosmg.Tests.RAT
+package com.example.neurosmg.tests.rat
 
 import android.app.AlertDialog
 import android.content.Context
@@ -289,7 +289,7 @@ class RATTest : Fragment() {
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.loginFragment, TestsPage.newInstance())
+                .replace(R.id.container, TestsPage.newInstance())
                 .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }
