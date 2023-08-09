@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
 
     override fun updateToolbarState(toolbarState: ToolbarState) {
+        Log.d("toolbarTest", "updateToolbarState: $toolbarState")
         when (toolbarState) {
             ToolbarState.Initial -> setupToolbarForInitial()
             ToolbarState.MainPage -> setupToolbarForMainPage()
