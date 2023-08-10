@@ -3,28 +3,28 @@ package com.example.neurosmg.patientTestList
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
-import com.example.neurosmg.Tests.CBT.CBTTest
-import com.example.neurosmg.Tests.FOT.FOTTest
-import com.example.neurosmg.Tests.GNG.GNGTest
-import com.example.neurosmg.Tests.IAT.IATTest
-import com.example.neurosmg.Tests.MRT.MRTTest
-import com.example.neurosmg.Tests.RAT.RATTest
-import com.example.neurosmg.Tests.SCT.SCTTest
-import com.example.neurosmg.Tests.TMT.TMTTest
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.patientTestList.addPatient.AddPatient
 import com.example.neurosmg.patientTestList.patientProfile.PatientProfile
+import com.example.neurosmg.tests.cbt.CBTTest
+import com.example.neurosmg.tests.fot.FOTTest
+import com.example.neurosmg.tests.gng.GNGTest
+import com.example.neurosmg.tests.iat.IATTest
+import com.example.neurosmg.tests.mrt.MRTTest
+import com.example.neurosmg.tests.rat.RATTest
+import com.example.neurosmg.tests.sct.SCTTest
+import com.example.neurosmg.tests.tmt.TMTTest
 
 class PatientTestList : Fragment(), PatientOnClickListener {
 
@@ -37,6 +37,7 @@ class PatientTestList : Fragment(), PatientOnClickListener {
     }
 
     private var mainActivityListener: MainActivityListener? = null
+    private var fragmentTag: String = ""
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -68,11 +69,8 @@ class PatientTestList : Fragment(), PatientOnClickListener {
         }
         flButton.setOnClickListener {
             fragment = AddPatient.newInstance()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.loginFragment, fragment)
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
+            fragmentTag = Screen.ADD_PATIENT
+            replaceFragment(fragment, fragmentTag)
         }
         if(arguments?.getBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE) == true){
             tvArchive.visibility = View.VISIBLE
@@ -100,27 +98,35 @@ class PatientTestList : Fragment(), PatientOnClickListener {
                     "FOT" ->  { //todo: лучше вынести это в companionObject тут в классе под ключами.
                         // А лучше одинаковые ключи вынести в отдельное место и использовать их там.
                         fragment = FOTTest.newInstance()
+                        saveTag(Screen.FOT_TEST)
                     }
                     "RAT" -> {
                         fragment = RATTest.newInstance()
+                        saveTag(Screen.RAT_TEST)
                     }
                     "IAT" -> {
                         fragment = IATTest.newInstance()
+                        saveTag(Screen.IAT_TEST)
                     }
                     "GNG" -> {
                         fragment = GNGTest.newInstance()
+                        saveTag(Screen.GNG_TEST)
                     }
                     "SCT" -> {
                         fragment = SCTTest.newInstance()
+                        saveTag(Screen.SCT_TEST)
                     }
                     "TMT" -> {
                         fragment = TMTTest.newInstance()
+                        saveTag(Screen.TMT_TEST)
                     }
                     "CBT" -> {
                         fragment = CBTTest.newInstance()
+                        saveTag(Screen.CBT_TEST)
                     }
                     "MRT" -> {
                         fragment = MRTTest.newInstance()
+                        saveTag(Screen.MRT_TEST)
                     }
                 }
 
@@ -142,10 +148,19 @@ class PatientTestList : Fragment(), PatientOnClickListener {
         bundle.putString(KeyOfArgument.KEY_OF_ID_PATIENT, patient.id)
         bundle.putString(KeyOfArgument.KEY_OF_TEST_NAME, arguments?.getString(KeyOfArgument.KEY_OF_TEST_NAME))
         fragment.arguments = bundle
+        replaceFragment(fragment, fragmentTag)
+    }
+
+    private fun saveTag(tag: String) {
+        fragmentTag = tag
+        bundle.putString(KeyOfArgument.KEY_OF_FRAGMENT, fragmentTag)
+    }
+
+    private fun replaceFragment(fragment: Fragment, tag: String) {
         parentFragmentManager
             .beginTransaction()
-            .replace(R.id.loginFragment, fragment)
-            .addToBackStack(Screen.MAIN_PAGE)
+            .replace(R.id.container, fragment)
+            .addToBackStack(tag)
             .commit()
     }
 

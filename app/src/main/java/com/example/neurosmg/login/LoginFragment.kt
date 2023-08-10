@@ -85,7 +85,7 @@ class LoginFragment : Fragment() {
 
     private fun goToMainScreen() {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.loginFragment, MainPageUser.newInstance())
+            .replace(R.id.container, MainPageUser.newInstance())
             .commit()
     }
 

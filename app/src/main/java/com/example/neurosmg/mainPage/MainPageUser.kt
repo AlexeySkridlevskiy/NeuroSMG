@@ -2,19 +2,15 @@ package com.example.neurosmg.mainPage
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
-import com.example.neurosmg.aboutProgramPage.AboutProgramPage
 import com.example.neurosmg.databinding.FragmentMainPageUserBinding
-import com.example.neurosmg.patientTestList.PatientTestList
 import com.example.neurosmg.testsPage.TestsPage
 
 class MainPageUser : Fragment() {
@@ -40,8 +36,8 @@ class MainPageUser : Fragment() {
         binding.btnGoTesting.setOnClickListener {
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.loginFragment, TestsPage.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
+                .replace(R.id.container, TestsPage.newInstance())
+                .addToBackStack(Screen.TESTS_PAGE)
                 .commit()
         }
         return binding.root

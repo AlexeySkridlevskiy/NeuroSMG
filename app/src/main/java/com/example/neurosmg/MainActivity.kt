@@ -1,10 +1,7 @@
 package com.example.neurosmg
 
 import android.os.Bundle
-import android.util.Log
-import android.view.Gravity
-import android.view.MenuItem
-import android.view.View
+import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +13,7 @@ import com.example.neurosmg.aboutProgramPage.AboutProgramPage
 import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.doctorProfile.DoctorProfile
 import com.example.neurosmg.login.LoginFragment
-import com.example.neurosmg.patientTestList.Patient
+import com.example.neurosmg.mainPage.MainPageUser
 import com.example.neurosmg.patientTestList.PatientTestList
 import com.example.neurosmg.testsPage.TestsPage
 
@@ -29,29 +26,29 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     private val bundle = Bundle()
     private lateinit var fragment: Fragment
+    private var currentFragmentTag: String? = null
 
     private val menuActions = mapOf(
         R.id.tests to {
-            replaceFragment(TestsPage.newInstance(), Screen.MAIN_PAGE)
+            replaceFragment(TestsPage.newInstance(), Screen.TESTS_PAGE)
         },
         R.id.questionnaires to {
-//            replaceFragment(TestsPage.newInstance(), Screen.MAIN_PAGE)
             Toast.makeText(this, "Страница 'Опросники' находится в разработке", Toast.LENGTH_SHORT).show()
         },
         R.id.patients to {
             bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT, true)
             fragment = PatientTestList.newInstance()
             fragment.arguments = bundle
-            replaceFragment(fragment, Screen.MAIN_PAGE)
+            replaceFragment(fragment, Screen.PATIENTS)
         },
         R.id.archive to {
             bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE, true)
             fragment = PatientTestList.newInstance()
             fragment.arguments = bundle
-            replaceFragment(fragment, Screen.MAIN_PAGE)
+            replaceFragment(fragment, Screen.ARCHIVE)
         },
         R.id.about_program to {
-            replaceFragment(AboutProgramPage.newInstance(), Screen.MAIN_PAGE)
+            replaceFragment(AboutProgramPage.newInstance(), Screen.ABOUT_APP)
         }
     )
 
@@ -59,14 +56,31 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        setupFragment()
+        if (savedInstanceState != null) {
+            currentFragmentTag = savedInstanceState.getString(KeyOfArgument.KEY_OF_FRAGMENT) ?: ""
+        }
+
+        if (currentFragmentTag != null) {
+            val fragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
+            if (fragment != null) {
+                setupFragment(fragment, currentFragmentTag ?: Screen.LOGIN)
+            }
+        } else {
+            setupFragment(LoginFragment.newInstance(), Screen.LOGIN)
+        }
+
         setupDrawerLayout()
     }
 
-    private fun setupFragment() {
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        outState.putString(KeyOfArgument.KEY_OF_FRAGMENT, currentFragmentTag)
+    }
+
+    private fun setupFragment(fragment: Fragment, tag: String) {
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.loginFragment, LoginFragment.newInstance())
+            .replace(R.id.container, fragment, tag)
             .commit()
     }
 
@@ -86,7 +100,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
 
     override fun updateToolbarState(toolbarState: ToolbarState) {
-        Log.d("toolbarTest", "updateToolbarState: $toolbarState")
         when (toolbarState) {
             ToolbarState.Initial -> setupToolbarForInitial()
             ToolbarState.MainPage -> setupToolbarForMainPage()
@@ -144,8 +157,8 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             idSettings.setOnClickListener {
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(R.id.loginFragment, DoctorProfile.newInstance())
-                    .addToBackStack(Screen.MAIN_PAGE)
+                    .replace(R.id.container, DoctorProfile.newInstance())
+                    .addToBackStack(Screen.DOCTOR_PROFILE)
                     .commit()
             }
         }
@@ -385,8 +398,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
 
     private fun replaceFragment(fragment: Fragment, tagBackStack: String) {
+        currentFragmentTag = tagBackStack
         supportFragmentManager.beginTransaction()
-            .replace(R.id.loginFragment, fragment)
+            .replace(R.id.container, fragment)
             .addToBackStack(tagBackStack)
             .commit()
     }

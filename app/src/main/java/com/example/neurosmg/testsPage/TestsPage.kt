@@ -2,7 +2,6 @@ package com.example.neurosmg.testsPage
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentTestsPageBinding
-import com.example.neurosmg.login.LoginViewModel
 import com.example.neurosmg.patientTestList.PatientTestList
 
 class TestsPage : Fragment(), ItemOnClickListener {
@@ -66,8 +64,8 @@ class TestsPage : Fragment(), ItemOnClickListener {
         fragment.arguments = bundle
         parentFragmentManager
             .beginTransaction()
-            .replace(R.id.loginFragment, fragment)
-            .addToBackStack(Screen.MAIN_PAGE)
+            .replace(R.id.container, fragment)
+            .addToBackStack(Screen.TESTS_PAGE)
             .commit()
     }
 

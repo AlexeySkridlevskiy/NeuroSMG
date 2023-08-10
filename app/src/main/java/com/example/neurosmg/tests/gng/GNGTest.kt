@@ -1,4 +1,4 @@
-package com.example.neurosmg.Tests.GNG
+package com.example.neurosmg.tests.gng
 
 import android.app.AlertDialog
 import android.content.Context
@@ -63,10 +63,10 @@ class GNGTest : Fragment() {
         }
 
         binding.btnCross.setOnClickListener {
-            if (answer == true){
+            if (answer == true) {
                 binding.tvAnswer.text = "TRUE"
                 binding.tvAnswer.setTextColor(Color.GREEN)
-            }else{
+            } else {
                 binding.tvAnswer.text = "FALSE"
                 binding.tvAnswer.setTextColor(Color.RED)
             }
@@ -78,71 +78,65 @@ class GNGTest : Fragment() {
         binding.btnStart.visibility = View.INVISIBLE
         binding.btnCross.visibility = View.VISIBLE
         handler.postDelayed({
-        timer = object : CountDownTimer(25000, 2500) { // Здесь задается интервал 1.5 секунды
-            override fun onTick(millisUntilFinished: Long) {
+            timer = object : CountDownTimer(25000, 2500) { // Здесь задается интервал 1.5 секунды
+                override fun onTick(millisUntilFinished: Long) {
 
-                val randomSquare = (1..4).random()
-                val randomCross = (0..1).random()
+                    val randomSquare = (1..4).random()
+                    val randomCross = (0..1).random()
 
-                when (randomSquare) {
-                    1 -> {
-                        binding.square1.setImageResource(
-                            if (randomCross == 0) R.drawable.cross else R.drawable.plus
-                        )
-                        answer = randomCross == 0
-                        handler.postDelayed({
-                            binding.square1.setImageResource(R.drawable.zoom)
-                            binding.tvAnswer.text = ""
-                        }, 350)
-                    }
-                    2 -> {
-                        binding.square2.setImageResource(
-                            if (randomCross == 0) R.drawable.cross else R.drawable.plus
-                        )
-                        answer = randomCross == 0
-                        handler.postDelayed({
-                            binding.square2.setImageResource(R.drawable.zoom)
-                            binding.tvAnswer.text = ""
-                        }, 350)
-                    }
-                    3 -> {
-                        binding.square3.setImageResource(
-                            if (randomCross == 0) R.drawable.cross else R.drawable.plus
-                        )
-                        answer = randomCross == 0
-                        handler.postDelayed({
-                            binding.square3.setImageResource(R.drawable.zoom)
-                            binding.tvAnswer.text = ""
-                        }, 350)
-                    }
-                    4 -> {
-                        binding.square4.setImageResource(
-                            if (randomCross == 0) R.drawable.cross else R.drawable.plus
-                        )
-                        answer = randomCross == 0
-                        handler.postDelayed({
-                            binding.square4.setImageResource(R.drawable.zoom)
-                            binding.tvAnswer.text = ""
-                        }, 350)
+                    when (randomSquare) {
+                        1 -> {
+                            binding.square1.setImageResource(
+                                if (randomCross == 0) R.drawable.cross else R.drawable.plus
+                            )
+                            answer = randomCross == 0
+                            handler.postDelayed({
+                                binding.square1.setImageResource(R.drawable.zoom)
+                                binding.tvAnswer.text = ""
+                            }, 350)
+                        }
+
+                        2 -> {
+                            binding.square2.setImageResource(
+                                if (randomCross == 0) R.drawable.cross else R.drawable.plus
+                            )
+                            answer = randomCross == 0
+                            handler.postDelayed({
+                                binding.square2.setImageResource(R.drawable.zoom)
+                                binding.tvAnswer.text = ""
+                            }, 350)
+                        }
+
+                        3 -> {
+                            binding.square3.setImageResource(
+                                if (randomCross == 0) R.drawable.cross else R.drawable.plus
+                            )
+                            answer = randomCross == 0
+                            handler.postDelayed({
+                                binding.square3.setImageResource(R.drawable.zoom)
+                                binding.tvAnswer.text = ""
+                            }, 350)
+                        }
+
+                        4 -> {
+                            binding.square4.setImageResource(
+                                if (randomCross == 0) R.drawable.cross else R.drawable.plus
+                            )
+                            answer = randomCross == 0
+                            handler.postDelayed({
+                                binding.square4.setImageResource(R.drawable.zoom)
+                                binding.tvAnswer.text = ""
+                            }, 350)
+                        }
                     }
                 }
-            }
 
-            override fun onFinish() {
-                infoDialogEndTest()
-//                hideSquares()
-            }
-        }.start()
+                override fun onFinish() {
+                    infoDialogEndTest()
+                }
+            }.start()
         }, 2000)
     }
-
-    // Метод для скрытия крестиков и плюсиков
-//    private fun hideSquares() {
-//        binding.square1.setImageDrawable(null)
-//        binding.square2.setImageDrawable(null)
-//        binding.square3.setImageDrawable(null)
-//        binding.square4.setImageDrawable(null)
-//    }
 
     // Переопределение метода onDetach для отключения связи с активностью
     override fun onDetach() {
@@ -199,8 +193,8 @@ class GNGTest : Fragment() {
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.loginFragment, TestsPage.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
+                .replace(R.id.container, TestsPage.newInstance())
+                .addToBackStack(Screen.TESTS_PAGE)
                 .commit()
         }
 
@@ -210,16 +204,13 @@ class GNGTest : Fragment() {
     }
 
     private fun educationAnimation() {
-//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
-//            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.gng)
                 okBtn.setOnClickListener {
                     root.isVisible = false
                     activity?.exitFullScreenMode()
-//                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
                     imageView2.isVisible = true
                     square1.isVisible = true
                     square2.isVisible = true
