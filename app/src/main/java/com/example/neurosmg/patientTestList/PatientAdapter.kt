@@ -17,7 +17,7 @@ class PatientAdapter(private val patientOnClickListener: PatientOnClickListener)
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ListItemBinding.bind(itemView)
         fun bind(patient: Patient) = with(binding) {
-            tvTitle.text = patient.id
+            tvTitle.text = patient.id.toString()
         }
     }
 

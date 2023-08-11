@@ -62,6 +62,7 @@ class PatientTestList : Fragment(), PatientOnClickListener {
 
     private fun init() = with(binding) {
         rcView.layoutManager = LinearLayoutManager(requireContext())
+        //todo: Нужно чтобы при вызове getListOfPatient() крутилась загрузка, а когда придут данные -> вывод
         adapter.addPatient(patient = viewModel.getListOfPatient())
         rcView.adapter = adapter
         if(arguments?.getBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT) == true){
@@ -145,7 +146,7 @@ class PatientTestList : Fragment(), PatientOnClickListener {
             }
         }
 
-        bundle.putString(KeyOfArgument.KEY_OF_ID_PATIENT, patient.id)
+        bundle.putString(KeyOfArgument.KEY_OF_ID_PATIENT, patient.id.toString())
         bundle.putString(KeyOfArgument.KEY_OF_TEST_NAME, arguments?.getString(KeyOfArgument.KEY_OF_TEST_NAME))
         fragment.arguments = bundle
         replaceFragment(fragment, fragmentTag)
