@@ -2,15 +2,16 @@ package com.example.neurosmg.doctorProfile
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentDoctorProfileBinding
 import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.common.State
 
 class DoctorProfile : Fragment() {
     lateinit var binding: FragmentDoctorProfileBinding
@@ -38,8 +39,22 @@ class DoctorProfile : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDoctorProfileBinding.inflate(inflater)
+        viewModel.idLD.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                State.Error -> {
+                    binding.progressBar.isVisible = false
+                }
 
-        binding.tvLoginDoctor.text = viewModel.getUsername()
+                State.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                State.Success -> {
+                    binding.progressBar.isVisible = false
+                }
+            }
+        }
+//        binding.tvLoginDoctor.text = arguments?.getString("username")
         return binding.root
     }
 

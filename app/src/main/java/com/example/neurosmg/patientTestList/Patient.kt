@@ -1,3 +1,3 @@
 package com.example.neurosmg.patientTestList
 
-data class Patient(val id: String)
+data class Patient(val id: Int)

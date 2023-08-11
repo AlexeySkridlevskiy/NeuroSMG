@@ -9,11 +9,17 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.aboutProgramPage.AboutProgramPage
+import com.example.neurosmg.common.State
 import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.doctorProfile.DoctorProfile
+import com.example.neurosmg.doctorProfile.DoctorProfileViewModel
 import com.example.neurosmg.login.LoginFragment
-import com.example.neurosmg.mainPage.MainPageUser
 import com.example.neurosmg.patientTestList.PatientTestList
 import com.example.neurosmg.testsPage.TestsPage
 
@@ -138,6 +144,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
 
     private fun setupToolbarForMainPage() {
+        val viewModelDoctor = ViewModelProvider(this).get(DoctorProfileViewModel::class.java)
         with(binding.includeToolbar) {
             visibilityToolbar(true)
             setSupportActionBar(toolbar)
@@ -153,7 +160,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             toolbar.setNavigationOnClickListener {
                 drawerLayout.openDrawer(GravityCompat.START)
             }
-
             idSettings.setOnClickListener {
                 supportFragmentManager
                     .beginTransaction()

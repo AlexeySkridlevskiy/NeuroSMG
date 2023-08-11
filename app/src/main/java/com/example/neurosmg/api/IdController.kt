@@ -3,20 +3,20 @@ package com.example.neurosmg.api
 import android.content.Context
 import android.content.SharedPreferences
 
-class LoginController(private val context: Context) {
+class IdController(private val context: Context) {
     private val sharedPreferences: SharedPreferences = context
         .getSharedPreferences(
-            "user_login",
+            "user_id",
             Context.MODE_PRIVATE
         )
     private val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
-    fun saveLogin(login: String) {
-        editor.putString("login", login)
+    fun saveId(id: Int) {
+        editor.putInt("id", id)
         editor.apply()
     }
 
-    fun getUserLogin(): String? {
-        return sharedPreferences.getString("login", null)
+    fun getUserId(): Int {
+        return sharedPreferences.getInt("id", -1)
     }
 }
