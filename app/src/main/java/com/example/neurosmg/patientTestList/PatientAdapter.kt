@@ -1,13 +1,13 @@
 package com.example.neurosmg.patientTestList
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.neurosmg.R
 import com.example.neurosmg.databinding.ListItemBinding
+import com.example.neurosmg.patientTestList.entity.Patient
 
 class PatientAdapter(private val patientOnClickListener: PatientOnClickListener) : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
 

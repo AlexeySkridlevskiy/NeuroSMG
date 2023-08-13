@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,8 +15,10 @@ import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.common.State
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.patientTestList.addPatient.AddPatient
+import com.example.neurosmg.patientTestList.entity.Patient
 import com.example.neurosmg.patientTestList.patientProfile.PatientProfile
 import com.example.neurosmg.tests.cbt.CBTTest
 import com.example.neurosmg.tests.fot.FOTTest
@@ -62,9 +65,23 @@ class PatientTestList : Fragment(), PatientOnClickListener {
 
     private fun init() = with(binding) {
         rcView.layoutManager = LinearLayoutManager(requireContext())
-        //todo: Нужно чтобы при вызове getListOfPatient() крутилась загрузка, а когда придут данные -> вывод
-        adapter.addPatient(patient = viewModel.getListOfPatient())
-        rcView.adapter = adapter
+
+        viewModel.userPatients.observe(viewLifecycleOwner) { state ->
+            when(state) {
+                State.Error -> {
+                    progressBar.isVisible = false
+                }
+                State.Loading -> {
+                    progressBar.isVisible = true
+                }
+                is State.Success -> {
+                    progressBar.isVisible = false
+                    adapter.addPatient(state.data)
+                    rcView.adapter = adapter
+                }
+            }
+        }
+
         if(arguments?.getBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT) == true){
             flButton.visibility = View.VISIBLE
         }

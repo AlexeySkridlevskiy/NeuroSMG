@@ -1,7 +1,6 @@
 package com.example.neurosmg.login
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,15 +20,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val retrofitBuilder = RetrofitBuilder()
     private val apiService = retrofitBuilder.retrofitCreate()
 
-    private val mutableLoginLD: MutableLiveData<State> = MutableLiveData()
-    val loginLD: LiveData<State> = mutableLoginLD
+    private val mutableLoginLD: MutableLiveData<State<String>> = MutableLiveData()
+    val loginLD: LiveData<State<String>> = mutableLoginLD
 
     fun isUserLoggedIn(): Boolean {
         val tokenIsNotNull = !tokenController.getUserToken().isNullOrEmpty()
 
         if (tokenIsNotNull) {
-            mutableLoginLD.value = State.Success
+            mutableLoginLD.value = State.Success(data = tokenController.getUserToken() ?: "")
             return true
+        } else {
+            mutableLoginLD.value = State.Error
         }
 
         return false
@@ -51,20 +52,18 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     val authResponse = response.body()
 
                     if (authResponse?.jwt?.isNotEmpty() == true) {
-                        mutableLoginLD.value = State.Success
+                        mutableLoginLD.value = State.Success(data = authResponse.jwt)
                         tokenController.saveToken(authResponse.jwt)
                         idController.saveId(authResponse.user.id)
                     }
-                    Log.d("MyLog", "${authResponse?.jwt}")
+
                 } else {
                     mutableLoginLD.value = State.Error
                 }
             }
 
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                //mutableLoginLD.value = State.Error
-                mutableLoginLD.value = State.Success
-                tokenController.saveToken("authResponse.jwt")
+                mutableLoginLD.value = State.Error
             }
         })
     }

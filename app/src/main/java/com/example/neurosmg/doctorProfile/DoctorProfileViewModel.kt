@@ -21,21 +21,25 @@ class DoctorProfileViewModel(application: Application) : AndroidViewModel(applic
     private var username = ""
 
     val userLiveData: MutableLiveData<UserResponse> = MutableLiveData()
-    private val mutableIdLD: MutableLiveData<State> = MutableLiveData()
-    val idLD: LiveData<State> = mutableIdLD
+
+    private val mutableIdLD: MutableLiveData<State<Boolean>> = MutableLiveData()
+    val idLD: LiveData<State<Boolean>> = mutableIdLD
+
     val loadingLD: MutableLiveData<Boolean> = MutableLiveData(false)
+
     private fun getUserInfo(id: Int) {
         val jwtToken = tokenController.getUserToken()
         val call: Call<UserResponse> = apiService.getUserById(id, "Bearer $jwtToken")
 
         mutableIdLD.value = State.Loading
+
         call.enqueue(object : Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
                 if (response.isSuccessful) {
                     val userResponse: UserResponse? = response.body()
                     userLiveData.postValue(userResponse)
                     if (userResponse != null) {
-                        mutableIdLD.value = State.Success
+                        mutableIdLD.value = State.Success(true)
                         username = userResponse.username
                     }
                 } else {

@@ -1,7 +1,7 @@
 package com.example.neurosmg.common
 
-sealed class State {
-    object Loading : State()
-    object Success : State()
-    object Error : State()
+sealed class State<out T> {
+    object Loading : State<Nothing>()
+    data class Success<out T>(val data: T) : State<T>()
+    object Error : State<Nothing>()
 }
