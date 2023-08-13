@@ -49,12 +49,12 @@ class DoctorProfile : Fragment() {
                     binding.progressBar.isVisible = true
                 }
 
-                State.Success -> {
+                is State.Success -> {
                     binding.progressBar.isVisible = false
                 }
             }
         }
-//        binding.tvLoginDoctor.text = arguments?.getString("username")
+
         return binding.root
     }
 

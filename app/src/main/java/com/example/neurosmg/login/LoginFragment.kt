@@ -74,7 +74,7 @@ class LoginFragment : Fragment() {
                     binding.progressBar.isVisible = true
                 }
 
-                State.Success -> {
+                is State.Success -> {
                     binding.progressBar.isVisible = false
                     goToMainScreen()
                 }
