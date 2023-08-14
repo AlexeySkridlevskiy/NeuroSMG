@@ -95,8 +95,8 @@ class PatientTestList : Fragment(), PatientOnClickListener {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onResume() {
+        super.onResume()
         if(arguments?.getBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE) == true){
             mainActivityListener?.updateToolbarState(ToolbarState.Archive)
         } else {
