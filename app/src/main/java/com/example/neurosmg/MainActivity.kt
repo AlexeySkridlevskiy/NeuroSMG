@@ -2,6 +2,7 @@ package com.example.neurosmg
 
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -42,21 +43,25 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             Toast.makeText(this, "Страница 'Опросники' находится в разработке", Toast.LENGTH_SHORT).show()
         },
         R.id.patients to {
-            bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT, true)
-            fragment = PatientTestList.newInstance()
-            fragment.arguments = bundle
-            replaceFragment(fragment, Screen.PATIENTS)
+            navigateToPatientTestList(false)
         },
         R.id.archive to {
-            bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE, true)
-            fragment = PatientTestList.newInstance()
-            fragment.arguments = bundle
-            replaceFragment(fragment, Screen.ARCHIVE)
+            navigateToPatientTestList(true)
         },
         R.id.about_program to {
             replaceFragment(AboutProgramPage.newInstance(), Screen.ABOUT_APP)
         }
     )
+
+    private fun navigateToPatientTestList(isArchive: Boolean) {
+        bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT, true)
+        bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE, isArchive)
+
+        fragment = PatientTestList().apply {
+            arguments = bundle
+        }
+        replaceFragment(fragment, if (isArchive) Screen.ARCHIVE else Screen.PATIENTS)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
