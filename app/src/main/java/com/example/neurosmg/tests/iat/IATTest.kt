@@ -3,16 +3,15 @@ package com.example.neurosmg.tests.iat
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.common.setScreenOrientation
 import com.example.neurosmg.databinding.FragmentIATTestBinding
 
 class IATTest : Fragment() {
@@ -22,7 +21,7 @@ class IATTest : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
         if (context is MainActivityListener) {
             mainActivityListener = context
         } else {
@@ -50,7 +49,7 @@ class IATTest : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     }
 
     override fun onDetach() {
