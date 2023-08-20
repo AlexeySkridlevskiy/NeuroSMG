@@ -10,6 +10,16 @@
         android:layout_height="match_parent"
         tools:context=".patientTestList.patientProfile.PatientProfile">
 
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/textView21"
             android:layout_width="match_parent"
@@ -41,7 +51,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
         <EditText
-            android:id="@+id/editTextDate2"
+            android:id="@+id/etBirthday"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="16dp"
@@ -60,10 +70,10 @@
             android:text="Укажите пол"
             app:layout_constraintEnd_toEndOf="@+id/textView21"
             app:layout_constraintStart_toStartOf="@+id/textView21"
-            app:layout_constraintTop_toBottomOf="@+id/editTextDate2" />
+            app:layout_constraintTop_toBottomOf="@+id/etBirthday" />
 
         <RadioButton
-            android:id="@+id/radioButton"
+            android:id="@+id/rbMan"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="4dp"
@@ -74,13 +84,13 @@
             app:layout_constraintTop_toBottomOf="@+id/textView23" />
 
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/rbWomen"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:text="Женский"
-            app:layout_constraintEnd_toEndOf="@+id/radioButton"
-            app:layout_constraintStart_toStartOf="@+id/radioButton"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton" />
+            app:layout_constraintEnd_toEndOf="@+id/rbMan"
+            app:layout_constraintStart_toStartOf="@+id/rbMan"
+            app:layout_constraintTop_toBottomOf="@+id/rbMan" />
 
         <TextView
             android:id="@+id/textView24"
@@ -88,12 +98,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Укажите ведущую руку"
-            app:layout_constraintEnd_toEndOf="@+id/radioButton2"
-            app:layout_constraintStart_toStartOf="@+id/radioButton2"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton2" />
+            app:layout_constraintEnd_toEndOf="@+id/rbWomen"
+            app:layout_constraintStart_toStartOf="@+id/rbWomen"
+            app:layout_constraintTop_toBottomOf="@+id/rbWomen" />
 
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/rbRight"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="4dp"
@@ -104,13 +114,13 @@
             app:layout_constraintTop_toBottomOf="@+id/textView24" />
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/rbLeft"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:text="Левая"
-            app:layout_constraintEnd_toEndOf="@+id/radioButton3"
-            app:layout_constraintStart_toStartOf="@+id/radioButton3"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton3" />
+            app:layout_constraintEnd_toEndOf="@+id/rbRight"
+            app:layout_constraintStart_toStartOf="@+id/rbRight"
+            app:layout_constraintTop_toBottomOf="@+id/rbRight" />
 
         <TextView
             android:id="@+id/textView25"
@@ -118,12 +128,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Дополнительная информация"
-            app:layout_constraintEnd_toEndOf="@+id/radioButton4"
-            app:layout_constraintStart_toStartOf="@+id/radioButton4"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton4" />
+            app:layout_constraintEnd_toEndOf="@+id/rbLeft"
+            app:layout_constraintStart_toStartOf="@+id/rbLeft"
+            app:layout_constraintTop_toBottomOf="@+id/rbLeft" />
 
         <EditText
-            android:id="@+id/editTextText"
+            android:id="@+id/etComment"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="16dp"
@@ -135,22 +145,22 @@
             app:layout_constraintTop_toBottomOf="@+id/textView25" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:text="Стереть"
-            app:layout_constraintStart_toStartOf="@+id/editTextText"
-            app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+            app:layout_constraintStart_toStartOf="@+id/etComment"
+            app:layout_constraintTop_toBottomOf="@+id/etComment" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/btnSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:text="Сохранить"
-            app:layout_constraintEnd_toEndOf="@+id/editTextText"
-            app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+            app:layout_constraintEnd_toEndOf="@+id/etComment"
+            app:layout_constraintTop_toBottomOf="@+id/etComment" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

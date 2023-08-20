@@ -1,6 +1,7 @@
 package com.example.neurosmg.patientTestList
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -39,6 +40,7 @@ class PatientsViewModel(application: Application) : AndroidViewModel(application
                 _userPatients.value = State.Loading
 
                 if (response.isSuccessful) {
+                    Log.d("MyLog", "${response.body()?.id_patient}")
                     val listOfIdPatients = response.body().mapToListOfPatients()
                     _userPatients.value = State.Success(listOfIdPatients)
                 } else {

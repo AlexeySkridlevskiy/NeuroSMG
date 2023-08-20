@@ -2,10 +2,12 @@ package com.example.neurosmg.patientTestList.patientProfile
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
@@ -13,7 +15,7 @@ import com.example.neurosmg.databinding.FragmentPatientProfileBinding
 
 class PatientProfile : Fragment() {
     lateinit var binding: FragmentPatientProfileBinding
-
+    private val bundle = Bundle()
     private var mainActivityListener: MainActivityListener? = null
 
     override fun onAttach(context: Context) {
@@ -33,6 +35,8 @@ class PatientProfile : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPatientProfileBinding.inflate(inflater)
+        binding.tvIdPatient.text = arguments?.getString(KeyOfArgument.KEY_OF_ID_PATIENT)
+
         return binding.root
     }
 

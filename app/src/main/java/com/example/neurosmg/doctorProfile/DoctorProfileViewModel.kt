@@ -25,7 +25,7 @@ class DoctorProfileViewModel(application: Application) : AndroidViewModel(applic
     private val mutableIdLD: MutableLiveData<State<Boolean>> = MutableLiveData()
     val idLD: LiveData<State<Boolean>> = mutableIdLD
 
-    val loadingLD: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val loadingLD: MutableLiveData<Boolean> = MutableLiveData(false)
 
     private fun getUserInfo(id: Int) {
         val jwtToken = tokenController.getUserToken()

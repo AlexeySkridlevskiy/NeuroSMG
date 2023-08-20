@@ -32,7 +32,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
         <TextView
-            android:id="@+id/textView22"
+            android:id="@+id/tvIdPatient"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -41,7 +41,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView21" />
 
         <EditText
-            android:id="@+id/editTextDate2"
+            android:id="@+id/etProfBirthday"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="16dp"
@@ -50,7 +50,7 @@
             android:text="07/11/1990"
             app:layout_constraintEnd_toEndOf="@+id/textView21"
             app:layout_constraintStart_toStartOf="@+id/textView21"
-            app:layout_constraintTop_toBottomOf="@+id/textView22" />
+            app:layout_constraintTop_toBottomOf="@+id/tvIdPatient" />
 
         <TextView
             android:id="@+id/textView23"
@@ -60,10 +60,10 @@
             android:text="Укажите пол"
             app:layout_constraintEnd_toEndOf="@+id/textView21"
             app:layout_constraintStart_toStartOf="@+id/textView21"
-            app:layout_constraintTop_toBottomOf="@+id/editTextDate2" />
+            app:layout_constraintTop_toBottomOf="@+id/etProfBirthday" />
 
         <RadioButton
-            android:id="@+id/radioButton"
+            android:id="@+id/rbProfMan"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="4dp"
@@ -74,13 +74,13 @@
             app:layout_constraintTop_toBottomOf="@+id/textView23" />
 
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/rbProfWomen"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:text="Женский"
-            app:layout_constraintEnd_toEndOf="@+id/radioButton"
-            app:layout_constraintStart_toStartOf="@+id/radioButton"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton" />
+            app:layout_constraintEnd_toEndOf="@+id/rbProfMan"
+            app:layout_constraintStart_toStartOf="@+id/rbProfMan"
+            app:layout_constraintTop_toBottomOf="@+id/rbProfMan" />
 
         <TextView
             android:id="@+id/textView24"
@@ -88,12 +88,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Укажите ведущую руку"
-            app:layout_constraintEnd_toEndOf="@+id/radioButton2"
-            app:layout_constraintStart_toStartOf="@+id/radioButton2"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton2" />
+            app:layout_constraintEnd_toEndOf="@+id/rbProfWomen"
+            app:layout_constraintStart_toStartOf="@+id/rbProfWomen"
+            app:layout_constraintTop_toBottomOf="@+id/rbProfWomen" />
 
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/rbProfRight"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="4dp"
@@ -104,13 +104,13 @@
             app:layout_constraintTop_toBottomOf="@+id/textView24" />
 
         <RadioButton
-            android:id="@+id/radioButton4"
+            android:id="@+id/rbProfLeft"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:text="Левая"
-            app:layout_constraintEnd_toEndOf="@+id/radioButton3"
-            app:layout_constraintStart_toStartOf="@+id/radioButton3"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton3" />
+            app:layout_constraintEnd_toEndOf="@+id/rbProfRight"
+            app:layout_constraintStart_toStartOf="@+id/rbProfRight"
+            app:layout_constraintTop_toBottomOf="@+id/rbProfRight" />
 
         <TextView
             android:id="@+id/textView25"
@@ -118,12 +118,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:text="Дополнительная информация"
-            app:layout_constraintEnd_toEndOf="@+id/radioButton4"
-            app:layout_constraintStart_toStartOf="@+id/radioButton4"
-            app:layout_constraintTop_toBottomOf="@+id/radioButton4" />
+            app:layout_constraintEnd_toEndOf="@+id/rbProfLeft"
+            app:layout_constraintStart_toStartOf="@+id/rbProfLeft"
+            app:layout_constraintTop_toBottomOf="@+id/rbProfLeft" />
 
         <EditText
-            android:id="@+id/editTextText"
+            android:id="@+id/etProfComment"
             android:layout_width="0dp"
             android:layout_height="56dp"
             android:layout_marginTop="16dp"
@@ -134,23 +134,46 @@
             app:layout_constraintStart_toStartOf="@+id/textView25"
             app:layout_constraintTop_toBottomOf="@+id/textView25" />
 
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="Стереть"
-            app:layout_constraintStart_toStartOf="@+id/editTextText"
-            app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/etProfComment"
+            app:layout_constraintStart_toStartOf="@+id/etProfComment"
+            app:layout_constraintTop_toBottomOf="@+id/etProfComment">
 
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="Сохранить"
-            app:layout_constraintEnd_toEndOf="@+id/editTextText"
-            app:layout_constraintTop_toBottomOf="@+id/editTextText" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="#E3E1E1"
+                    android:text="Стереть"
+                    android:textColor="#6750A4" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="20dp"
+                android:layout_height="1dp" />
+
+            <!-- Правая кнопка -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Сохранить" />
+            </LinearLayout>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
