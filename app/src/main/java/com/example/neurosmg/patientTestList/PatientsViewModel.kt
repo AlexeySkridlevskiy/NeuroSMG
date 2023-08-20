@@ -28,9 +28,9 @@ class PatientsViewModel(application: Application) : AndroidViewModel(application
     private val _userPatients: MutableLiveData<State<List<Patient>>> = MutableLiveData()
     val userPatients: LiveData<State<List<Patient>>> = _userPatients
 
-    private fun fetchUserPatients(id: Int) {
+    fun fetchUserPatients() {
         val jwtToken = tokenController.getUserToken()
-        val call = apiService.getUserPatients(id, "Bearer $jwtToken")
+        val call = apiService.getUserPatients(userId, "Bearer $jwtToken")
 
         call.enqueue(object : Callback<PatientListResponse> {
             override fun onResponse(
@@ -44,17 +44,14 @@ class PatientsViewModel(application: Application) : AndroidViewModel(application
                     val listOfIdPatients = response.body().mapToListOfPatients()
                     _userPatients.value = State.Success(listOfIdPatients)
                 } else {
-                    _userPatients.value = State.Error
+                    _userPatients.value = State.Error(emptyList())
                 }
             }
 
             override fun onFailure(call: Call<PatientListResponse>, t: Throwable) {
-                _userPatients.value = State.Error
+                _userPatients.value = State.Error(emptyList())
             }
         })
     }
 
-    init {
-        fetchUserPatients(userId)
-    }
 }

@@ -42,7 +42,7 @@ class DoctorProfile : Fragment() {
         binding = FragmentDoctorProfileBinding.inflate(inflater)
         viewModel.idLD.observe(viewLifecycleOwner) { state ->
             when (state) {
-                State.Error -> {
+                is State.Error -> {
                     binding.progressBar.isVisible = false
                 }
 

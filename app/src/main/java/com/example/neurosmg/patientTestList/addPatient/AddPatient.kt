@@ -19,6 +19,7 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.api.IdController
 import com.example.neurosmg.common.State
+import com.example.neurosmg.common.showToast
 import com.example.neurosmg.databinding.FragmentAddPatientBinding
 import com.example.neurosmg.patientTestList.PatientTestList
 import com.example.neurosmg.testsPage.TestsPage
@@ -39,9 +40,6 @@ class AddPatient : Fragment() {
             throw RuntimeException("$context must implement MainActivityListener")
         }
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,8 +48,14 @@ class AddPatient : Fragment() {
         binding = FragmentAddPatientBinding.inflate(inflater)
         viewModel.patientAdded.observe(viewLifecycleOwner) { state ->
             when (state) {
-                State.Error -> {
-                    binding.progressBar.isVisible = false
+                is State.Error -> {
+                    binding.progressBar.isVisible = state.data.isLoading
+                    if (state.data.exceptionMessage.isNotEmpty()) {
+                        showToast(state.data.exceptionMessage)
+                    }
+                    if (state.data.showErrorDialog) {
+                        infoDialogNotAddPatient()
+                    }
                 }
 
                 State.Loading -> {
@@ -59,7 +63,10 @@ class AddPatient : Fragment() {
                 }
 
                 is State.Success -> {
-                    binding.progressBar.isVisible = false
+                    binding.progressBar.isVisible = state.data.isLoading
+                    if (state.data.showSuccessDialog) {
+                        infoDialogAddPatient()
+                    }
                 }
             }
         }
@@ -92,12 +99,8 @@ class AddPatient : Fragment() {
                 Comment = comment,
                 user_id_patient = idController.getUserId()
             )
-            Log.d("MyLog", "$patientData")
-            if (viewModel.isPatientAdd(patientData)){
-                infoDialogAddPatient()
-            }else{
-                infoDialogNotAddPatient()
-            }
+
+            viewModel.addPatient(patientData)
         }
 
         return binding.root
@@ -107,6 +110,7 @@ class AddPatient : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.PatientProfile)
     }
+
     override fun onDetach() {
         super.onDetach()
         mainActivityListener = null
@@ -123,11 +127,7 @@ class AddPatient : Fragment() {
         alertDialogBuilder.setMessage("") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, PatientTestList.newInstance())
-                .addToBackStack(Screen.TESTS_PAGE)
-                .commit()
+            parentFragmentManager.popBackStack()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -141,11 +141,7 @@ class AddPatient : Fragment() {
         alertDialogBuilder.setMessage("") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, PatientTestList.newInstance())
-                .addToBackStack(Screen.TESTS_PAGE)
-                .commit()
+            parentFragmentManager.popBackStack()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
