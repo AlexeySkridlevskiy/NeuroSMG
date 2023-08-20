@@ -11,6 +11,7 @@ import com.example.neurosmg.patientTestList.entity.Patient
 
 class PatientAdapter(private val patientOnClickListener: PatientOnClickListener) : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
 
+
     private val patientList = mutableListOf<Patient>()
     var onItemClick: ((Patient) -> Unit)? = null
 

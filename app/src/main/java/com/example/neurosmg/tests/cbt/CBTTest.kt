@@ -52,11 +52,11 @@ class CBTTest : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentCBTTestBinding.inflate(inflater)
+        educationAnimation()
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        infoDialogStartTest()
         mainActivityListener?.updateToolbarState(ToolbarState.CBTTest)
         allSquares = listOf(
             binding.square1, binding.square2, binding.square3, binding.square4,
@@ -236,7 +236,7 @@ class CBTTest : Fragment() {
 //            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
-                animationLottie.setAnimation(R.raw.fot)
+                animationLottie.setAnimation(R.raw.cbt)
                 okBtn.setOnClickListener {
                     root.isVisible = false
                     activity?.exitFullScreenMode()
@@ -244,6 +244,7 @@ class CBTTest : Fragment() {
                     linearLayout.isVisible = true
                     gridLayout.isVisible = true
                     btnStart.isVisible = true
+                    infoDialogStartTest()
                 }
             }
             linearLayout.isVisible = false

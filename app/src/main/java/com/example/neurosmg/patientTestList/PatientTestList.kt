@@ -85,6 +85,7 @@ class PatientTestList : Fragment(), PatientOnClickListener {
         if(arguments?.getBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT) == true){
             flButton.visibility = View.VISIBLE
         }
+
         flButton.setOnClickListener {
             fragment = AddPatient.newInstance()
             fragmentTag = Screen.ADD_PATIENT
@@ -92,6 +93,7 @@ class PatientTestList : Fragment(), PatientOnClickListener {
         }
         if(arguments?.getBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE) == true){
             tvArchive.visibility = View.VISIBLE
+            flButton.visibility = View.GONE
         }
     }
 
