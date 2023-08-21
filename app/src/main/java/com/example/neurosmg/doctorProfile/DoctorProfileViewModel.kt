@@ -43,12 +43,12 @@ class DoctorProfileViewModel(application: Application) : AndroidViewModel(applic
                         username = userResponse.username
                     }
                 } else {
-                    mutableIdLD.value = State.Error
+                    mutableIdLD.value = State.Error(false)
                 }
             }
 
             override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                mutableIdLD.value = State.Error
+                mutableIdLD.value = State.Error(false)
             }
         })
     }

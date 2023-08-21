@@ -30,7 +30,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             mutableLoginLD.value = State.Success(data = tokenController.getUserToken() ?: "")
             return true
         } else {
-            mutableLoginLD.value = State.Error
+            mutableLoginLD.value = State.Error("")
         }
 
         return false
@@ -58,12 +58,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     }
 
                 } else {
-                    mutableLoginLD.value = State.Error
+                    mutableLoginLD.value = State.Error("")
                 }
             }
 
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                mutableLoginLD.value = State.Error
+                mutableLoginLD.value = State.Error("")
             }
         })
     }

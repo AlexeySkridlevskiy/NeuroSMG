@@ -64,7 +64,7 @@ class LoginFragment : Fragment() {
 
         viewModel.loginLD.observe(viewLifecycleOwner) { state ->
             when (state) {
-                State.Error -> {
+                is State.Error -> {
                     binding.etLogin.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
                     binding.etPassword.error = "Неверный логин или пароль"; // TODO:вынеси в ресурсы
                     binding.progressBar.isVisible = false

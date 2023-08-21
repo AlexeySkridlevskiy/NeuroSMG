@@ -50,16 +50,13 @@ class PatientTestList : Fragment(), PatientOnClickListener {
             throw RuntimeException("$context must implement MainActivityListener")
         }
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPatientTestListBinding.inflate(inflater)
-        init()
+        viewModel.fetchUserPatients()
         return binding.root
     }
 
@@ -68,7 +65,7 @@ class PatientTestList : Fragment(), PatientOnClickListener {
 
         viewModel.userPatients.observe(viewLifecycleOwner) { state ->
             when(state) {
-                State.Error -> {
+                is State.Error -> {
                     progressBar.isVisible = false
                 }
                 State.Loading -> {
@@ -88,13 +85,18 @@ class PatientTestList : Fragment(), PatientOnClickListener {
 
         flButton.setOnClickListener {
             fragment = AddPatient.newInstance()
-            fragmentTag = Screen.ADD_PATIENT
-            replaceFragment(fragment, fragmentTag)
+            replaceFragment(fragment)
         }
         if(arguments?.getBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE) == true){
             tvArchive.visibility = View.VISIBLE
             flButton.visibility = View.GONE
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        init()
+
     }
 
     override fun onResume() {
@@ -176,7 +178,7 @@ class PatientTestList : Fragment(), PatientOnClickListener {
         bundle.putString(KeyOfArgument.KEY_OF_FRAGMENT, fragmentTag)
     }
 
-    private fun replaceFragment(fragment: Fragment, tag: String) {
+    private fun replaceFragment(fragment: Fragment, tag: String? = null) {
         parentFragmentManager
             .beginTransaction()
             .replace(R.id.container, fragment)
