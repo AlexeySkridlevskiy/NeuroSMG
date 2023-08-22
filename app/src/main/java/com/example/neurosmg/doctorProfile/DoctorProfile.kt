@@ -55,7 +55,7 @@ class DoctorProfile : Fragment() {
                 }
             }
         }
-//        binding.tvLoginDoctor.text = viewModel.getUsername()
+        binding.tvLoginDoctor.text = viewModel.getUsername()
 
         return binding.root
     }
