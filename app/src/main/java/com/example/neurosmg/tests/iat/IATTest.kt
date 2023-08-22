@@ -27,7 +27,7 @@ class IATTest : Fragment() {
     lateinit var binding: FragmentIATTestBinding
     private var mainActivityListener: MainActivityListener? = null
 
-    private val totalRounds = 5
+    private val totalRounds = 20
     private var currentRound = 1
     private var currentStep = 1
 
