@@ -19,9 +19,9 @@ import com.example.neurosmg.aboutProgramPage.AboutProgramPage
 import com.example.neurosmg.common.State
 import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.doctorProfile.DoctorProfile
-import com.example.neurosmg.doctorProfile.DoctorProfileViewModel
 import com.example.neurosmg.login.LoginFragment
 import com.example.neurosmg.patientTestList.PatientTestList
+import com.example.neurosmg.patientTestList.StatePatientViewModel
 import com.example.neurosmg.testsPage.TestsPage
 
 class MainActivity : AppCompatActivity(), MainActivityListener {
@@ -34,6 +34,10 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     private val bundle = Bundle()
     private lateinit var fragment: Fragment
     private var currentFragmentTag: String? = null
+
+    private val viewModelState by lazy {
+        ViewModelProvider(this)[StatePatientViewModel::class.java]
+    }
 
     private val menuActions = mapOf(
         R.id.tests to {
@@ -54,8 +58,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     )
 
     private fun navigateToPatientTestList(isArchive: Boolean) {
-        bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_PATIENT, true)
-        bundle.putBoolean(KeyOfArgument.KEY_OF_MAIN_TO_ARCHIVE, isArchive)
+        viewModelState.setFlagFromArchive(isArchive)
 
         fragment = PatientTestList().apply {
             arguments = bundle
@@ -149,7 +152,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
 
     private fun setupToolbarForMainPage() {
-        val viewModelDoctor = ViewModelProvider(this).get(DoctorProfileViewModel::class.java)
         with(binding.includeToolbar) {
             visibilityToolbar(true)
             setSupportActionBar(toolbar)
