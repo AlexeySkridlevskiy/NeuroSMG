@@ -95,7 +95,9 @@ class PatientTestList : Fragment() {
                 binding.flButton.isVisible = true
             }
 
-            else -> {}
+            else -> {
+                mainActivityListener?.updateToolbarState(ToolbarState.PatientList)
+            }
         }
 
         init()
