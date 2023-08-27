@@ -18,20 +18,17 @@ class DoctorProfileViewModel(application: Application) : AndroidViewModel(applic
     private val retrofitBuilder = RetrofitBuilder()
     private val apiService = retrofitBuilder.retrofitCreate()
     private val userId = idController.getUserId()
-    private var username = ""
 
     val userLiveData: MutableLiveData<UserResponse> = MutableLiveData()
 
-    private val mutableIdLD: MutableLiveData<State<Boolean>> = MutableLiveData()
-    val idLD: LiveData<State<Boolean>> = mutableIdLD
+    private val _profileLD: MutableLiveData<State<ProfileDoctorState>> = MutableLiveData()
+    val profileLD: LiveData<State<ProfileDoctorState>> = _profileLD
 
-    private val loadingLD: MutableLiveData<Boolean> = MutableLiveData(false)
-
-    private fun getUserInfo(id: Int) {
+    fun getUserInfo() {
         val jwtToken = tokenController.getUserToken()
-        val call: Call<UserResponse> = apiService.getUserById(id, "Bearer $jwtToken")
+        val call: Call<UserResponse> = apiService.getUserById(userId, "Bearer $jwtToken")
 
-        mutableIdLD.value = State.Loading
+        _profileLD.value = State.Loading
 
         call.enqueue(object : Callback<UserResponse> {
             override fun onResponse(call: Call<UserResponse>, response: Response<UserResponse>) {
@@ -39,22 +36,25 @@ class DoctorProfileViewModel(application: Application) : AndroidViewModel(applic
                     val userResponse: UserResponse? = response.body()
                     userLiveData.postValue(userResponse)
                     if (userResponse != null) {
-                        mutableIdLD.value = State.Success(true)
-                        username = userResponse.username
+                        val stateSuccess = ProfileDoctorState(
+                            username = userResponse.username
+                        )
+                        _profileLD.value = State.Success(stateSuccess)
                     }
                 } else {
-                    mutableIdLD.value = State.Error(false)
+                    val stateError = ProfileDoctorState(
+                        errorMessage = response.errorBody().toString()
+                    )
+                    _profileLD.value = State.Error(stateError)
                 }
             }
 
             override fun onFailure(call: Call<UserResponse>, t: Throwable) {
-                mutableIdLD.value = State.Error(false)
+                val stateError = ProfileDoctorState(
+                    errorMessage = t.message
+                )
+                _profileLD.value = State.Error(stateError)
             }
         })
-    }
-    fun getUsername(): String {
-        loadingLD.postValue(true)
-        getUserInfo(userId)
-        return username
     }
 }

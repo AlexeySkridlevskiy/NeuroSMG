@@ -2,7 +2,6 @@ package com.example.neurosmg.doctorProfile
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +12,7 @@ import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentDoctorProfileBinding
 import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.common.State
+import com.example.neurosmg.common.showToast
 
 class DoctorProfile : Fragment() {
     lateinit var binding: FragmentDoctorProfileBinding
@@ -40,10 +40,20 @@ class DoctorProfile : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentDoctorProfileBinding.inflate(inflater)
-        viewModel.idLD.observe(viewLifecycleOwner) { state ->
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.getUserInfo()
+
+        viewModel.profileLD.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is State.Error -> {
                     binding.progressBar.isVisible = false
+                    if (state.data.errorMessage != null) {
+                        showToast(state.data.errorMessage)
+                    }
                 }
 
                 State.Loading -> {
@@ -52,12 +62,12 @@ class DoctorProfile : Fragment() {
 
                 is State.Success -> {
                     binding.progressBar.isVisible = false
+                    if (state.data.username != null) {
+                        binding.tvLoginDoctor.text = state.data.username
+                    }
                 }
             }
         }
-        binding.tvLoginDoctor.text = viewModel.getUsername()
-
-        return binding.root
     }
 
     override fun onDetach() {
