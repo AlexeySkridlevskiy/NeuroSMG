@@ -13,8 +13,10 @@ import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.State
+import com.example.neurosmg.common.toFragment
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.patientTestList.addPatient.AddPatient
+import com.example.neurosmg.patientTestList.patientProfile.PatientProfile
 
 class PatientTestList : Fragment() {
 
@@ -76,27 +78,44 @@ class PatientTestList : Fragment() {
             fragment = AddPatient.newInstance()
             replaceFragment(fragment)
         }
-
-        if (patientStateViewModel.isNavFromArchive()) {
-            tvArchive.isVisible = true
-            flButton.isVisible = false
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (patientStateViewModel.isNavFromArchive()) {
-            mainActivityListener?.updateToolbarState(ToolbarState.Archive)
-        } else {
-            mainActivityListener?.updateToolbarState(ToolbarState.PatientList)
+        when (patientStateViewModel.getStatePatientList().navigateTo) {
+            ScreenNavigationMenu.TO_ARCHIVE -> {
+                binding.tvArchive.isVisible = true
+                binding.flButton.isVisible = false
+                mainActivityListener?.updateToolbarState(ToolbarState.Archive)
+            }
+
+            ScreenNavigationMenu.TO_PATIENT_LIST -> {
+                mainActivityListener?.updateToolbarState(ToolbarState.PatientList)
+                binding.flButton.isVisible = true
+            }
+
+            else -> {}
         }
 
         init()
 
         adapter.onPatientItemClick = object : PatientAdapter.OnPatientClickListener {
             override fun onPatientIdClick(patient: Int) {
-                fragment = patientStateViewModel.getSavedFragmentTest()
+                fragment = when (patientStateViewModel.getStatePatientList().navigateTo) {
+                    ScreenNavigationMenu.TO_ARCHIVE -> {
+                        PatientProfile.newInstance()
+                    }
+
+                    ScreenNavigationMenu.TO_TESTS -> {
+                        patientStateViewModel.getStatePatientList().navigateToTest?.toFragment()!!
+                    }
+
+                    ScreenNavigationMenu.TO_PATIENT_LIST -> {
+                        PatientProfile.newInstance()
+                    }
+                }
+
                 replaceFragment(fragment)
             }
         }

@@ -42,6 +42,7 @@ class TestsPage : Fragment(), ItemOnClickListener {
             throw RuntimeException("$context must implement MainActivityListener")
         }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,7 +66,7 @@ class TestsPage : Fragment(), ItemOnClickListener {
 
     override fun onItemClick(item: TestItem) {
 
-        patientStateViewModel.saveFragmentTest(item.title)
+        patientStateViewModel.navToTests(item.title)
 
         parentFragmentManager
             .beginTransaction()

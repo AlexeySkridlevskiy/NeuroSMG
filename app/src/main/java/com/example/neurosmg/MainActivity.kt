@@ -58,11 +58,13 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     )
 
     private fun navigateToPatientTestList(isArchive: Boolean) {
-        viewModelState.setFlagFromArchive(isArchive)
-
-        fragment = PatientTestList().apply {
-            arguments = bundle
+        if (isArchive) {
+            viewModelState.navToArchive()
+        } else {
+            viewModelState.navToPatientList()
         }
+
+        fragment = PatientTestList()
         replaceFragment(fragment, if (isArchive) Screen.ARCHIVE else Screen.PATIENTS)
     }
 
