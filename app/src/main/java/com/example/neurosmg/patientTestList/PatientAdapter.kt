@@ -9,11 +9,12 @@ import com.example.neurosmg.R
 import com.example.neurosmg.databinding.ListItemBinding
 import com.example.neurosmg.patientTestList.entity.Patient
 
-class PatientAdapter(private val patientOnClickListener: PatientOnClickListener) : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
+class PatientAdapter() : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
 
 
     private val patientList = mutableListOf<Patient>()
-    var onItemClick: ((Patient) -> Unit)? = null
+
+    var onPatientItemClick: OnPatientClickListener? = null
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ListItemBinding.bind(itemView)
@@ -32,8 +33,7 @@ class PatientAdapter(private val patientOnClickListener: PatientOnClickListener)
 
         val patient = patientList[position]
         holder.itemView.setOnClickListener {
-            onItemClick?.invoke(patient)
-            patientOnClickListener.onItemClick(patientList[position])
+            onPatientItemClick?.onPatientIdClick(patient.id)
         }
     }
 
@@ -46,5 +46,9 @@ class PatientAdapter(private val patientOnClickListener: PatientOnClickListener)
         patientList.clear()
         patientList.addAll(patient)
         notifyDataSetChanged()
+    }
+
+    interface OnPatientClickListener {
+        fun onPatientIdClick(patient: Int)
     }
 }

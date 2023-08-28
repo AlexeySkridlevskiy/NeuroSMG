@@ -15,6 +15,7 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentTestsPageBinding
 import com.example.neurosmg.patientTestList.PatientTestList
+import com.example.neurosmg.patientTestList.StatePatientViewModel
 
 class TestsPage : Fragment(), ItemOnClickListener {
 
@@ -25,7 +26,10 @@ class TestsPage : Fragment(), ItemOnClickListener {
         ViewModelProvider(requireActivity())[TestPageViewModel::class.java]
     }
 
-    private val bundle = Bundle()
+    private val patientStateViewModel by lazy {
+        ViewModelProvider(requireActivity())[StatePatientViewModel::class.java]
+    }
+
     private val adapter = TestAdapter(this)
 
     private var mainActivityListener: MainActivityListener? = null
@@ -38,6 +42,7 @@ class TestsPage : Fragment(), ItemOnClickListener {
             throw RuntimeException("$context must implement MainActivityListener")
         }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,8 +65,9 @@ class TestsPage : Fragment(), ItemOnClickListener {
     }
 
     override fun onItemClick(item: TestItem) {
-        bundle.putString(KeyOfArgument.KEY_OF_TEST_NAME, item.title)
-        fragment.arguments = bundle
+
+        patientStateViewModel.navToTests(item.title)
+
         parentFragmentManager
             .beginTransaction()
             .replace(R.id.container, fragment)
