@@ -1,6 +1,7 @@
 package com.example.neurosmg.testsPage
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.common.setScreenOrientation
 import com.example.neurosmg.databinding.FragmentTestsPageBinding
 import com.example.neurosmg.patientTestList.PatientTestList
 import com.example.neurosmg.patientTestList.StatePatientViewModel
@@ -53,6 +55,7 @@ class TestsPage : Fragment(), ItemOnClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
         mainActivityListener?.updateToolbarState(ToolbarState.TestPage)
         init()
     }
