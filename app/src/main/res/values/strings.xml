@@ -51,4 +51,5 @@
     <string name="about_program_text2">Кафедры психиатрии и наркологии с курсом ФПК и ПК.</string>
     <string name="about_program_text3">Кафедры общей и клинической биохимии ФПК и ПК.</string>
     <string name="next_btn">Далее</string>
+    <string name="patient_date_of_birthd">Дата рождения</string>
 </resources>
