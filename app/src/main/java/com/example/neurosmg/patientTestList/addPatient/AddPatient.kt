@@ -29,7 +29,7 @@ class AddPatient : Fragment() {
         ViewModelProvider(requireActivity())[AddPatientViewModel::class.java]
     }
     lateinit var binding: FragmentAddPatientBinding
-
+    private var idNewPatient: Int = -1
     private var mainActivityListener: MainActivityListener? = null
 
     override fun onAttach(context: Context) {
@@ -65,6 +65,7 @@ class AddPatient : Fragment() {
                 is State.Success -> {
                     binding.progressBar.isVisible = state.data.isLoading
                     if (state.data.showSuccessDialog) {
+                        idNewPatient = state.data.addedPatientId
                         infoDialogAddPatient()
                     }
                 }
@@ -75,22 +76,26 @@ class AddPatient : Fragment() {
         var gender = "Other";
         binding.rbMan.setOnClickListener {
             gender = "Male"
+            binding.rbWomen.isChecked = false
         }
         binding.rbWomen.setOnClickListener {
             gender = "Female"
+            binding.rbMan.isChecked = false
         }
 
         var hand = "";
         binding.rbLeft.setOnClickListener {
             hand = "Left"
+            binding.rbRight.isChecked = false
         }
 
         binding.rbRight.setOnClickListener {
             hand = "Right"
+            binding.rbLeft.isChecked = false
         }
 
         binding.btnSave.setOnClickListener {
-            val birthday = binding.etBirthday.text.toString() // Получаем текст из EditText
+            val birthday = binding.etBirthday.text.toString()
             val comment = binding.etComment.text.toString()
             val patientData = PatientData(
                 Birthday = birthday,
@@ -101,6 +106,15 @@ class AddPatient : Fragment() {
             )
 
             viewModel.addPatient(patientData)
+        }
+
+        binding.btnDelete.setOnClickListener {
+            binding.etBirthday.setText("")
+            binding.rbMan.isChecked = false
+            binding.rbWomen.isChecked = false
+            binding.rbLeft.isChecked = false
+            binding.rbRight.isChecked = false
+            binding.etComment.setText("")
         }
 
         return binding.root
@@ -123,7 +137,7 @@ class AddPatient : Fragment() {
 
     private fun infoDialogAddPatient() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Пациент сохранен!") // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle("Пациент сохранен!\nID нового пациента $idNewPatient") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()

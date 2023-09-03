@@ -1,55 +1,93 @@
 package com.example.neurosmg.patientTestList.patientProfile
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.neurosmg.api.ApiService
+import com.example.neurosmg.api.TokenController
 import com.example.neurosmg.common.State
+import com.example.neurosmg.doctorProfile.ProfileDoctorState
 import com.example.neurosmg.login.RetrofitBuilder
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class PatientProfileViewModel(application: Application) : AndroidViewModel(application) {
 
-    //private val apiClient = ApiService.getInstance(application)
+    private val tokenController = TokenController(application.baseContext)
+    private val retrofitBuilder = RetrofitBuilder()
+    private val apiService = retrofitBuilder.retrofitCreate()
 
-    private val _patientData: MutableLiveData<State<PatientResponse>> = MutableLiveData()
-    val patientData: LiveData<State<PatientResponse>> = _patientData
+    private val _patientData: MutableLiveData<State<PatientProfileState>> = MutableLiveData()
+    val patientData: LiveData<State<PatientProfileState>> = _patientData
+    var patientResponce: PatientResponse? = null
+    private fun fetchPatientById(id: Int) {
+        _patientData.value = State.Loading
 
-    private val _loading: MutableLiveData<Boolean> = MutableLiveData(false)
-    val loading: LiveData<Boolean> = _loading
+        val jwtToken = tokenController.getUserToken()
+        apiService.getPatientById("Bearer $jwtToken", id).enqueue(object : Callback<PatientResponse> {
+            override fun onResponse(call: Call<PatientResponse>, response: Response<PatientResponse>) {
+                if (response.isSuccessful) {
+                    patientResponce = response.body()
+                    val stateSuccess = PatientProfileState(
+                        birthday = patientResponce?.data?.attributes?.Birthday,
+                        gender = patientResponce?.data?.attributes?.Gender,
+                        leadHand = patientResponce?.data?.attributes?.LeadHand,
+                        comment = patientResponce?.data?.attributes?.Comment
+                    )
+                    _patientData.value = State.Success(stateSuccess)
+                } else {
+                    val stateError = PatientProfileState(
+                        errorMessage = response.errorBody().toString()
+                    )
+                    _patientData.value = State.Error(stateError)
+                }
+            }
 
-    fun fetchPatientData(patientId: Int) {
-//        _loading.value = true
-//
-//        apiClient.getPatientById(patientId) { response ->
-//            _loading.value = false
-//
-//            if (response.isSuccessful) {
-//                _patientData.value = State.Success(response.body())
-//            } else {
-//                _patientData.value = State.Error
-//            }
-//        }
+            override fun onFailure(call: Call<PatientResponse>, t: Throwable) {
+                val stateError = PatientProfileState(
+                    errorMessage = t.message
+                )
+                _patientData.value = State.Error(stateError)
+            }
+        })
     }
-//    private val apiClient = ApiService.getInstance(application)
-//
-//    private val _patientData: MutableLiveData<State<PatientResponse>> = MutableLiveData()
-//    val patientData: LiveData<State<PatientResponse>> = _patientData
-//
-//    private val _loading: MutableLiveData<Boolean> = MutableLiveData(false)
-//    val loading: LiveData<Boolean> = _loading
-//
-//    fun fetchPatientData(patientId: Int) {
-//        _loading.value = true
-//
-//        apiClient.getPatientById(patientId) { response ->
-//            _loading.value = false
-//
-//            if (response.isSuccessful) {
-//                _patientData.value = State.Success(response.body())
-//            } else {
-//                _patientData.value = State.Error
-//            }
-//        }
-//    }
+
+    fun updatePatientData(updatedData: UpdatePatientRequest, id: Int) {
+        _patientData.value = State.Loading
+
+        val jwtToken = tokenController.getUserToken()
+        apiService.updatePatient("Bearer $jwtToken", id, updatedData).enqueue(object : Callback<PatientResponse> {
+            override fun onResponse(call: Call<PatientResponse>, response: Response<PatientResponse>) {
+                if (response.isSuccessful) {
+                    val stateSuccess = PatientProfileState(
+                        birthday = updatedData.data.birthday,
+                        gender = updatedData.data.gender,
+                        leadHand = updatedData.data.leadHand,
+                        comment = updatedData.data.comment
+                    )
+                    _patientData.value = State.Success(stateSuccess)
+                } else {
+                    val stateError = PatientProfileState(
+                        errorMessage = response.errorBody().toString()
+                    )
+                    _patientData.value = State.Error(stateError)
+                }
+            }
+
+            override fun onFailure(call: Call<PatientResponse>, t: Throwable) {
+                val stateError = PatientProfileState(
+                    errorMessage = t.message
+                )
+                _patientData.value = State.Error(stateError)
+            }
+        })
+    }
+
+    fun getPatientById(id: Int): PatientResponse? {
+        fetchPatientById(id)
+
+        return patientResponce
+    }
 }

@@ -38,7 +38,7 @@ class CanvasView @JvmOverloads constructor(
         super.onDraw(canvas)
 
         for (point in points) {
-            canvas.drawCircle(point.first, point.second, 32f, paint)
+            canvas.drawCircle(point.first, point.second, 16f, paint)
         }
     }
 

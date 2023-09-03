@@ -45,6 +45,8 @@ class MRTTest : Fragment() {
     ): View {
         binding = FragmentMRTTestBinding.inflate(inflater)
         educationAnimation()
+        binding.imgView1.setImageResource(R.drawable.figure_1_1)
+        binding.imgView2.setImageResource(R.drawable.figure_1_2)
         return binding.root
     }
 
@@ -71,7 +73,8 @@ class MRTTest : Fragment() {
                 okBtn.setOnClickListener {
                     root.isVisible = false
                     activity?.exitFullScreenMode()
-                    tvText.isVisible = true
+                    constraintLayout4.isVisible = true
+                    linearLayout.isVisible = true
 //                    square1.isVisible = true
 //                    square2.isVisible = true
 //                    square3.isVisible = true
@@ -80,7 +83,8 @@ class MRTTest : Fragment() {
 //                    infoDialogInstruction()
                 }
             }
-            tvText.isVisible = false
+            constraintLayout4.isVisible = false
+            linearLayout.isVisible = false
 //            imageView2.isVisible = false
 //            square1.isVisible = false
 //            square2.isVisible = false

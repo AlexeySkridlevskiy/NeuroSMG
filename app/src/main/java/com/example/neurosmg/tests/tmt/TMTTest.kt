@@ -14,8 +14,9 @@ import com.example.neurosmg.databinding.FragmentTMTTestBinding
 
 class TMTTest : Fragment() {
 
-    lateinit var binding: FragmentTMTTestBinding
+    private lateinit var binding: FragmentTMTTestBinding
     private var mainActivityListener: MainActivityListener? = null
+    private lateinit var labyrinthView: LabyrinthView
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -48,6 +49,11 @@ class TMTTest : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.TMTTest)
+
+        labyrinthView = binding.labyrinthView
+        // You can change the labyrinth after the user completes it
+        // by calling the changeLabyrinth() method of the labyrinthView
+//        labyrinthView.changeLabyrinth()
     }
 
     override fun onDetach() {

@@ -2,6 +2,7 @@ package com.example.neurosmg.patientTestList
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
@@ -23,6 +25,7 @@ class PatientTestList : Fragment() {
     lateinit var binding: FragmentPatientTestListBinding
 
     private lateinit var fragment: Fragment
+    private lateinit var bundle: Bundle
     private val adapter = PatientAdapter()
 
     private val viewModel by lazy {
@@ -114,7 +117,11 @@ class PatientTestList : Fragment() {
                     }
 
                     ScreenNavigationMenu.TO_PATIENT_LIST -> {
-                        PatientProfile.newInstance()
+                        val patientProfileFragment = PatientProfile.newInstance()
+                        val bundle = Bundle()
+                        bundle.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patient)
+                        patientProfileFragment.arguments = bundle
+                        patientProfileFragment
                     }
                 }
 

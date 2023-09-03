@@ -30,7 +30,15 @@
             android:text="ID"
             app:layout_constraintStart_toStartOf="@+id/textView21"
             app:layout_constraintTop_toBottomOf="@+id/textView21" />
-
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <TextView
             android:id="@+id/tvIdPatient"
             android:layout_width="wrap_content"
@@ -46,8 +54,8 @@
             android:layout_height="56dp"
             android:layout_marginTop="16dp"
             android:ems="10"
+            android:hint="Дата рождения"
             android:inputType="date"
-            android:text="07/11/1990"
             app:layout_constraintEnd_toEndOf="@+id/textView21"
             app:layout_constraintStart_toStartOf="@+id/textView21"
             app:layout_constraintTop_toBottomOf="@+id/tvIdPatient" />
@@ -150,6 +158,7 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/btnDeleteProf"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="#E3E1E1"
@@ -169,6 +178,7 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/btnSaveProf"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Сохранить" />
