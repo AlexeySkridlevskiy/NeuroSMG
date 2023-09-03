@@ -1,6 +1,7 @@
 package com.example.neurosmg.patientTestList.addPatient
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -23,6 +24,7 @@ import com.example.neurosmg.common.showToast
 import com.example.neurosmg.databinding.FragmentAddPatientBinding
 import com.example.neurosmg.patientTestList.PatientTestList
 import com.example.neurosmg.testsPage.TestsPage
+import java.util.Calendar
 
 class AddPatient : Fragment() {
     private val viewModel by lazy {
@@ -94,6 +96,10 @@ class AddPatient : Fragment() {
             binding.rbLeft.isChecked = false
         }
 
+        binding.etBirthday.setOnClickListener {
+            showDatePickerDialog()
+        }
+
         binding.btnSave.setOnClickListener {
             val birthday = binding.etBirthday.text.toString()
             val comment = binding.etComment.text.toString()
@@ -161,5 +167,25 @@ class AddPatient : Fragment() {
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
         alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(), { _, year, monthOfYear, dayOfMonth ->
+                val selectedDate =
+                    "$year-${monthOfYear + 1}-$dayOfMonth" // Формат даты по вашему выбору
+                binding.etBirthday.setText(selectedDate)
+            },
+            year,
+            month,
+            day
+        )
+
+        datePickerDialog.show()
     }
 }
