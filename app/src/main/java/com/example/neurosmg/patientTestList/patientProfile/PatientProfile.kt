@@ -7,17 +7,24 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.common.State
+import com.example.neurosmg.common.showToast
 import com.example.neurosmg.databinding.FragmentPatientProfileBinding
+import com.example.neurosmg.doctorProfile.DoctorProfileViewModel
 
 class PatientProfile : Fragment() {
     lateinit var binding: FragmentPatientProfileBinding
-    private val bundle = Bundle()
     private var mainActivityListener: MainActivityListener? = null
-
+    private var patientResponce: PatientResponse? = null
+    private val viewModel by lazy {
+        ViewModelProvider(requireActivity())[PatientProfileViewModel::class.java]
+    }
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is MainActivityListener) {
@@ -35,8 +42,120 @@ class PatientProfile : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentPatientProfileBinding.inflate(inflater)
-        binding.tvIdPatient.text = arguments?.getString(KeyOfArgument.KEY_OF_ID_PATIENT)
+        binding.btnDeleteProf.setOnClickListener {
+            binding.etProfBirthday.setText("")
+            binding.rbProfMan.isChecked = false
+            binding.rbProfWomen.isChecked = false
+            binding.rbProfRight.isChecked = false
+            binding.rbProfLeft.isChecked = false
+            binding.etProfComment.setText("")
+        }
+        val id = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT)
+        binding.tvIdPatient.text = id.toString()
+        if (id != null) {
+           patientResponce = viewModel.getPatientById(id)
+        }
 
+        var gender = ""
+        gender = if(binding.rbProfMan.isChecked){
+            "Male"
+        }else{
+            "Female"
+        }
+        binding.rbProfMan.setOnClickListener {
+            gender = "Male"
+            binding.rbProfWomen.isChecked = false
+        }
+        binding.rbProfWomen.setOnClickListener {
+            gender = "Female"
+            binding.rbProfMan.isChecked = false
+        }
+
+        var hand=""
+        hand = if(binding.rbProfRight.isChecked){
+            "Right"
+        }else{
+            "Left"
+        }
+
+        binding.rbProfLeft.setOnClickListener {
+            hand = "Left"
+            binding.rbProfRight.isChecked = false
+        }
+
+        binding.rbProfRight.setOnClickListener {
+            hand = "Right"
+            binding.rbProfLeft.isChecked = false
+        }
+        binding.btnSaveProf.setOnClickListener {
+            val birthday = binding.etProfBirthday.text.toString()
+            val comment = binding.etProfComment.text.toString()
+            gender = if(binding.rbProfMan.isChecked){
+                "Male"
+            }else{
+                "Female"
+            }
+            hand = if(binding.rbProfRight.isChecked){
+                "Right"
+            }else{
+                "Left"
+            }
+            if (id != null) {
+                val updatedData = UpdatePatientRequest(
+                    data = UpdatePatientData(
+                        birthday = birthday,
+                        gender = gender,
+                        leadHand = hand,
+                        comment = comment
+                    )
+                )
+                viewModel.updatePatientData(updatedData, id)
+            }
+        }
+
+        viewModel.patientData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is State.Error -> {
+                    binding.progressBar.isVisible = false
+                    if (state.data.errorMessage != null) {
+//                        showToast(state.data.errorMessage)
+                        showToast("Введите данные пациента!")
+                    }
+                }
+
+                State.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                is State.Success -> {
+                    binding.progressBar.isVisible = false
+                    if (state.data.birthday != null) {
+                        binding.etProfBirthday.setText(state.data.birthday)
+                    }
+                    if (state.data.gender != null) {
+                        if(state.data.gender == "Male"){
+                            binding.rbProfMan.isChecked = true
+                            binding.rbProfWomen.isChecked = false
+                        }else{
+                            binding.rbProfWomen.isChecked = true
+                            binding.rbProfMan.isChecked = false
+                        }
+                    }
+                    if (state.data.leadHand != null) {
+                        if(state.data.leadHand == "Right"){
+                            binding.rbProfRight.isChecked = true
+                            binding.rbProfLeft.isChecked = false
+                        }else{
+                            binding.rbProfLeft.isChecked = true
+                            binding.rbProfRight.isChecked = false
+                        }
+                    }
+                    if (state.data.comment != null) {
+                        binding.etProfComment.setText(state.data.comment)
+                    }
+                }
+            }
+        }
         return binding.root
     }
 

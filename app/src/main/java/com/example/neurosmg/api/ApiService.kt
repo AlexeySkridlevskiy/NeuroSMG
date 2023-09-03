@@ -6,6 +6,7 @@ import com.example.neurosmg.login.api.AuthData
 import com.example.neurosmg.login.api.AuthResponse
 import com.example.neurosmg.patientTestList.PatientListResponse
 import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
+import com.example.neurosmg.patientTestList.patientProfile.UpdatePatientRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.*
@@ -24,11 +25,19 @@ interface ApiService {
     fun addPatient(
         @Header("Authorization") token: String,
         @Body patientRequest: PatientRequest
-    ): Call<Unit>
+    ): Call<PatientResponse>
 
     @GET("/api/patients/{id}")
     fun getPatientById(
         @Header("Authorization") authHeader: String,
         @Path("id") id: Int
     ): Call<PatientResponse>
+
+    @PUT("/api/patients/{id}")
+    fun updatePatient(
+        @Header("Authorization") authHeader: String,
+        @Path("id") id: Int,
+        @Body updatePatientRequest: UpdatePatientRequest
+    ): Call<PatientResponse>
+
 }

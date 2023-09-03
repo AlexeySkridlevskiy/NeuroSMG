@@ -9,6 +9,7 @@ import com.example.neurosmg.api.TokenController
 import com.example.neurosmg.common.State
 import com.example.neurosmg.login.RetrofitBuilder
 import com.example.neurosmg.patientTestList.PatientViewState
+import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,6 +21,7 @@ class AddPatientViewModel(application: Application) : AndroidViewModel(applicati
     private val apiService = retrofitBuilder.retrofitCreate()
 
     var isAddPatient = false
+    var idNewPatient = -1
 
     private val mutableAddPatient: MutableLiveData<State<PatientViewState>> = MutableLiveData()
     val patientAdded: LiveData<State<PatientViewState>> = mutableAddPatient
@@ -29,17 +31,21 @@ class AddPatientViewModel(application: Application) : AndroidViewModel(applicati
 
         val addPatientRequest = PatientRequest(patientData)
         mutableAddPatient.value = State.Loading
-        apiService.addPatient("Bearer $jwtToken", addPatientRequest).enqueue(object : Callback<Unit> {
-                override fun onResponse(call: Call<Unit>, response: Response<Unit>) {
 
+        apiService.addPatient("Bearer $jwtToken", addPatientRequest)
+            .enqueue(object : Callback<PatientResponse> { // Изменено: Callback<Unit> на Callback<PatientResponse>
+                override fun onResponse(call: Call<PatientResponse>, response: Response<PatientResponse>) {
                     if (response.isSuccessful) {
                         isAddPatient = true
+                        val addedPatientId: Int = response.body()?.data?.id ?: -1
 
                         val stateSuccess = PatientViewState(
                             isLoading = false,
-                            showSuccessDialog = true
+                            showSuccessDialog = true,
+                            addedPatientId = addedPatientId // Получение ID пациента
                         )
                         mutableAddPatient.value = State.Success(stateSuccess)
+//                        idNewPatient = response.body()?.data?.id!!
                     } else {
                         val stateError = PatientViewState(
                             showErrorDialog = false
@@ -48,7 +54,7 @@ class AddPatientViewModel(application: Application) : AndroidViewModel(applicati
                     }
                 }
 
-                override fun onFailure(call: Call<Unit>, t: Throwable) {
+                override fun onFailure(call: Call<PatientResponse>, t: Throwable) {
                     val stateError = PatientViewState(
                         showErrorDialog = false,
                         exceptionMessage = t.message.toString()
@@ -57,5 +63,10 @@ class AddPatientViewModel(application: Application) : AndroidViewModel(applicati
                 }
             })
     }
+
+    fun getNewPatientId(): Int {
+        return idNewPatient
+    }
+
 
 }
