@@ -4,27 +4,22 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
-import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.api.IdController
 import com.example.neurosmg.common.State
 import com.example.neurosmg.common.showToast
 import com.example.neurosmg.databinding.FragmentAddPatientBinding
-import com.example.neurosmg.patientTestList.PatientTestList
-import com.example.neurosmg.testsPage.TestsPage
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class AddPatient : Fragment() {
     private val viewModel by lazy {
@@ -71,6 +66,8 @@ class AddPatient : Fragment() {
                         infoDialogAddPatient()
                     }
                 }
+
+                State.Empty -> {}
             }
         }
         val idController = IdController(requireContext())
@@ -136,18 +133,14 @@ class AddPatient : Fragment() {
         mainActivityListener = null
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = AddPatient()
-    }
-
     private fun infoDialogAddPatient() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         alertDialogBuilder.setTitle("Пациент сохранен!\nID нового пациента $idNewPatient") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("")
+        alertDialogBuilder.setPositiveButton(getString(R.string.dialog_ok)) { dialog, _ ->
             dialog.dismiss()
             parentFragmentManager.popBackStack()
+            viewModel.setEmptyStatus()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -157,11 +150,12 @@ class AddPatient : Fragment() {
 
     private fun infoDialogNotAddPatient() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Пациент не создан! Ошибка!") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(getString(R.string.dialog_fail_add_patient))
+        alertDialogBuilder.setMessage("")
+        alertDialogBuilder.setPositiveButton(getString(R.string.dialog_ok)) { dialog, _ ->
             dialog.dismiss()
             parentFragmentManager.popBackStack()
+            viewModel.setEmptyStatus()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -177,8 +171,14 @@ class AddPatient : Fragment() {
 
         val datePickerDialog = DatePickerDialog(
             requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val selectedDate =
-                    "$year-${monthOfYear + 1}-$dayOfMonth" // Формат даты по вашему выбору
+                val selectedCalendar = Calendar.getInstance()
+                selectedCalendar.set(Calendar.YEAR, year)
+                selectedCalendar.set(Calendar.MONTH, monthOfYear)
+                selectedCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val selectedDate = dateFormat.format(selectedCalendar.time)
+
                 binding.etBirthday.setText(selectedDate)
             },
             year,
@@ -187,5 +187,10 @@ class AddPatient : Fragment() {
         )
 
         datePickerDialog.show()
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance() = AddPatient()
     }
 }

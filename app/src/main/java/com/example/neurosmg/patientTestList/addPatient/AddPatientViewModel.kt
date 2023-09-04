@@ -21,7 +21,6 @@ class AddPatientViewModel(application: Application) : AndroidViewModel(applicati
     private val apiService = retrofitBuilder.retrofitCreate()
 
     var isAddPatient = false
-    var idNewPatient = -1
 
     private val mutableAddPatient: MutableLiveData<State<PatientViewState>> = MutableLiveData()
     val patientAdded: LiveData<State<PatientViewState>> = mutableAddPatient
@@ -33,7 +32,7 @@ class AddPatientViewModel(application: Application) : AndroidViewModel(applicati
         mutableAddPatient.value = State.Loading
 
         apiService.addPatient("Bearer $jwtToken", addPatientRequest)
-            .enqueue(object : Callback<PatientResponse> { // Изменено: Callback<Unit> на Callback<PatientResponse>
+            .enqueue(object : Callback<PatientResponse> {
                 override fun onResponse(call: Call<PatientResponse>, response: Response<PatientResponse>) {
                     if (response.isSuccessful) {
                         isAddPatient = true
@@ -42,10 +41,9 @@ class AddPatientViewModel(application: Application) : AndroidViewModel(applicati
                         val stateSuccess = PatientViewState(
                             isLoading = false,
                             showSuccessDialog = true,
-                            addedPatientId = addedPatientId // Получение ID пациента
+                            addedPatientId = addedPatientId
                         )
                         mutableAddPatient.value = State.Success(stateSuccess)
-//                        idNewPatient = response.body()?.data?.id!!
                     } else {
                         val stateError = PatientViewState(
                             showErrorDialog = false
@@ -64,9 +62,7 @@ class AddPatientViewModel(application: Application) : AndroidViewModel(applicati
             })
     }
 
-    fun getNewPatientId(): Int {
-        return idNewPatient
+    fun setEmptyStatus() {
+        mutableAddPatient.value = State.Empty
     }
-
-
 }
