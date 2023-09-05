@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.tmt
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -7,12 +8,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
+import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
 import com.example.neurosmg.databinding.FragmentTMTTestBinding
+import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.utils.exitFullScreenMode
 
 class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
@@ -51,14 +56,15 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.TMTTest)
-
-        labyrinthView = binding.labyrinthView
-
-        labyrinthView.setLabyrinthCompletionListener(this)
+        educationAnimation()
     }
 
     override fun onLabyrinthCompleted(steps: Int) {
-        binding.tvLabSteps.text = steps.toString()
+        if(steps==21){
+            infoDialogEndTest()
+        }else{
+            binding.tvLabSteps.text = steps.toString()
+        }
     }
 
     override fun onDetach() {
@@ -69,5 +75,60 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     companion object {
         @JvmStatic
         fun newInstance() = TMTTest()
+    }
+
+    private fun educationAnimation() {
+//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
+        binding.apply {
+//            activity?.enterFullScreenMode()
+            lottieLayout.run {
+                root.isVisible = true
+                animationLottie.setAnimation(R.raw.tmt)
+                okBtn.setOnClickListener {
+                    infoDialog()
+                    root.isVisible = false
+                    activity?.exitFullScreenMode()
+//                    mainActivityListener?.updateToolbarState(ToolbarState.SCTTest)
+                    constraintLayout5.isVisible = true
+                    labyrinthView.isVisible = true
+                }
+            }
+            constraintLayout5.isVisible = false
+            labyrinthView.isVisible = false
+        }
+    }
+
+    private fun infoDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Правила тестирования") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Сделайте выбор между напитками и алкоголем. Отнесите товар к определенной категории.") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+            labyrinthView = binding.labyrinthView
+
+            labyrinthView.setLabyrinthCompletionListener(this)
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    private fun infoDialogEndTest() {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Данные будут сохранены в папке.") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            dialog.dismiss()
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.container, TestsPage.newInstance())
+                .addToBackStack(Screen.MAIN_PAGE)
+                .commit()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
     }
 }
