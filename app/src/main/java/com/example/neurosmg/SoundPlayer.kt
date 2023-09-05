@@ -5,7 +5,6 @@ class SoundPlayer(private val context: Context) {
     private var mediaPlayer: MediaPlayer? = null
 
     fun playSound(resourceId: Int) {
-        stopSound()
 
         mediaPlayer = MediaPlayer.create(context, resourceId)
 
