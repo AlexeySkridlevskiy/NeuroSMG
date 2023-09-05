@@ -133,20 +133,25 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
     private fun handleLabyrinthCompletion() {
         tvLabSteps++
         completionListener?.onLabyrinthCompleted(tvLabSteps)
-        val randomIndex = (labyrinthList.indices).random()
-
-        labyrinthData = labyrinthList[randomIndex]
-        finishY = if(randomIndex==0||randomIndex==5){
-            3
+        if(tvLabSteps==21){
+            userPath.clear()
+            isFinishMessageShown = false
+            isCollisionLogged = false
         }else{
-            1
-        }
+            val randomIndex = (labyrinthList.indices).random()
 
-        userPath.clear()
-        isFinishMessageShown = false
-        isCollisionLogged = false
-        // Запросите перерисовку
-        invalidate()
+            labyrinthData = labyrinthList[randomIndex]
+            finishY = if(randomIndex==0||randomIndex==5){
+                3
+            }else{
+                1
+            }
+
+            userPath.clear()
+            isFinishMessageShown = false
+            isCollisionLogged = false
+            invalidate()
+        }
     }
 
 
