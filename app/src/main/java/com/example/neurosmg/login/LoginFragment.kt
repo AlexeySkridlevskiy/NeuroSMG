@@ -78,6 +78,8 @@ class LoginFragment : Fragment() {
                     binding.progressBar.isVisible = false
                     goToMainScreen()
                 }
+
+                State.Empty -> {}
             }
         }
 

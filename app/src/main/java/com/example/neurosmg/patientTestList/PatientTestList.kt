@@ -74,6 +74,8 @@ class PatientTestList : Fragment() {
                     adapter.addPatient(state.data)
                     rcView.adapter = adapter
                 }
+
+                State.Empty -> {}
             }
         }
 

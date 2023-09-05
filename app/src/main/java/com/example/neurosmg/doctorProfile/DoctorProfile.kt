@@ -66,6 +66,8 @@ class DoctorProfile : Fragment() {
                         binding.tvLoginDoctor.text = state.data.username
                     }
                 }
+
+                State.Empty -> {}
             }
         }
     }

@@ -162,6 +162,8 @@ class PatientProfile : Fragment() {
                         binding.etProfComment.setText(state.data.comment)
                     }
                 }
+
+                State.Empty -> {}
             }
         }
         return binding.root

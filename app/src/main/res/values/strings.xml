@@ -52,4 +52,6 @@
     <string name="about_program_text3">Кафедры общей и клинической биохимии ФПК и ПК.</string>
     <string name="next_btn">Далее</string>
     <string name="patient_date_of_birthd">Дата рождения</string>
+    <string name="dialog_fail_add_patient">Пациент не создан! Попробуйте еще раз!</string>
+    <string name="dialog_ok">Окей</string>
 </resources>
