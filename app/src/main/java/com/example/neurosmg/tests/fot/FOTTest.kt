@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -77,6 +78,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
             }
 
             override fun onFinish() {
+                canvasView.touchEnabled = false
                 endTest()
             }
         }.start()
@@ -95,7 +97,6 @@ class FOTTest : Fragment(), CanvasViewCallback {
             testRound++
         } else if (testRound != 0) {
             TestActive.KEY_ACTIVE_FOT_TEST = false
-            binding.startBtn.visibility = View.VISIBLE
             infoDialogEndAllTest()
         }
 
@@ -147,6 +148,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
     private fun infoDialog() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        binding.startBtn.visibility = View.INVISIBLE
         alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Для начала тестирования коснитесь экрана") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
@@ -178,6 +180,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
         alertDialogBuilder.setTitle("Время вышло") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Продолжите исследование для левой руки") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            canvasView.touchEnabled = true
             dialog.dismiss()
         }
 
