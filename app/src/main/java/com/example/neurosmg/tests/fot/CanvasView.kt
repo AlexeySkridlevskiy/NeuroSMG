@@ -24,6 +24,7 @@ class CanvasView @JvmOverloads constructor(
     private var touchCount: Int = 0
     private var canvasViewCallback: CanvasViewCallback? = null
     private var startIndex: Int = 2
+    var touchEnabled = true
 
     init {
         paint.color = Color.BLUE
@@ -44,6 +45,10 @@ class CanvasView @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if(!touchEnabled){
+            return false
+        }
+
         if (startIndex == 0){
             canvasViewCallback?.onCanvasFirstTouch()
             startIndex++
