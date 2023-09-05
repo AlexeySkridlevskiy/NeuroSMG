@@ -1,5 +1,6 @@
 package com.example.neurosmg.patientTestList.patientProfile
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,9 @@ import com.example.neurosmg.common.State
 import com.example.neurosmg.common.showToast
 import com.example.neurosmg.databinding.FragmentPatientProfileBinding
 import com.example.neurosmg.doctorProfile.DoctorProfileViewModel
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class PatientProfile : Fragment() {
     lateinit var binding: FragmentPatientProfileBinding
@@ -43,7 +47,7 @@ class PatientProfile : Fragment() {
     ): View {
         binding = FragmentPatientProfileBinding.inflate(inflater)
         binding.btnDeleteProf.setOnClickListener {
-            binding.etProfBirthday.setText("")
+            binding.etBirthday.setText("")
             binding.rbProfMan.isChecked = false
             binding.rbProfWomen.isChecked = false
             binding.rbProfRight.isChecked = false
@@ -88,7 +92,7 @@ class PatientProfile : Fragment() {
             binding.rbProfLeft.isChecked = false
         }
         binding.btnSaveProf.setOnClickListener {
-            val birthday = binding.etProfBirthday.text.toString()
+            val birthday = binding.etBirthday.text.toString()
             val comment = binding.etProfComment.text.toString()
             gender = if(binding.rbProfMan.isChecked){
                 "Male"
@@ -113,6 +117,10 @@ class PatientProfile : Fragment() {
             }
         }
 
+        binding.etBirthday.setOnClickListener {
+            showDatePickerDialog()
+        }
+
         viewModel.patientData.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is State.Error -> {
@@ -130,7 +138,7 @@ class PatientProfile : Fragment() {
                 is State.Success -> {
                     binding.progressBar.isVisible = false
                     if (state.data.birthday != null) {
-                        binding.etProfBirthday.setText(state.data.birthday)
+                        binding.etBirthday.setText(state.data.birthday)
                     }
                     if (state.data.gender != null) {
                         if(state.data.gender == "Male"){
@@ -173,5 +181,32 @@ class PatientProfile : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = PatientProfile()
+    }
+
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, monthOfYear, dayOfMonth ->
+                val selectedDate = formatDate(year, monthOfYear + 1, dayOfMonth)
+                binding.etBirthday.setText(selectedDate)
+            },
+            year,
+            month,
+            day
+        )
+
+        datePickerDialog.show()
+    }
+
+    private fun formatDate(year: Int, month: Int, day: Int): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day) // Месяцы начинаются с 0, поэтому вычитаем 1
+        return dateFormat.format(calendar.time)
     }
 }

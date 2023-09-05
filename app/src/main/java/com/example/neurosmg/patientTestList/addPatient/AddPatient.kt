@@ -17,6 +17,8 @@ import com.example.neurosmg.api.IdController
 import com.example.neurosmg.common.State
 import com.example.neurosmg.common.showToast
 import com.example.neurosmg.databinding.FragmentAddPatientBinding
+import com.example.neurosmg.patientTestList.PatientTestList
+import com.example.neurosmg.testsPage.TestsPage
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -170,14 +172,9 @@ class AddPatient : Fragment() {
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
         val datePickerDialog = DatePickerDialog(
-            requireContext(), { _, year, monthOfYear, dayOfMonth ->
-                val selectedCalendar = Calendar.getInstance()
-                selectedCalendar.set(Calendar.YEAR, year)
-                selectedCalendar.set(Calendar.MONTH, monthOfYear)
-                selectedCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val selectedDate = dateFormat.format(selectedCalendar.time)
+            requireContext(),
+            { _, year, monthOfYear, dayOfMonth ->
+                val selectedDate = formatDate(year, monthOfYear + 1, dayOfMonth)
 
                 binding.etBirthday.setText(selectedDate)
             },
@@ -187,6 +184,13 @@ class AddPatient : Fragment() {
         )
 
         datePickerDialog.show()
+    }
+
+    private fun formatDate(year: Int, month: Int, day: Int): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month - 1, day) // Месяцы начинаются с 0, поэтому вычитаем 1
+        return dateFormat.format(calendar.time)
     }
 
     companion object {
