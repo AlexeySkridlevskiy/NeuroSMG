@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.fot
 
+import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
@@ -31,9 +32,11 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private var viewDialog: Int = 0
     private var testRound: Int = 0
     private var isStartTimer: Boolean = false
+    private var soundPlayer: SoundPlayer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        soundPlayer = SoundPlayer(context)
         if (context is MainActivityListener) {
             mainActivityListener = context
         } else {
@@ -171,6 +174,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
     private fun infoDialogToLeft() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.fot_6)
         alertDialogBuilder.setTitle("Время вышло") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Продолжите исследование для левой руки") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
@@ -203,11 +207,14 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private fun educationAnimation() {
 //        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
+            soundPlayer?.playSound(R.raw.fot_1)
 //            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.fot)
                 okBtn.setOnClickListener {
+                    soundPlayer?.stopSound()
+                    soundPlayer?.playSound(R.raw.fot_5)
                     root.isVisible = false
                     activity?.exitFullScreenMode()
 //                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
