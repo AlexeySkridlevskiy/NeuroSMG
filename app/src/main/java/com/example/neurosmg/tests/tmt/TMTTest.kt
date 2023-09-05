@@ -3,16 +3,18 @@ package com.example.neurosmg.tests.tmt
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.neurosmg.MainActivityListener
+import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
 import com.example.neurosmg.databinding.FragmentTMTTestBinding
 
-class TMTTest : Fragment() {
+class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
     private lateinit var binding: FragmentTMTTestBinding
     private var mainActivityListener: MainActivityListener? = null
@@ -51,9 +53,12 @@ class TMTTest : Fragment() {
         mainActivityListener?.updateToolbarState(ToolbarState.TMTTest)
 
         labyrinthView = binding.labyrinthView
-        // You can change the labyrinth after the user completes it
-        // by calling the changeLabyrinth() method of the labyrinthView
-//        labyrinthView.changeLabyrinth()
+
+        labyrinthView.setLabyrinthCompletionListener(this)
+    }
+
+    override fun onLabyrinthCompleted(steps: Int) {
+        binding.tvLabSteps.text = steps.toString()
     }
 
     override fun onDetach() {

@@ -10,33 +10,145 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 
 class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
+    interface LabyrinthCompletionListener {
+        fun onLabyrinthCompleted(steps: Int)
+    }
+
+    fun setLabyrinthCompletionListener(listener: LabyrinthCompletionListener) {
+        completionListener = listener
+    }
+
+
+    private var completionListener: LabyrinthCompletionListener? = null
+
+
     private val userPath = mutableListOf<Point>()
+    private var tvLabSteps = 1
     private val userPathPaint = Paint().apply {
         color = Color.BLUE
-        strokeWidth = 10f
+        strokeWidth = 20f
         style = Paint.Style.STROKE
         isAntiAlias = true
     }
 
+    private val finishX = 12
+    private var finishY = 3
+    private var isFinishMessageShown = false
+    private var isCollisionLogged = false
+
     private val paint = Paint()
-    private val cellSize = 81
-    private val labyrinthData = mutableListOf(
-        listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
-        listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1),
-        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
-        listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    private var cellSize = 0
+    private val labyrinth1 = mutableListOf(
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
+        listOf(0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1),
+        listOf(0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1),
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
     )
+
+    private val labyrinth2 = mutableListOf(
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
+        listOf(0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1),
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    )
+
+    private val labyrinth3 = mutableListOf(
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
+        listOf(0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1),
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    )
+
+    private val labyrinth4 = mutableListOf(
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1),
+        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1),
+        listOf(0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1),
+        listOf(0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1),
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    )
+
+    private val labyrinth5 = mutableListOf(
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1),
+        listOf(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1),
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    )
+
+    private val labyrinth6 = mutableListOf(
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1),
+        listOf(0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1),
+        listOf(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1),
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    )
+
+    private val labyrinth7 = mutableListOf(
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1),
+        listOf(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1),
+        listOf(0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1),
+        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    )
+    private var labyrinthData = labyrinth1
+    private val labyrinthList = listOf(labyrinth1, labyrinth2, labyrinth3, labyrinth4, labyrinth5, labyrinth6, labyrinth7)
 
     init {
         paint.color = Color.BLACK
         paint.style = Paint.Style.FILL
     }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        // Измеряем ширину ConstraintLayout
+        val parentWidth = MeasureSpec.getSize(widthMeasureSpec)
+
+        // Вычисляем размер ячейки так, чтобы она соответствовала ширине ConstraintLayout
+        cellSize = parentWidth / labyrinth1[0].size
+
+        // Устанавливаем размеры для нашего View
+        setMeasuredDimension(parentWidth, cellSize * labyrinth1.size)
+    }
+
+    private fun handleLabyrinthCompletion() {
+        tvLabSteps++
+        completionListener?.onLabyrinthCompleted(tvLabSteps)
+        val randomIndex = (labyrinthList.indices).random()
+
+        labyrinthData = labyrinthList[randomIndex]
+        finishY = if(randomIndex==0||randomIndex==5){
+            3
+        }else{
+            1
+        }
+
+        userPath.clear()
+        isFinishMessageShown = false
+        isCollisionLogged = false
+        // Запросите перерисовку
+        invalidate()
+    }
+
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
@@ -75,13 +187,32 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
                 if (isValidMove(x, y)) {
                     userPath.add(Point(x, y))
                     invalidate()
+
+                    // Проверяем, достиг ли пользователь финишной точки
+                    if (!isFinishMessageShown && x / cellSize == finishX && y / cellSize == finishY) {
+                        showToast("Вы прошли лабиринт!")
+                        handleLabyrinthCompletion()
+                        isFinishMessageShown = true
+                    }
+
+                    if (!isCollisionLogged && !isValidMove(x, y)) {
+                        Log.d("MyLog", "Столкновение")
+                        isCollisionLogged = true // Устанавливаем флаг, чтобы сообщение больше не выводилось
+                    }
                 }
             }
             MotionEvent.ACTION_UP -> {
-
+                userPath.clear()
+                isFinishMessageShown = false
+                isCollisionLogged = false
             }
         }
         return true
+    }
+
+    private fun showToast(message: String) {
+        val toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
+        toast.show()
     }
 
     private fun isValidMove(x: Int, y: Int): Boolean {

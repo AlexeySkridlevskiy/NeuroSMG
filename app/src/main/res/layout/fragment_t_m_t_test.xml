@@ -6,13 +6,47 @@
     android:layout_height="match_parent"
     tools:context=".tests.tmt.TMTTest">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Шаг: "
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvLabSteps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1"
+            app:layout_constraintStart_toEndOf="@+id/textView16"
+            app:layout_constraintTop_toTopOf="@+id/textView16" />
+
+        <TextView
+            android:id="@+id/textView30"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" / 20"
+            app:layout_constraintStart_toEndOf="@+id/tvLabSteps"
+            app:layout_constraintTop_toTopOf="@+id/textView16" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.example.neurosmg.tests.tmt.LabyrinthView
         android:id="@+id/labyrinthView"
         android:layout_width="393dp"
-        android:layout_height="216dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="123dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
