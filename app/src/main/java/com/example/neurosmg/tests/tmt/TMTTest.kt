@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.tmt
 
+import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
@@ -24,9 +25,11 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     private lateinit var binding: FragmentTMTTestBinding
     private var mainActivityListener: MainActivityListener? = null
     private lateinit var labyrinthView: LabyrinthView
+    private var soundPlayer: SoundPlayer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        soundPlayer = SoundPlayer(context)
         setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
         if (context is MainActivityListener) {
             mainActivityListener = context
@@ -80,11 +83,14 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     private fun educationAnimation() {
 //        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
+            soundPlayer?.playSound(R.raw.tmt_anim)
 //            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.tmt)
                 okBtn.setOnClickListener {
+                    soundPlayer?.stopSound()
+                    soundPlayer?.playSound(R.raw.tmt_start_btn)
                     infoDialog()
                     root.isVisible = false
                     activity?.exitFullScreenMode()
@@ -116,6 +122,7 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
     private fun infoDialogEndTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси

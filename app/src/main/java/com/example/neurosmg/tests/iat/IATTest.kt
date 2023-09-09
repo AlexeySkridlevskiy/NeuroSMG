@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.iat
 
+import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
@@ -37,9 +38,11 @@ class IATTest : Fragment() {
     private val badWords = arrayOf("Мерзко", "Отрицательно", "Гадко", "Отвратительно", "Ужасно")
 
     private lateinit var currentWordList: Array<String>
+    private var soundPlayer: SoundPlayer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        soundPlayer = SoundPlayer(context)
         setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
         if (context is MainActivityListener) {
             mainActivityListener = context
@@ -313,6 +316,7 @@ class IATTest : Fragment() {
 
     private fun infoDialogEndTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси

@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.cbt
 
+import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
@@ -35,9 +36,11 @@ class CBTTest : Fragment() {
     private var expectedIndex = 0
     private var stepsIndex = 1
     private val maxStepsIndex = 20
+    private var soundPlayer: SoundPlayer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        soundPlayer = SoundPlayer(context)
         if (context is MainActivityListener) {
             mainActivityListener = context
         } else {
@@ -108,6 +111,9 @@ class CBTTest : Fragment() {
         if (index >= sequence.size) {
             resetSquares()
             isShowingSequence = false
+            if(stepsIndex==2){
+                soundPlayer?.playSound(R.raw.cbt_first_seq)
+            }
             return
         }
 
@@ -147,8 +153,15 @@ class CBTTest : Fragment() {
                 if (expectedIndex == sequenceSquares.size) {
                     sequenceSquares = emptyList()
                     expectedIndex = 0
-
                     currentSequenceLength++
+                    when(currentSequenceLength){
+                        4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
+                        5 -> soundPlayer?.playSound(R.raw.cbt_seq_5)
+                        6 -> soundPlayer?.playSound(R.raw.cbt_seq_6)
+                        7 -> soundPlayer?.playSound(R.raw.cbt_seq_7)
+                        8 -> soundPlayer?.playSound(R.raw.cbt_seq_8)
+                        9 -> soundPlayer?.playSound(R.raw.cbt_seq_9)
+                    }
                     Log.d("MyLog", "$currentSequenceLength")
                     if (currentSequenceLength > maxSequenceLength) {
                         finishTest()
@@ -161,6 +174,10 @@ class CBTTest : Fragment() {
                     currentSequenceLength = 5
                     sequenceSquares = emptyList()
                     expectedIndex = 0
+                }
+                when(currentSequenceLength){
+                    4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
+                    5 -> soundPlayer?.playSound(R.raw.cbt_seq_5)
                 }
                 showNextRandomSquares()
             }
@@ -216,6 +233,7 @@ class CBTTest : Fragment() {
 
     private fun infoDialogFinishTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
@@ -235,11 +253,14 @@ class CBTTest : Fragment() {
     private fun educationAnimation() {
 //        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
+            soundPlayer?.playSound(R.raw.cbt_anim)
 //            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.cbt)
                 okBtn.setOnClickListener {
+                    soundPlayer?.stopSound()
+                    soundPlayer?.playSound(R.raw.cbt_start_btn)
                     root.isVisible = false
                     activity?.exitFullScreenMode()
 //                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)

@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.mrt
 
+import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
@@ -28,6 +29,7 @@ class MRTTest : Fragment() {
 
     private var steps = 0
     private var flag = false
+    private var soundPlayer: SoundPlayer? = null
     private val image1Resources = arrayOf(
         R.drawable.figure_1_1,
         R.drawable.figure_1_2,
@@ -64,6 +66,7 @@ class MRTTest : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        soundPlayer = SoundPlayer(context)
         setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
         if (context is MainActivityListener) {
             mainActivityListener = context
@@ -127,10 +130,12 @@ class MRTTest : Fragment() {
 
     private fun educationAnimation() {
         binding.apply {
+            soundPlayer?.playSound(R.raw.mrt_anim)
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.mrt)
                 okBtn.setOnClickListener {
+                    soundPlayer?.stopSound()
                     root.isVisible = false
                     activity?.exitFullScreenMode()
                     constraintLayout4.isVisible = true
@@ -206,6 +211,7 @@ class MRTTest : Fragment() {
 
     private fun infoDialogEndTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование окончено!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные сохранены в папке!") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
