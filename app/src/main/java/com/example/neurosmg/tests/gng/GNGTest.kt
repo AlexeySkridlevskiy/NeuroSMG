@@ -150,6 +150,7 @@ class GNGTest : Fragment() {
     // Переопределение метода onDestroy для отмены таймера при уничтожении фрагмента
     override fun onDestroy() {
         super.onDestroy()
+        soundPlayer?.stopSound()
         if (::timer.isInitialized) {
             timer.cancel()
         }

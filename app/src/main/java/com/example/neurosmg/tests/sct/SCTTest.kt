@@ -217,4 +217,9 @@ class SCTTest : Fragment() {
 //            constraintLayout.isVisible = false
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPlayer?.stopSound()
+    }
 }

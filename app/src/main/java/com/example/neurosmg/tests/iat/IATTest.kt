@@ -333,4 +333,8 @@ class IATTest : Fragment() {
         alertDialog.setCanceledOnTouchOutside(false)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPlayer?.stopSound()
+    }
 }

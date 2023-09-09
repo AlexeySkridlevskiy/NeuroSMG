@@ -66,8 +66,8 @@ class MRTTest : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        soundPlayer = SoundPlayer(context)
         setScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+        soundPlayer = SoundPlayer(context)
         if (context is MainActivityListener) {
             mainActivityListener = context
         } else {
@@ -92,7 +92,6 @@ class MRTTest : Fragment() {
         binding = FragmentMRTTestBinding.inflate(inflater)
         binding.buttonLeft.isVisible = false
         binding.buttonRight.isVisible = false
-        educationAnimation()
         binding.buttonLeft.setOnClickListener {
 //            if(flag){
 //                binding.textView12.text = "true"
@@ -116,6 +115,7 @@ class MRTTest : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.MRTTest)
+        educationAnimation()
     }
 
     override fun onDetach() {
@@ -242,5 +242,10 @@ class MRTTest : Fragment() {
         val alertDialog: AlertDialog = alertDialogBuilder.create()
         alertDialog.show()
         alertDialog.setCanceledOnTouchOutside(false)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPlayer?.stopSound()
     }
 }

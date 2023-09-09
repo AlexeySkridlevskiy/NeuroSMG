@@ -328,4 +328,9 @@ class RATTest : Fragment() {
             btnStart.isVisible = false
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPlayer?.stopSound()
+    }
 }

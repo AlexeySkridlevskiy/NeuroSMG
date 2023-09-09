@@ -275,4 +275,9 @@ class CBTTest : Fragment() {
             btnStart.isVisible = false
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPlayer?.stopSound()
+    }
 }
