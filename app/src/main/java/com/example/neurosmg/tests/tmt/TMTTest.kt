@@ -138,4 +138,9 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
         alertDialog.show()
         alertDialog.setCanceledOnTouchOutside(false)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPlayer?.stopSound()
+    }
 }

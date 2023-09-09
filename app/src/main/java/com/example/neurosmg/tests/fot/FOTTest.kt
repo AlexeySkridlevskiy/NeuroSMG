@@ -249,4 +249,9 @@ class FOTTest : Fragment(), CanvasViewCallback {
             constraintLayout.isVisible = false
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        soundPlayer?.stopSound()
+    }
 }
