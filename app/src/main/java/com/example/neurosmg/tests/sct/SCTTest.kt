@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.sct
 
+import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -36,9 +37,11 @@ class SCTTest : Fragment() {
 
     lateinit var binding: FragmentSCTTestBinding
     private var mainActivityListener: MainActivityListener? = null
+    private var soundPlayer: SoundPlayer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        soundPlayer = SoundPlayer(context)
         if (context is MainActivityListener) {
             mainActivityListener = context
         } else {
@@ -170,6 +173,7 @@ class SCTTest : Fragment() {
 
     private fun infoDialogEndTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено, спасибо!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
@@ -189,11 +193,14 @@ class SCTTest : Fragment() {
     private fun educationAnimation() {
 //        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
+            soundPlayer?.playSound(R.raw.sct_anim)
 //            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.sct)
                 okBtn.setOnClickListener {
+                    soundPlayer?.stopSound()
+                    soundPlayer?.playSound(R.raw.sct_start)
                     infoDialogStartTest()
                     root.isVisible = false
                     activity?.exitFullScreenMode()

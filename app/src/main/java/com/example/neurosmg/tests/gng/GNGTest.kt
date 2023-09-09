@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.gng
 
+import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -28,10 +29,12 @@ class GNGTest : Fragment() {
     private lateinit var timer: CountDownTimer
     val handler = Handler()
     private var answer = false
+    private var soundPlayer: SoundPlayer? = null
 
     // Переопределение метода onAttach для связи с активностью
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        soundPlayer = SoundPlayer(context)
         if (context is MainActivityListener) {
             mainActivityListener = context
         } else {
@@ -64,11 +67,11 @@ class GNGTest : Fragment() {
 
         binding.btnCross.setOnClickListener {
             if (answer == true) {
-                binding.tvAnswer.text = "TRUE"
-                binding.tvAnswer.setTextColor(Color.GREEN)
+//                binding.tvAnswer.text = "TRUE"
+//                binding.tvAnswer.setTextColor(Color.GREEN)
             } else {
-                binding.tvAnswer.text = "FALSE"
-                binding.tvAnswer.setTextColor(Color.RED)
+//                binding.tvAnswer.text = "FALSE"
+//                binding.tvAnswer.setTextColor(Color.RED)
             }
         }
     }
@@ -92,7 +95,7 @@ class GNGTest : Fragment() {
                             answer = randomCross == 0
                             handler.postDelayed({
                                 binding.square1.setImageResource(R.drawable.zoom)
-                                binding.tvAnswer.text = ""
+//                                binding.tvAnswer.text = ""
                             }, 350)
                         }
 
@@ -103,7 +106,7 @@ class GNGTest : Fragment() {
                             answer = randomCross == 0
                             handler.postDelayed({
                                 binding.square2.setImageResource(R.drawable.zoom)
-                                binding.tvAnswer.text = ""
+//                                binding.tvAnswer.text = ""
                             }, 350)
                         }
 
@@ -114,7 +117,7 @@ class GNGTest : Fragment() {
                             answer = randomCross == 0
                             handler.postDelayed({
                                 binding.square3.setImageResource(R.drawable.zoom)
-                                binding.tvAnswer.text = ""
+//                                binding.tvAnswer.text = ""
                             }, 350)
                         }
 
@@ -125,7 +128,7 @@ class GNGTest : Fragment() {
                             answer = randomCross == 0
                             handler.postDelayed({
                                 binding.square4.setImageResource(R.drawable.zoom)
-                                binding.tvAnswer.text = ""
+//                                binding.tvAnswer.text = ""
                             }, 350)
                         }
                     }
@@ -187,6 +190,7 @@ class GNGTest : Fragment() {
 
     private fun infoDialogEndTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
@@ -205,10 +209,13 @@ class GNGTest : Fragment() {
 
     private fun educationAnimation() {
         binding.apply {
+            soundPlayer?.playSound(R.raw.gng_anim)
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.gng)
                 okBtn.setOnClickListener {
+                    soundPlayer?.stopSound()
+                    soundPlayer?.playSound(R.raw.gng_start_btn)
                     root.isVisible = false
                     activity?.exitFullScreenMode()
                     imageView2.isVisible = true

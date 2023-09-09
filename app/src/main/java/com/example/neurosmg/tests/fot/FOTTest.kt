@@ -5,8 +5,8 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -32,8 +32,12 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private var touchCount: Int = 0
     private var viewDialog: Int = 0
     private var testRound: Int = 0
+    private var secPerStart: Int = 0
     private var isStartTimer: Boolean = false
     private var soundPlayer: SoundPlayer? = null
+    private var handIndex = "right"
+    private var EventX: Float = 0F
+    private var EventY: Float = 0F
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -74,6 +78,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
         countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsRemaining = millisUntilFinished / 1000
+                secPerStart = (30-millisUntilFinished/1000).toInt()
                 binding.tvTime.text = secondsRemaining.toString()
             }
 
@@ -91,6 +96,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
             val touchesPerSecond = touchCount.toDouble() / 30 //todo: тут частота нажатий
             binding.tvClicks.text = touchCount.toString()
+            handIndex = "left"
             binding.lblHandTv.text = "Левая рука"
             onPause()
             infoDialogToLeft()
@@ -142,6 +148,15 @@ class FOTTest : Fragment(), CanvasViewCallback {
         }
     }
 
+    override fun onCanvasData(x: Float, y: Float) {
+        EventX = x
+        EventY = y
+    }
+
+    override fun onCanvasDataMotion(timeInSeconds: Long, durationMillis: Long) {
+        Log.d("MyLog", "$durationMillis, $secPerStart, $timeInSeconds, $EventX , $EventY, $handIndex")
+    }
+
     private fun updateTouchCountTextView() {
         binding.tvClicks.text = touchCount.toString()
     }
@@ -176,7 +191,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
     private fun infoDialogToLeft() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.fot_6)
+        soundPlayer?.playSound(R.raw.fot_left)
         alertDialogBuilder.setTitle("Время вышло") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Продолжите исследование для левой руки") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
@@ -191,6 +206,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
     private fun infoDialogEndAllTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
@@ -210,14 +226,14 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private fun educationAnimation() {
 //        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
-            soundPlayer?.playSound(R.raw.fot_1)
+            soundPlayer?.playSound(R.raw.fot_anim)
 //            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.fot)
                 okBtn.setOnClickListener {
                     soundPlayer?.stopSound()
-                    soundPlayer?.playSound(R.raw.fot_5)
+                    soundPlayer?.playSound(R.raw.fot_start_btn)
                     root.isVisible = false
                     activity?.exitFullScreenMode()
 //                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)

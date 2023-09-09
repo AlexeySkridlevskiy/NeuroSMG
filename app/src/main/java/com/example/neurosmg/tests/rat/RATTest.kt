@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.rat
 
+import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -33,9 +34,11 @@ class RATTest : Fragment() {
     private var bankIndexCount :Double = 0.0
     private var currentIndexCircle :Int = 1
     private var attemptIndex :Int = 1
+    private var soundPlayer: SoundPlayer? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        soundPlayer = SoundPlayer(context)
         if (context is MainActivityListener) {
             mainActivityListener = context
         } else {
@@ -100,6 +103,7 @@ class RATTest : Fragment() {
             currentCircle.text = currentIndexCircle.toString()
             indexTouch = 0
             addRandomBall(binding.ballsContainer)
+            soundPlayer?.playSound(R.raw.rat_pop)
             Toast.makeText(requireContext(), "Шарик лопнул...", Toast.LENGTH_SHORT).show()
         }
         return shouldPop
@@ -257,6 +261,7 @@ class RATTest : Fragment() {
 
     private fun infoDialogAttempt2() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.rat_new_game)
         alertDialogBuilder.setTitle("Попытка №2") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()
@@ -270,6 +275,7 @@ class RATTest : Fragment() {
 
     private fun infoDialogAttempt3() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.rat_new_game)
         alertDialogBuilder.setTitle("Попытка №3") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()
@@ -283,6 +289,7 @@ class RATTest : Fragment() {
 
     private fun infoDialogEndTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
@@ -302,11 +309,13 @@ class RATTest : Fragment() {
     private fun educationAnimation() {
 //        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
+            soundPlayer?.playSound(R.raw.rat_anim)
 //            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.rat)
                 okBtn.setOnClickListener {
+                    soundPlayer?.stopSound()
                     infoDialog()
                     root.isVisible = false
                     activity?.exitFullScreenMode()
