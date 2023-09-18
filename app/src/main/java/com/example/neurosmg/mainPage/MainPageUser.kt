@@ -6,16 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
-import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
-import com.example.neurosmg.common.State
 import com.example.neurosmg.databinding.FragmentMainPageUserBinding
-import com.example.neurosmg.doctorProfile.DoctorProfileViewModel
-import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.patientTestList.PatientListFragment
 
 class MainPageUser : Fragment() {
     lateinit var binding: FragmentMainPageUserBinding
@@ -39,8 +35,8 @@ class MainPageUser : Fragment() {
         binding.btnGoTesting.setOnClickListener {
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.container, TestsPage.newInstance())
-                .addToBackStack(Screen.TESTS_PAGE)
+                .replace(R.id.container, PatientListFragment.newInstance())
+                .addToBackStack(Screen.PATIENTS)
                 .commit()
         }
 

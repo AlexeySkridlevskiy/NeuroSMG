@@ -2,7 +2,6 @@ package com.example.neurosmg.patientTestList
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,13 +18,14 @@ import com.example.neurosmg.common.toFragment
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.patientTestList.addPatient.AddPatient
 import com.example.neurosmg.patientTestList.patientProfile.PatientProfile
+import com.example.neurosmg.testsPage.TestsPageFragment
 
-class PatientTestList : Fragment() {
+class PatientListFragment : Fragment() {
 
     lateinit var binding: FragmentPatientTestListBinding
 
     private lateinit var fragment: Fragment
-    private lateinit var bundle: Bundle
+    private val bundle: Bundle = Bundle()
     private val adapter = PatientAdapter()
 
     private val viewModel by lazy {
@@ -114,16 +114,15 @@ class PatientTestList : Fragment() {
                         PatientProfile.newInstance()
                     }
 
-                    ScreenNavigationMenu.TO_TESTS -> {
-                        patientStateViewModel.getStatePatientList().navigateToTest?.toFragment()!!
-                    }
-
                     ScreenNavigationMenu.TO_PATIENT_LIST -> {
                         val patientProfileFragment = PatientProfile.newInstance()
-                        val bundle = Bundle()
                         bundle.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patient)
                         patientProfileFragment.arguments = bundle
                         patientProfileFragment
+                    }
+
+                    ScreenNavigationMenu.TO_CHOOSED_TEST -> {
+                        TestsPageFragment.newInstance(patient)
                     }
                 }
 
@@ -148,6 +147,6 @@ class PatientTestList : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = PatientTestList()
+        fun newInstance() = PatientListFragment()
     }
 }

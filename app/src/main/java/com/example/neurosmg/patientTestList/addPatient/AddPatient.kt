@@ -17,8 +17,6 @@ import com.example.neurosmg.api.IdController
 import com.example.neurosmg.common.State
 import com.example.neurosmg.common.showToast
 import com.example.neurosmg.databinding.FragmentAddPatientBinding
-import com.example.neurosmg.patientTestList.PatientTestList
-import com.example.neurosmg.testsPage.TestsPage
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale

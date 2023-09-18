@@ -22,8 +22,7 @@ import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentRATTestBinding
-import com.example.neurosmg.testsPage.TestsPage
-import com.example.neurosmg.utils.enterFullScreenMode
+import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 import kotlin.random.Random
 
@@ -336,7 +335,7 @@ class RATTest : Fragment() {
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.container, TestsPage.newInstance())
+                .replace(R.id.container, TestsPageFragment.newInstance())
                 .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }
