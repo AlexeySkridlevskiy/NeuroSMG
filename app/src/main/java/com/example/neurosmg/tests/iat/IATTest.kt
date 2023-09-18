@@ -1,12 +1,14 @@
 package com.example.neurosmg.tests.iat
 
 import SoundPlayer
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -21,7 +23,6 @@ import com.example.neurosmg.common.setScreenOrientation
 import com.example.neurosmg.databinding.FragmentIATTestBinding
 import com.example.neurosmg.testsPage.TestsPage
 import com.example.neurosmg.utils.exitFullScreenMode
-import kotlin.random.Random
 
 class IATTest : Fragment() {
 
@@ -39,6 +40,16 @@ class IATTest : Fragment() {
 
     private lateinit var currentWordList: Array<String>
     private var soundPlayer: SoundPlayer? = null
+
+    private var touchStartTimeUnixTimestamp: Long = 0
+    private var touchStartTimeMillis: Long = 0
+    private var touchEndTimeMillis: Long = 0
+    private var touchDurationSeconds: Long = 0
+    private var touchCategory: String = ""
+    private var touchLeftCategory: String = "soft"
+    private var touchRightCategory: String = "alco"
+    private var correctAnswer: String = ""
+    private var presentWord: String = ""
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -92,6 +103,121 @@ class IATTest : Fragment() {
         fun newInstance() = IATTest()
     }
 
+    private fun updateWordList() {
+        currentWordList = if(currentStep==1){
+            if((0..1).random()==0) drinksWords else alcoholWords
+        }else if(currentStep==2){
+            if((0..1).random()==0) goodWords else badWords
+        }else if(currentStep==3||currentStep==4){
+            if((0..1).random()==0){
+                if((0..1).random()==0) drinksWords else alcoholWords
+            }else{
+                if((0..1).random()==0) goodWords else badWords
+            }
+        }else if(currentStep==5){
+            if((0..1).random()==0) alcoholWords else drinksWords
+        }else if(currentStep==6||currentStep==7){
+            if((0..1).random()==0){
+                if((0..1).random()==0) alcoholWords else drinksWords
+            }else{
+                if((0..1).random()==0) badWords else goodWords
+            }
+        }else{
+            if((0..1).random()==0) drinksWords else alcoholWords
+        }
+
+        updateWord()
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    private fun updateWord() {
+        if (currentWordList.contentEquals(drinksWords)){
+            binding.tvText.text = drinksWords.random()
+        }else if(currentWordList.contentEquals(alcoholWords)){
+            binding.tvText.text = alcoholWords.random()
+        }else if(currentWordList.contentEquals(goodWords)){
+            binding.tvText.text = goodWords.random()
+        }else if(currentWordList.contentEquals(badWords)){
+            binding.tvText.text = badWords.random()
+        }
+        presentWord = binding.tvText.text as String
+
+            if (currentRound <= totalRounds) {
+                binding.tvQuestion.text = currentRound.toString()
+                currentRound++
+            } else {
+                if (currentStep < 7){
+                    currentRound = 1
+                    currentStep++
+                    if (currentStep==2){
+                        infoDialogStep2()
+                        touchLeftCategory = "good"
+                        touchRightCategory = "bad"
+                        binding.btnLeft.text = "Хорошо"
+                        binding.btnRight.text = "Плохо"
+                    }else if(currentStep==3){
+                        infoDialogStep3()
+                        touchLeftCategory = "goodsoft"
+                        touchRightCategory = "badalco"
+                        binding.btnLeft.text = "Хорошо или напиток"
+                        binding.btnRight.text = "Плохо или алкоголь"
+                    }else if(currentStep==4){
+                        infoDialogStep4()
+                    }else if(currentStep==5){
+                        infoDialogStep5()
+                        touchLeftCategory = "alco"
+                        touchRightCategory = "soft"
+                        binding.btnLeft.text = "Алкоголь"
+                        binding.btnRight.text = "Напиток"
+                    }else if(currentStep==6){
+                        infoDialogStep6()
+                        touchLeftCategory = "goodalco"
+                        touchRightCategory = "badsoft"
+                        binding.btnLeft.text = "Алкоголь или хорошо"
+                        binding.btnRight.text = "Напитки или плохо"
+                    }else if(currentStep==7){
+                        infoDialogStep7()
+                    }
+                    binding.tvStep.text = currentStep.toString()
+                }else{
+                    infoDialogEndTest()
+                    binding.btnLeft.isEnabled = false
+                    binding.btnRight.isEnabled = false
+                }
+            }
+    }
+
+    private fun checkAnswer(selectedCategory: Int) {
+        var correctCategory = -1
+        correctCategory = if(currentStep==5){
+            if (currentWordList.contentEquals(alcoholWords)) 0 else 1
+        }else if(currentStep>=6){
+            if (currentWordList.contentEquals(alcoholWords)||currentWordList.contentEquals(goodWords)) 0 else 1
+        }else{
+            if (currentWordList.contentEquals(drinksWords)||currentWordList.contentEquals(goodWords)) 0 else 1
+        }
+
+        if (selectedCategory == correctCategory) {
+            correctAnswer = "true"
+            saveData()
+            updateWordList()
+        } else {
+            correctAnswer = "false"
+            saveData()
+            Toast.makeText(requireContext(), "Неверно! Сделайте правильный выбор", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun saveData(){
+        var touchNameCategory = ""
+        touchNameCategory = if(touchCategory=="left"){
+            touchLeftCategory
+        }else{
+            touchRightCategory
+        }
+        Log.d("MyLog", "$touchStartTimeUnixTimestamp, $currentStep-${currentRound-1}, $touchDurationSeconds, $touchCategory, $touchNameCategory, $correctAnswer, $presentWord")
+    }
+
     private fun educationAnimation() {
         binding.apply {
             lottieLayout.run {
@@ -113,101 +239,50 @@ class IATTest : Fragment() {
         }
     }
 
-    private fun updateWordList() {
-        currentWordList = if(currentStep==1){
-            if((0..1).random()==0) drinksWords else alcoholWords
-        }else if(currentStep==2){
-            if((0..1).random()==0) goodWords else badWords
-        }else if(currentStep==3||currentStep==4){
-            if((0..1).random()==0){
-                if((0..1).random()==0) drinksWords else alcoholWords
-            }else{
-                if((0..1).random()==0) goodWords else badWords
-            }
-        }else if(currentStep==5){
-            binding.btnLeft.setOnClickListener { checkAnswer(1) }
-            binding.btnRight.setOnClickListener { checkAnswer(0) }
-            if((0..1).random()==0) alcoholWords else drinksWords
-        }else if(currentStep==6||currentStep==7){
-            if((0..1).random()==0){
-                if((0..1).random()==0) alcoholWords else drinksWords
-            }else{
-                if((0..1).random()==0) badWords else goodWords
-            }
-        }else{
-            if((0..1).random()==0) drinksWords else alcoholWords
-        }
-
-        updateWord()
+    private fun calculateTouchDuration() {
+        val touchDurationMillis = touchEndTimeMillis - touchStartTimeMillis
+        touchDurationSeconds = touchDurationMillis // Преобразовать в секунды с точностью до тысячных миллисекунд
     }
 
-    private fun updateWord() {
-        if (currentWordList.contentEquals(drinksWords)){
-            binding.tvText.text = drinksWords.random()
-        }else if(currentWordList.contentEquals(alcoholWords)){
-            binding.tvText.text = alcoholWords.random()
-        }else if(currentWordList.contentEquals(goodWords)){
-            binding.tvText.text = goodWords.random()
-        }else if(currentWordList.contentEquals(badWords)){
-            binding.tvText.text = badWords.random()
-        }
-
-            if (currentRound <= totalRounds) {
-                binding.tvQuestion.text = currentRound.toString()
-                currentRound++
-            } else {
-                if (currentStep < 7){
-                    currentRound = 1
-                    currentStep++
-                    if (currentStep==2){
-                        infoDialogStep2()
-                        binding.btnLeft.text = "Хорошо"
-                        binding.btnRight.text = "Плохо"
-                    }else if(currentStep==3){
-                        infoDialogStep3()
-                        binding.btnLeft.text = "Хорошо или напиток"
-                        binding.btnRight.text = "Плохо или алкоголь"
-                    }else if(currentStep==4){
-                        infoDialogStep4()
-                    }else if(currentStep==5){
-                        infoDialogStep5()
-                        binding.btnLeft.text = "Алкоголь"
-                        binding.btnRight.text = "Напиток"
-                    }else if(currentStep==6){
-                        infoDialogStep6()
-                        binding.btnLeft.text = "Плохо или алкоголь"
-                        binding.btnRight.text = "Хорошо или напиток"
-                    }else if(currentStep==7){
-                        infoDialogStep7()
-                    }
-                    binding.tvStep.text = currentStep.toString()
-                }else{
-                    infoDialogEndTest()
-                    binding.btnLeft.isEnabled = false
-                    binding.btnRight.isEnabled = false
-                }
-            }
-    }
-
-
-    private fun checkAnswer(selectedCategory: Int) {
-        val correctCategory = if (currentWordList.contentEquals(drinksWords)||currentWordList.contentEquals(goodWords)) 0 else 1
-
-        if (selectedCategory == correctCategory) {
-            updateWordList()
-        } else {
-            Toast.makeText(requireContext(), "Неверно! Сделайте правильный выбор", Toast.LENGTH_SHORT).show()
-        }
-    }
-
+    @SuppressLint("ClickableViewAccessibility")
     private fun infoDialogInstructionTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         alertDialogBuilder.setTitle("Правило тестирования") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между напитками и алкоголем. Отнесите товар к определенной категории.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             dialog.dismiss()
-            binding.btnLeft.setOnClickListener { checkAnswer(0) }
-            binding.btnRight.setOnClickListener { checkAnswer(1) }
+
+            binding.btnLeft.setOnTouchListener { _, motionEvent ->
+                when (motionEvent.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        touchCategory = "left"
+                        touchStartTimeUnixTimestamp = System.currentTimeMillis()
+                        touchStartTimeMillis = System.currentTimeMillis()
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        touchEndTimeMillis = System.currentTimeMillis()
+                        calculateTouchDuration()
+                        checkAnswer(0)
+                    }
+                }
+                false
+            }
+
+            binding.btnRight.setOnTouchListener { _, motionEvent ->
+                when (motionEvent.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        touchCategory = "right"
+                        touchStartTimeUnixTimestamp = System.currentTimeMillis()
+                        touchStartTimeMillis = System.currentTimeMillis()
+                    }
+                    MotionEvent.ACTION_UP -> {
+                        touchEndTimeMillis = System.currentTimeMillis()
+                        calculateTouchDuration()
+                        checkAnswer(1)
+                    }
+                }
+                false
+            }
             infoDialogStep1()
         }
 

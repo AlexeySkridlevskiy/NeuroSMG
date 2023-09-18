@@ -1,13 +1,17 @@
 package com.example.neurosmg.tests.gng
 
 import SoundPlayer
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -30,6 +34,13 @@ class GNGTest : Fragment() {
     val handler = Handler()
     private var answer = false
     private var soundPlayer: SoundPlayer? = null
+    private var touchStartTimeUnixTimestamp: Long = 0
+    private var indexStep: Int = 0
+    private var indexGoNogo: String = ""
+    private var flagClickBtn: Int = 0
+    private var touchStartTime: Long = 0
+    private var touchEndTime: Long = 0
+    private var randomTimeView: Long = 0
 
     // Переопределение метода onAttach для связи с активностью
     override fun onAttach(context: Context) {
@@ -52,6 +63,7 @@ class GNGTest : Fragment() {
     }
 
     // Переопределение метода onViewCreated для инициализации интерфейса и запуска генерации
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.GNGTest)
@@ -74,19 +86,67 @@ class GNGTest : Fragment() {
 //                binding.tvAnswer.setTextColor(Color.RED)
             }
         }
+
+        binding.btnCross.setOnTouchListener { view, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    binding.btnCross.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF7260A3"))
+                    // Когда начинается нажатие
+                    touchStartTime = System.currentTimeMillis()
+                    return@setOnTouchListener true
+                }
+                MotionEvent.ACTION_UP -> {
+                    binding.btnCross.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF6750A4"))
+                    // Когда нажатие заканчивается
+                    touchEndTime = System.currentTimeMillis()
+                    val pressDuration = touchEndTime - touchStartTime
+                    // Здесь вы можете использовать pressDuration по вашему усмотрению
+                    flagClickBtn = pressDuration.toInt()
+                    return@setOnTouchListener true
+                }
+            }
+            false
+        }
     }
 
-    // Метод для запуска генерации крестиков и плюсиков через определенные интервалы
+    private fun saveData(){
+        Log.d("MyLog", "$touchStartTimeUnixTimestamp, $indexStep, $indexGoNogo, $flagClickBtn, $randomTimeView")
+    }
+
+    private fun timerForData(){
+        handler.postDelayed({
+            timer = object : CountDownTimer(125000, 2500) { // Здесь задается интервал 1.5 секунды
+                override fun onTick(millisUntilFinished: Long) {
+                    saveData()
+                    flagClickBtn = 0
+                }
+
+                override fun onFinish() {
+                }
+            }.start()
+        }, 2400)
+    }
+
     private fun startGeneratingCrossesAndPluses() {
         binding.btnStart.visibility = View.INVISIBLE
         binding.btnCross.visibility = View.VISIBLE
         handler.postDelayed({
-            timer = object : CountDownTimer(25000, 2500) { // Здесь задается интервал 1.5 секунды
+            timer = object : CountDownTimer(125000, 2500) { // Здесь задается интервал 1.5 секунды
                 override fun onTick(millisUntilFinished: Long) {
+                    if(indexStep==0){
+                        timerForData()
+                    }
 
+                    indexStep++
+                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
                     val randomSquare = (1..4).random()
                     val randomCross = (0..1).random()
-
+                    indexGoNogo = if(randomCross==0){
+                        "go"
+                    }else{
+                        "nogo"
+                    }
+                    randomTimeView = (1000..2000).random().toLong()
                     when (randomSquare) {
                         1 -> {
                             binding.square1.setImageResource(
@@ -95,8 +155,7 @@ class GNGTest : Fragment() {
                             answer = randomCross == 0
                             handler.postDelayed({
                                 binding.square1.setImageResource(R.drawable.zoom)
-//                                binding.tvAnswer.text = ""
-                            }, 350)
+                            }, randomTimeView)
                         }
 
                         2 -> {
@@ -106,8 +165,7 @@ class GNGTest : Fragment() {
                             answer = randomCross == 0
                             handler.postDelayed({
                                 binding.square2.setImageResource(R.drawable.zoom)
-//                                binding.tvAnswer.text = ""
-                            }, 350)
+                            }, randomTimeView)
                         }
 
                         3 -> {
@@ -117,8 +175,7 @@ class GNGTest : Fragment() {
                             answer = randomCross == 0
                             handler.postDelayed({
                                 binding.square3.setImageResource(R.drawable.zoom)
-//                                binding.tvAnswer.text = ""
-                            }, 350)
+                            }, randomTimeView)
                         }
 
                         4 -> {
@@ -128,8 +185,7 @@ class GNGTest : Fragment() {
                             answer = randomCross == 0
                             handler.postDelayed({
                                 binding.square4.setImageResource(R.drawable.zoom)
-//                                binding.tvAnswer.text = ""
-                            }, 350)
+                            }, randomTimeView)
                         }
                     }
                 }

@@ -15,6 +15,7 @@ fun String.toFragment(): Fragment =
         "FOT" -> FOTTest.newInstance()
         "RAT" -> RATTest.newInstance()
         "IAT" -> IATTest.newInstance()
+//        "IAT 2" -> IAT2Test.newInstance()
         "GNG" -> GNGTest.newInstance()
         "SCT" -> SCTTest.newInstance()
         "TMT" -> TMTTest.newInstance()

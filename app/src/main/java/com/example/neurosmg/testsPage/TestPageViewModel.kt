@@ -8,6 +8,7 @@ class TestPageViewModel : ViewModel() {
         TestItem("FOT"),
         TestItem("RAT"),
         TestItem("IAT"),
+        TestItem("IAT 2"),
         TestItem("GNG"),
         TestItem("SCT"),
         TestItem("TMT"),

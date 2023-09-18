@@ -7,6 +7,8 @@ import com.example.neurosmg.login.api.AuthResponse
 import com.example.neurosmg.patientTestList.PatientListResponse
 import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
 import com.example.neurosmg.patientTestList.patientProfile.UpdatePatientRequest
+import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.*
@@ -39,5 +41,11 @@ interface ApiService {
         @Path("id") id: Int,
         @Body updatePatientRequest: UpdatePatientRequest
     ): Call<PatientResponse>
+
+    @Multipart
+    @POST("/api/datafiles") // Замените на реальный путь для загрузки файла на ваш сервер
+    fun uploadCSV(@Header("Authorization") authHeader: String,
+                  @Part file: MultipartBody.Part
+    ): Call<ResponseBody>
 
 }
