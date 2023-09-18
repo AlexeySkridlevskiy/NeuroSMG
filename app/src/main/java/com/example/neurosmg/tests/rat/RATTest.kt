@@ -1,14 +1,17 @@
 package com.example.neurosmg.tests.rat
 
 import SoundPlayer
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -20,6 +23,7 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentRATTestBinding
 import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.utils.enterFullScreenMode
 import com.example.neurosmg.utils.exitFullScreenMode
 import kotlin.random.Random
 
@@ -34,7 +38,14 @@ class RATTest : Fragment() {
     private var bankIndexCount :Double = 0.0
     private var currentIndexCircle :Int = 1
     private var attemptIndex :Int = 1
+    private var indexTouchAttempt :Int = 0
     private var soundPlayer: SoundPlayer? = null
+    private var touchStartTimeUnixTimestamp: Long = 0
+    private var indexPop: Int = 0
+    private var colorIndex: Int = 0
+    private var sizeBall: Int = 10
+    private var touchDuration: Long = 0
+    private var stateBall: String = ""
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -54,6 +65,7 @@ class RATTest : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.RATTest)
@@ -62,6 +74,8 @@ class RATTest : Fragment() {
             infoDialogAttempt1()
             binding.btnStart.visibility = View.INVISIBLE
             binding.btnStop.visibility = View.VISIBLE
+            colorIndex = Random.nextInt(ballColors.size)
+            indexPop = Random.nextInt(ballProbabilities[colorIndex])
         }
 
         binding.btnStop.setOnClickListener {
@@ -71,31 +85,49 @@ class RATTest : Fragment() {
         }
         val ballsContainer: ConstraintLayout = binding.ballsContainer
 
-        ballsContainer.setOnClickListener {
-            indexTouch++
-            if (indexTouch>0){
-                binding.btnStop.isEnabled = true
-            }
-            val ballCount = ballsContainer.childCount
-            if (ballCount > 0) {
-                val lastBall = ballsContainer.getChildAt(ballCount - 1)
-                val isPopped = popBall(lastBall)
-                if (!isPopped) {
-                    growBall(lastBall)
+        ballsContainer.isClickable = true
+        ballsContainer.isFocusable = true
+        ballsContainer.setOnTouchListener { view, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
                 }
-            } else {
-                addRandomBall(ballsContainer)
+                MotionEvent.ACTION_UP -> {
+                    touchDuration = System.currentTimeMillis() - touchStartTimeUnixTimestamp
+
+                    indexTouch++
+                    if (indexTouch > 0) {
+                        binding.btnStop.isEnabled = true
+                    }
+                    val ballCount = ballsContainer.childCount
+                    if (ballCount > 0) {
+                        val lastBall = ballsContainer.getChildAt(ballCount - 1)
+                        val isPopped = popBall(lastBall)
+                        if (!isPopped) {
+                            growBall(lastBall)
+                        }
+                    } else {
+                        addRandomBall(ballsContainer)
+                    }
+                }
             }
+            true
         }
+
     }
 
     private fun popBall(ballView: View): Boolean {
+        indexPop++
+        indexTouchAttempt++
+        sizeBall+=2
+        val shouldPop = indexPop == ballProbabilities[colorIndex]
+        touchStartTimeUnixTimestamp = System.currentTimeMillis()
 
-        val colorIndex = ballView.tag as Int
-        val indexPop = Random.nextInt(ballProbabilities[colorIndex]-indexTouch)
-        val shouldPop = indexPop == 0
         if (shouldPop) with(binding) {
-
+            sizeBall=10
+            stateBall = "exploded"
+            colorIndex = Random.nextInt(ballColors.size)
+            indexPop = Random.nextInt(ballProbabilities[colorIndex])
             ballsContainer.removeView(ballView)
             bankCurrentCount.text = "0"
             newAttempt()
@@ -104,11 +136,22 @@ class RATTest : Fragment() {
             indexTouch = 0
             addRandomBall(binding.ballsContainer)
             soundPlayer?.playSound(R.raw.rat_pop)
+            saveData()
             Toast.makeText(requireContext(), "Шарик лопнул...", Toast.LENGTH_SHORT).show()
+            return true
         }
-        return shouldPop
+        stateBall="pump"
+        saveData() //todo: фиксация данных
+        return false
     }
+    @SuppressLint("SuspiciousIndentation")
     private fun stopBall(ballView: View): Boolean {
+        sizeBall=10
+        stateBall = "save"
+        indexTouchAttempt++
+        touchDuration = 0
+        colorIndex = Random.nextInt(ballColors.size)
+        indexPop = Random.nextInt(ballProbabilities[colorIndex])
             binding.ballsContainer.removeView(ballView)
             bankIndexCount += indexTouch*0.05
             binding.bankCount.text = String.format("%.2f", bankIndexCount)
@@ -118,12 +161,12 @@ class RATTest : Fragment() {
             binding.currentCircle.text = currentIndexCircle.toString()
             indexTouch = 0
             addRandomBall(binding.ballsContainer)
+        saveData()
         return true
     }
     private fun growBall(ballView: View) {
-        val colorIndex = ballView.tag as Int
         val dpToPx = resources.displayMetrics.density
-        val ballSizeDp = 2 // Измените эту переменную на нужное вам значение
+        val ballSizeDp = 2
 
         val centerX = ballView.x + ballView.width / 2
         val centerY = ballView.y + ballView.height / 2
@@ -140,16 +183,11 @@ class RATTest : Fragment() {
         layoutParams.leftMargin = newLeftMargin.toInt()
         layoutParams.topMargin = newTopMargin.toInt()
 
-        // Устанавливаем пивот анимации для центрирования анимации масштабирования
         ballView.pivotX = ballView.width / 2f
         ballView.pivotY = ballView.height / 2f
 
         ballView.requestLayout()
 
-        // После увеличения шарика, проверяем лопнул ли он
-        if (Random.nextInt(ballProbabilities[colorIndex]) == 0) {
-            popBall(ballView)
-        }
     }
     private fun addRandomBall(container: ConstraintLayout) {
         if(indexTouch==0){
@@ -158,27 +196,23 @@ class RATTest : Fragment() {
         val ballSize = resources.getDimensionPixelSize(R.dimen.ball_size)
         val layoutParams = ConstraintLayout.LayoutParams(ballSize, ballSize)
         val ball = View(requireContext())
-        val colorIndex = Random.nextInt(ballColors.size)
         ball.background = createRandomBallDrawable(colorIndex)
         ball.id = View.generateViewId()
 
-        ball.tag = colorIndex // Используем tag для хранения индекса цвета
+        ball.tag = colorIndex
         ballProbabilitiesCurrent = ballProbabilities[colorIndex]
 
         container.addView(ball, layoutParams)
 
-        // Центрируем шарик в контейнере
         layoutParams.leftToLeft = container.id
         layoutParams.topToTop = container.id
 
-        // Рассчитываем позицию шарика так, чтобы он находился по центру контейнера
         val leftMargin = (container.width - ballSize) / 2
         val topMargin = (container.height - ballSize) / 2
         layoutParams.leftMargin = leftMargin
         layoutParams.topMargin = topMargin
         ball.layoutParams = layoutParams
 
-        // Обработчик клика на шарик
         ball.setOnClickListener {
             if (Random.nextInt(ballProbabilities[colorIndex]) == 0) {
                 popBall(ball)
@@ -196,6 +230,11 @@ class RATTest : Fragment() {
         return shapeDrawable
     }
 
+    private fun saveData(){
+        val bankCount = String.format("%.2f", bankIndexCount)
+        Log.d("MyLog", "$touchStartTimeUnixTimestamp, $attemptIndex, ${ballProbabilities[colorIndex]}, $indexPop, $sizeBall, $currentIndexCircle, $indexTouchAttempt, $indexTouch, $touchDuration, $stateBall, $bankCount")
+    }
+
     override fun onDetach() {
         super.onDetach()
         mainActivityListener = null
@@ -210,6 +249,7 @@ class RATTest : Fragment() {
         if (attemptIndex <= 3){
             if (currentIndexCircle==30){
                 indexTouch=0
+                indexTouchAttempt=0
                 currentIndexCircle=0
                 bankIndexCount=0.0
                 binding.bankCount.text = bankIndexCount.toString()
@@ -319,7 +359,7 @@ class RATTest : Fragment() {
                     infoDialog()
                     root.isVisible = false
                     activity?.exitFullScreenMode()
-//                    mainActivityListener?.updateToolbarState(ToolbarState.SCTTest)
+//                    mainActivityListener?.updateToolbarState(ToolbarState.RATTest)
                     constraintLayout2.isVisible = true
                     btnStart.isVisible = true
                 }

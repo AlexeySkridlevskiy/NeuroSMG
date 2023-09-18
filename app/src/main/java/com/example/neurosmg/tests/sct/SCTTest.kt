@@ -1,13 +1,16 @@
 package com.example.neurosmg.tests.sct
 
 import SoundPlayer
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -38,6 +41,15 @@ class SCTTest : Fragment() {
     lateinit var binding: FragmentSCTTestBinding
     private var mainActivityListener: MainActivityListener? = null
     private var soundPlayer: SoundPlayer? = null
+
+    private var randomColor: Int = 0
+
+    private var touchStartTimeUnixTimestamp: Long = 0
+    private var touchStartTimeMillis: Long = 0
+    private var touchEndTimeMillis: Long = 0
+    private var touchDurationSeconds: Long = 0
+    private var touchBtnLR: String = ""
+    private var touchBtnLRColor: String = ""
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -80,27 +92,57 @@ class SCTTest : Fragment() {
         showRandomWord()
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupButtonClickListeners() {
-        buttonRed.setOnClickListener {
-            binding.tvColorText.visibility = View.INVISIBLE
-            checkAnswer(Color.RED)
+        buttonRed.setOnTouchListener { _, motionEvent ->
+            touchBtnLR = "left"
+            touchBtnLRColor = "red"
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
+                    touchStartTimeMillis = System.currentTimeMillis()
+                }
+                MotionEvent.ACTION_UP -> {
+                    touchEndTimeMillis = System.currentTimeMillis()
+                    calculateTouchDuration()
+                    binding.tvColorText.visibility = View.INVISIBLE
+                    checkAnswer(Color.RED)
+                }
+            }
+            false
         }
 
-        buttonBlue.setOnClickListener {
-            binding.tvColorText.visibility = View.INVISIBLE
-            checkAnswer(Color.BLUE)
+        buttonBlue.setOnTouchListener { _, motionEvent ->
+            touchBtnLR = "right"
+            touchBtnLRColor = "blue"
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
+                    touchStartTimeMillis = System.currentTimeMillis()
+                }
+                MotionEvent.ACTION_UP -> {
+                    touchEndTimeMillis = System.currentTimeMillis()
+                    calculateTouchDuration()
+                    binding.tvColorText.visibility = View.INVISIBLE
+                    checkAnswer(Color.BLUE)
+                }
+            }
+            false
         }
     }
-
+    private fun calculateTouchDuration() {
+        val touchDurationMillis = touchEndTimeMillis - touchStartTimeMillis
+        touchDurationSeconds = touchDurationMillis // Преобразовать в секунды с точностью до тысячных миллисекунд
+    }
     private fun showRandomWord() {
         val randomIndex = Random.nextInt(0, words.size)
         val randomWord = words[randomIndex]
-        var randomColor = colors[Random.nextInt(0, colors.size)]
+        randomColor = colors[Random.nextInt(0, colors.size)]
         if(totalAttempts<10){
-            if (randomWord=="Красный"){
-                randomColor = Color.RED
+            randomColor = if (randomWord=="Красный"){
+                Color.RED
             }else{
-                randomColor = Color.BLUE
+                Color.BLUE
             }
         }
 
@@ -119,6 +161,8 @@ class SCTTest : Fragment() {
             score++
         }
 
+        saveData()
+
         if (totalAttempts < 50) {
             showRandomWord()
         } else {
@@ -126,9 +170,19 @@ class SCTTest : Fragment() {
         }
     }
 
+    private fun saveData() {
+        var randomColorView = ""
+        randomColorView = if(randomColor == Color.RED){
+            "red"
+        }else{
+            "blue"
+        }
+        Log.d("MyLog", "$touchStartTimeUnixTimestamp, $touchDurationSeconds, $touchBtnLR, $randomColorView, $touchBtnLRColor, $totalAttempts")
+    }
+
     private fun showTestResult() {
 //        textView.visibility = View.VISIBLE
-        val accuracy = score * 100 / totalAttempts
+//        val accuracy = score * 100 / totalAttempts
 //        val resultText = "Тест завершен!\n\nТочность: $accuracy%"
 //        textView.text = resultText
         infoDialogEndTest()

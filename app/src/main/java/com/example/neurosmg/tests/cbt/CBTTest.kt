@@ -12,11 +12,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.csvdatauploader.CSVDataUploader
+import com.example.neurosmg.csvdatauploader.DataUploadCallback
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
+import com.example.neurosmg.patientTestList.PatientsViewModel
 import com.example.neurosmg.testsPage.TestsPage
 import com.example.neurosmg.utils.exitFullScreenMode
 
@@ -37,6 +41,13 @@ class CBTTest : Fragment() {
     private var stepsIndex = 1
     private val maxStepsIndex = 20
     private var soundPlayer: SoundPlayer? = null
+    private var touchStartTimeMillis: Long = 0
+    private var touchEndTimeMillis: Long = 0
+    private var touchDurationSeconds: Long = 0
+
+    private val viewModel by lazy {
+        ViewModelProvider(requireActivity())[CSVDataUploader::class.java]
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -96,10 +107,9 @@ class CBTTest : Fragment() {
         sequence = visibleSquares.shuffled().take(currentSequenceLength).map { visibleSquares.indexOf(it) }
         sequenceSquares = sequence.map { visibleSquares[it] }
 
-        // Add a delay before showing the sequence
         binding.root.postDelayed({
             showSequence()
-        }, 1000L) // Adjust the delay time as needed
+        }, 1000L)
     }
 
     private fun showSequence() {
@@ -114,6 +124,7 @@ class CBTTest : Fragment() {
             if(stepsIndex==2){
                 soundPlayer?.playSound(R.raw.cbt_first_seq)
             }
+            touchStartTimeMillis = System.currentTimeMillis()
             return
         }
 
@@ -150,6 +161,10 @@ class CBTTest : Fragment() {
             if (square == sequenceSquares[expectedIndex]) {
                 square.setBackgroundResource(R.color.cbt_color_square_user)
                 expectedIndex++
+                touchEndTimeMillis = System.currentTimeMillis()
+                touchDurationSeconds = touchEndTimeMillis - touchStartTimeMillis
+                saveData(touchDurationSeconds)
+                touchStartTimeMillis = System.currentTimeMillis()
                 if (expectedIndex == sequenceSquares.size) {
                     sequenceSquares = emptyList()
                     expectedIndex = 0
@@ -162,7 +177,6 @@ class CBTTest : Fragment() {
                         8 -> soundPlayer?.playSound(R.raw.cbt_seq_8)
                         9 -> soundPlayer?.playSound(R.raw.cbt_seq_9)
                     }
-                    Log.d("MyLog", "$currentSequenceLength")
                     if (currentSequenceLength > maxSequenceLength) {
                         finishTest()
                     } else {
@@ -188,6 +202,21 @@ class CBTTest : Fragment() {
         binding.gridLayout.visibility = View.INVISIBLE
         binding.linearLayout.visibility = View.INVISIBLE
         infoDialogFinishTest()
+    }
+
+    private fun saveData(touchDurationSeconds: Long) {
+//        val dataToUpload = "Name, Age, Email\nJohn Doe, 30, john@example.com\nJane Smith, 25, jane@example.com"
+//
+//        viewModel.generateAndUploadCSV(dataToUpload, object : DataUploadCallback {
+//            override fun onSuccess() {
+//                Log.d("MyLog", "Данные успешно отправлены на сервер.")
+//            }
+//
+//            override fun onFailure(errorMessage: String) {
+//                Log.d("MyLog", "Произошла ошибка: $errorMessage")
+//            }
+//        }) //todo: тут отправка данных на сервер (csv)
+        Log.d("MyLog", "${stepsIndex-1}, $expectedIndex, $touchDurationSeconds")
     }
 
     override fun onDetach() {
