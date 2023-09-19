@@ -21,7 +21,7 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
 import com.example.neurosmg.databinding.FragmentIATTestBinding
-import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
 class IATTest : Fragment() {
@@ -398,7 +398,7 @@ class IATTest : Fragment() {
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.container, TestsPage.newInstance())
+                .replace(R.id.container, TestsPageFragment.newInstance())
                 .addToBackStack(Screen.TESTS_PAGE)
                 .commit()
         }

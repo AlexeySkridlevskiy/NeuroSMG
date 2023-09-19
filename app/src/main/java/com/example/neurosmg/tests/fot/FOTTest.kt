@@ -16,7 +16,7 @@ import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.databinding.FragmentFOTTestBinding
-import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
 class FOTTest : Fragment(), CanvasViewCallback {
@@ -213,7 +213,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.container, TestsPage.newInstance())
+                .replace(R.id.container, TestsPageFragment.newInstance())
                 .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 class StatePatientViewModel : ViewModel() {
 
     private var statePatientList = StatePatientList(
-        navigateTo = ScreenNavigationMenu.TO_TESTS,
+        navigateTo = ScreenNavigationMenu.TO_CHOOSED_TEST,
         navigateToTest = null
     )
 
@@ -24,14 +24,6 @@ class StatePatientViewModel : ViewModel() {
         )
         statePatientList = archive
     }
-
-    fun navToTests(test: String) {
-        val archive = statePatientList.copy(
-            navigateTo = ScreenNavigationMenu.TO_TESTS,
-            navigateToTest = test
-        )
-        statePatientList = archive
-    }
 }
 
 data class StatePatientList(
@@ -41,6 +33,6 @@ data class StatePatientList(
 
 enum class ScreenNavigationMenu {
     TO_ARCHIVE,
-    TO_TESTS,
-    TO_PATIENT_LIST
+    TO_PATIENT_LIST,
+    TO_CHOOSED_TEST
 }

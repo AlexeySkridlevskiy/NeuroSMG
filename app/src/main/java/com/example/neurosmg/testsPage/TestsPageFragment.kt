@@ -3,38 +3,33 @@ package com.example.neurosmg.testsPage
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
+import com.example.neurosmg.common.toFragment
 import com.example.neurosmg.databinding.FragmentTestsPageBinding
-import com.example.neurosmg.patientTestList.PatientTestList
-import com.example.neurosmg.patientTestList.StatePatientViewModel
 
-class TestsPage : Fragment(), ItemOnClickListener {
+class TestsPageFragment : Fragment(), ItemOnClickListener {
 
     private lateinit var binding: FragmentTestsPageBinding
-    private val fragment = PatientTestList.newInstance()
 
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[TestPageViewModel::class.java]
     }
 
-    private val patientStateViewModel by lazy {
-        ViewModelProvider(requireActivity())[StatePatientViewModel::class.java]
-    }
-
     private val adapter = TestAdapter(this)
 
     private var mainActivityListener: MainActivityListener? = null
+
+    private var patientId: Int? = -1
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -43,6 +38,11 @@ class TestsPage : Fragment(), ItemOnClickListener {
         } else {
             throw RuntimeException("$context must implement MainActivityListener")
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        patientId = arguments?.getInt(PATIENT_ID)
     }
 
     override fun onCreateView(
@@ -69,11 +69,9 @@ class TestsPage : Fragment(), ItemOnClickListener {
 
     override fun onItemClick(item: TestItem) {
 
-        patientStateViewModel.navToTests(item.title)
-
         parentFragmentManager
             .beginTransaction()
-            .replace(R.id.container, fragment)
+            .replace(R.id.container, item.title.toFragment())
             .addToBackStack(Screen.TESTS_PAGE)
             .commit()
     }
@@ -84,7 +82,18 @@ class TestsPage : Fragment(), ItemOnClickListener {
     }
 
     companion object {
+
+        private const val PATIENT_ID = "patientId"
+
         @JvmStatic
-        fun newInstance() = TestsPage()
+        fun newInstance(
+            patientId: Int = -1
+        ): TestsPageFragment {
+            val fragment = TestsPageFragment()
+            val args = Bundle()
+            args.putInt(PATIENT_ID, patientId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

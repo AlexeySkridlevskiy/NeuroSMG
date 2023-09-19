@@ -18,10 +18,8 @@ import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.csvdatauploader.CSVDataUploader
-import com.example.neurosmg.csvdatauploader.DataUploadCallback
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
-import com.example.neurosmg.patientTestList.PatientsViewModel
-import com.example.neurosmg.testsPage.TestsPage
+import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
 class CBTTest : Fragment() {
@@ -269,7 +267,7 @@ class CBTTest : Fragment() {
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.container, TestsPage.newInstance())
+                .replace(R.id.container, TestsPageFragment.newInstance())
                 .addToBackStack(Screen.MAIN_PAGE)
                 .commit()
         }
