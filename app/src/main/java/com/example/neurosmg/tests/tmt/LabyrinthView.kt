@@ -40,6 +40,9 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
     private var isFinishMessageShown = false
     private var isCollisionLogged = false
 
+    private val updateInterval = 50L // 50 миллисекунд (20 раз в секунду)
+    private var lastUpdateTime = 0L
+
     private val paint = Paint()
     private var cellSize = 0
     private val labyrinth1 = mutableListOf(
@@ -153,8 +156,6 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
             invalidate()
         }
     }
-
-
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -191,6 +192,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
 
                 if (isValidMove(x, y)) {
                     userPath.add(Point(x, y))
+
                     invalidate()
 
                     // Проверяем, достиг ли пользователь финишной точки

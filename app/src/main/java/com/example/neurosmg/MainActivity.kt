@@ -25,7 +25,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
-    private val bundle = Bundle()
     private lateinit var fragment: Fragment
     private var currentFragmentTag: String? = null
 
@@ -35,7 +34,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     private val menuActions = mapOf(
         R.id.tests to {
-            replaceFragment(TestsPageFragment.newInstance(), Screen.TESTS_PAGE)
+            replaceFragment(PatientListFragment.newInstance(), Screen.PATIENTS)
         },
         R.id.questionnaires to {
             Toast.makeText(this, "Страница 'Опросники' находится в разработке", Toast.LENGTH_SHORT).show()

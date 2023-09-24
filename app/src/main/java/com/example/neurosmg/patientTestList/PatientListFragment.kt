@@ -14,7 +14,6 @@ import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.State
-import com.example.neurosmg.common.toFragment
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.patientTestList.addPatient.AddPatient
 import com.example.neurosmg.patientTestList.patientProfile.PatientProfile
