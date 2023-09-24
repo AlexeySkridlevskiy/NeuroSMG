@@ -1,7 +1,9 @@
 package com.example.neurosmg.csvdatauploader
 
 data class MediaData(
-    val mediaId: String,
-    val mediaData: ByteArray
+    val data: Data
 )
 
+data class Data(
+    val file: List<String>
+)

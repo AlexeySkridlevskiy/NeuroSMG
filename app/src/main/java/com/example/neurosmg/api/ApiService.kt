@@ -1,5 +1,6 @@
 package com.example.neurosmg.api
 
+import com.example.neurosmg.csvdatauploader.MediaData
 import com.example.neurosmg.patientTestList.addPatient.PatientRequest
 import com.example.neurosmg.doctorProfile.UserResponse
 import com.example.neurosmg.login.api.AuthData
@@ -43,9 +44,9 @@ interface ApiService {
     ): Call<PatientResponse>
 
     @Multipart
-    @POST("/api/datafiles") // Замените на реальный путь для загрузки файла на ваш сервер
-    fun uploadCSV(@Header("Authorization") authHeader: String,
-                  @Part file: MultipartBody.Part
-    ): Call<ResponseBody>
-
+    @POST("/datafiles") // Указать путь к вашему API Strapi
+    fun uploadFile(
+        @Header("Authorization") authHeader: String,
+        @Part file: MultipartBody.Part
+    ): Call<String>
 }

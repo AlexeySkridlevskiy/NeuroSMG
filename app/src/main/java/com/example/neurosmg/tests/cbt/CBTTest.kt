@@ -17,7 +17,7 @@ import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
-import com.example.neurosmg.csvdatauploader.CSVDataUploader
+import com.example.neurosmg.csvdatauploader.CSVWriter
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
@@ -42,10 +42,7 @@ class CBTTest : Fragment() {
     private var touchStartTimeMillis: Long = 0
     private var touchEndTimeMillis: Long = 0
     private var touchDurationSeconds: Long = 0
-
-    private val viewModel by lazy {
-        ViewModelProvider(requireActivity())[CSVDataUploader::class.java]
-    }
+    private val data = mutableListOf<MutableList<String>>()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -90,7 +87,7 @@ class CBTTest : Fragment() {
     }
 
     private fun startTest() {
-        if(stepsIndex==maxStepsIndex){
+        if(stepsIndex>maxStepsIndex){
             finishTest()
         }
         binding.tvSteps.text = stepsIndex.toString()
@@ -214,6 +211,12 @@ class CBTTest : Fragment() {
 //                Log.d("MyLog", "Произошла ошибка: $errorMessage")
 //            }
 //        }) //todo: тут отправка данных на сервер (csv)
+
+        val dynamicRow = mutableListOf(
+            (stepsIndex-1).toString(), expectedIndex.toString(), touchDurationSeconds.toString()
+        )
+        data.add(dynamicRow)
+
         Log.d("MyLog", "${stepsIndex-1}, $expectedIndex, $touchDurationSeconds")
     }
 
@@ -259,6 +262,10 @@ class CBTTest : Fragment() {
     }
 
     private fun infoDialogFinishTest() {
+        val outputPath = "/storage/emulated/0/Download/output.csv"
+        val csvWriter = CSVWriter(outputPath)
+        csvWriter.writeDataToCsv(data)
+
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси

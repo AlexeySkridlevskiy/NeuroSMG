@@ -3,12 +3,15 @@ package com.example.neurosmg.testsPage
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
@@ -42,7 +45,7 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
 
     override fun onResume() {
         super.onResume()
-        patientId = arguments?.getInt(PATIENT_ID)
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT)
     }
 
     override fun onCreateView(
@@ -65,6 +68,7 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
         rcView.layoutManager = LinearLayoutManager(requireContext())
         adapter.addTest(testItem = viewModel.getTests())
         rcView.adapter = adapter
+        Toast.makeText(requireContext(), "ID пациента ${arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT)}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onItemClick(item: TestItem) {
@@ -83,7 +87,7 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
 
     companion object {
 
-        private const val PATIENT_ID = "patientId"
+//        private const val PATIENT_ID = "patientId"
 
         @JvmStatic
         fun newInstance(
@@ -91,7 +95,7 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
         ): TestsPageFragment {
             val fragment = TestsPageFragment()
             val args = Bundle()
-            args.putInt(PATIENT_ID, patientId)
+            args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
             fragment.arguments = args
             return fragment
         }
