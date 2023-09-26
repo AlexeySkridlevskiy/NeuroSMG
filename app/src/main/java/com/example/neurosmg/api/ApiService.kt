@@ -1,17 +1,14 @@
 package com.example.neurosmg.api
 
-import com.example.neurosmg.csvdatauploader.MediaData
-import com.example.neurosmg.patientTestList.addPatient.PatientRequest
 import com.example.neurosmg.doctorProfile.UserResponse
 import com.example.neurosmg.login.api.AuthData
 import com.example.neurosmg.login.api.AuthResponse
 import com.example.neurosmg.patientTestList.PatientListResponse
+import com.example.neurosmg.patientTestList.addPatient.PatientRequest
 import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
 import com.example.neurosmg.patientTestList.patientProfile.UpdatePatientRequest
 import okhttp3.MultipartBody
-import okhttp3.ResponseBody
 import retrofit2.Call
-import retrofit2.http.Body
 import retrofit2.http.*
 
 interface ApiService {
@@ -44,7 +41,7 @@ interface ApiService {
     ): Call<PatientResponse>
 
     @Multipart
-    @POST("/datafiles") // Указать путь к вашему API Strapi
+    @POST("/api/datafiles")
     fun uploadFile(
         @Header("Authorization") authHeader: String,
         @Part file: MultipartBody.Part

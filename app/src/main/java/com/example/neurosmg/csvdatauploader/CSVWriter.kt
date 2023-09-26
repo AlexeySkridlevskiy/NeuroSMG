@@ -1,27 +1,35 @@
 package com.example.neurosmg.csvdatauploader
 
+import android.content.Context
 import android.util.Log
+import java.io.BufferedWriter
 import java.io.File
+import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.IOException
+import java.io.OutputStreamWriter
 
-class CSVWriter(private val fileName: String) {
+class CSVWriter(
+    private val context: Context
+) {
+    val filePath = File(context.getExternalFilesDir(null), "output.csv")
+
     fun writeDataToCsv(data: List<List<String>>) {
         try {
-            val file = File(fileName)
-            val csvWriter = FileWriter(file)
+            val outputStream = FileOutputStream(filePath)
+            val writer = BufferedWriter(OutputStreamWriter(outputStream))
 
             for (row in data) {
-                csvWriter.append(row.joinToString(","))
-                csvWriter.append("\n")
+                val line = row.joinToString(separator = ",")
+                writer.write(line)
+                writer.newLine()
             }
 
-            csvWriter.flush()
-            csvWriter.close()
-
-            Log.d("MyLog", "Данные успешно записаны в $fileName")
+            writer.close()
+            outputStream.close()
         } catch (e: IOException) {
-           Log.d("MyLog","Ошибка при записи данных в $fileName: ${e.message}")
+            e.printStackTrace()
         }
+
     }
 }

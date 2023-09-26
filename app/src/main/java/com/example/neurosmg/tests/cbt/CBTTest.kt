@@ -19,6 +19,7 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.csvdatauploader.CSVWriter
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
+import com.example.neurosmg.doctorProfile.DoctorProfileViewModel
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
@@ -35,14 +36,18 @@ class CBTTest : Fragment() {
     private val maxSequenceLength = 9
     private var sequence: List<Int> = emptyList()
     private var isShowingSequence = false
-    private var expectedIndex = 0
-    private var stepsIndex = 1
+    private var expectedIndex = 20
+    private var stepsIndex = 20
     private val maxStepsIndex = 20
     private var soundPlayer: SoundPlayer? = null
     private var touchStartTimeMillis: Long = 0
     private var touchEndTimeMillis: Long = 0
     private var touchDurationSeconds: Long = 0
     private val data = mutableListOf<MutableList<String>>()
+
+    private val viewModelUploaderFile by lazy {
+        ViewModelProvider(requireActivity())[FileUploaderViewModel::class.java]
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -53,6 +58,7 @@ class CBTTest : Fragment() {
             throw RuntimeException("$context must implement MainActivityListener")
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -65,6 +71,7 @@ class CBTTest : Fragment() {
         educationAnimation()
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.CBTTest)
@@ -87,7 +94,7 @@ class CBTTest : Fragment() {
     }
 
     private fun startTest() {
-        if(stepsIndex>maxStepsIndex){
+        if (stepsIndex > maxStepsIndex) {
             finishTest()
         }
         binding.tvSteps.text = stepsIndex.toString()
@@ -99,7 +106,8 @@ class CBTTest : Fragment() {
             square.visibility = View.VISIBLE
         }
 
-        sequence = visibleSquares.shuffled().take(currentSequenceLength).map { visibleSquares.indexOf(it) }
+        sequence =
+            visibleSquares.shuffled().take(currentSequenceLength).map { visibleSquares.indexOf(it) }
         sequenceSquares = sequence.map { visibleSquares[it] }
 
         binding.root.postDelayed({
@@ -116,7 +124,7 @@ class CBTTest : Fragment() {
         if (index >= sequence.size) {
             resetSquares()
             isShowingSequence = false
-            if(stepsIndex==2){
+            if (stepsIndex == 2) {
                 soundPlayer?.playSound(R.raw.cbt_first_seq)
             }
             touchStartTimeMillis = System.currentTimeMillis()
@@ -164,7 +172,7 @@ class CBTTest : Fragment() {
                     sequenceSquares = emptyList()
                     expectedIndex = 0
                     currentSequenceLength++
-                    when(currentSequenceLength){
+                    when (currentSequenceLength) {
                         4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
                         5 -> soundPlayer?.playSound(R.raw.cbt_seq_5)
                         6 -> soundPlayer?.playSound(R.raw.cbt_seq_6)
@@ -184,7 +192,7 @@ class CBTTest : Fragment() {
                     sequenceSquares = emptyList()
                     expectedIndex = 0
                 }
-                when(currentSequenceLength){
+                when (currentSequenceLength) {
                     4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
                     5 -> soundPlayer?.playSound(R.raw.cbt_seq_5)
                 }
@@ -213,11 +221,11 @@ class CBTTest : Fragment() {
 //        }) //todo: тут отправка данных на сервер (csv)
 
         val dynamicRow = mutableListOf(
-            (stepsIndex-1).toString(), expectedIndex.toString(), touchDurationSeconds.toString()
+            (stepsIndex - 1).toString(), expectedIndex.toString(), touchDurationSeconds.toString()
         )
         data.add(dynamicRow)
 
-        Log.d("MyLog", "${stepsIndex-1}, $expectedIndex, $touchDurationSeconds")
+        Log.d("MyLog", "${stepsIndex - 1}, $expectedIndex, $touchDurationSeconds")
     }
 
     override fun onDetach() {
@@ -228,10 +236,6 @@ class CBTTest : Fragment() {
         }
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = CBTTest()
-    }
 
     private fun infoDialogStartTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
@@ -262,9 +266,8 @@ class CBTTest : Fragment() {
     }
 
     private fun infoDialogFinishTest() {
-        val outputPath = "/storage/emulated/0/Download/output.csv"
-        val csvWriter = CSVWriter(outputPath)
-        csvWriter.writeDataToCsv(data)
+        saveDataToFileCSV()
+        startUploadFile()
 
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
@@ -310,8 +313,28 @@ class CBTTest : Fragment() {
         }
     }
 
+    private fun saveDataToFileCSV() {
+        val csvWriter = CSVWriter(context = requireContext())
+        csvWriter.writeDataToCsv(data)
+    }
+
+    private fun startUploadFile() {
+        viewModelUploaderFile.uploadFile() {
+            Log.d("viewModelUploaderFile", "infoDialogFinishTest: закончил грузить файл")
+            Log.d("viewModelUploaderFile", "infoDialogFinishTest: $it")
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         soundPlayer?.stopSound()
     }
+
+    companion object {
+        private const val OUTPUT_PATH = "/storage/emulated/0/Download/output.csv"
+
+        @JvmStatic
+        fun newInstance() = CBTTest()
+    }
+
 }
