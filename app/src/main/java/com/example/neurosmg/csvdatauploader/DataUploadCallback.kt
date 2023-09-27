@@ -1,6 +1,6 @@
 package com.example.neurosmg.csvdatauploader
 
-interface DataUploadCallback {
-    fun onSuccess()
-    fun onFailure(errorMessage: String)
+sealed class DataUploadCallback {
+    object OnSuccess : DataUploadCallback()
+    object OnFailure : DataUploadCallback()
 }

@@ -1,5 +1,6 @@
 package com.example.neurosmg.api
 
+import com.example.neurosmg.csvdatauploader.UploadFileResponse
 import com.example.neurosmg.doctorProfile.UserResponse
 import com.example.neurosmg.login.api.AuthData
 import com.example.neurosmg.login.api.AuthResponse
@@ -16,9 +17,16 @@ interface ApiService {
     fun login(@Body authData: AuthData): Call<AuthResponse>
 
     @GET("/api/users/{id}")
-    fun getUserById(@Path("id") id: Int, @Header("Authorization") authorization: String): Call<UserResponse>
+    fun getUserById(
+        @Path("id") id: Int,
+        @Header("Authorization") authorization: String
+    ): Call<UserResponse>
+
     @GET("/api/users/{id}?populate=id_patient")
-    fun getUserPatients(@Path("id") id: Int, @Header("Authorization") authorization: String): Call<PatientListResponse>
+    fun getUserPatients(
+        @Path("id") id: Int,
+        @Header("Authorization") authorization: String
+    ): Call<PatientListResponse>
 
     @Headers("Content-Type: application/json")
     @POST("/api/patients")
@@ -41,9 +49,10 @@ interface ApiService {
     ): Call<PatientResponse>
 
     @Multipart
-    @POST("/api/datafiles")
-    fun uploadFile(
+    @POST("/api/upload")
+    suspend fun uploadFile(
         @Header("Authorization") authHeader: String,
+        @Query("id") id: Int,
         @Part file: MultipartBody.Part
-    ): Call<String>
+    ): UploadFileResponse
 }

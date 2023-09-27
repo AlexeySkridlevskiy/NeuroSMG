@@ -10,7 +10,7 @@ import com.example.neurosmg.tests.rat.RATTest
 import com.example.neurosmg.tests.sct.SCTTest
 import com.example.neurosmg.tests.tmt.TMTTest
 
-fun String.toFragment(): Fragment =
+fun String.toFragment(patientId: Int): Fragment =
     when (this) {
         "FOT" -> FOTTest.newInstance()
         "RAT" -> RATTest.newInstance()
@@ -19,7 +19,7 @@ fun String.toFragment(): Fragment =
         "GNG" -> GNGTest.newInstance()
         "SCT" -> SCTTest.newInstance()
         "TMT" -> TMTTest.newInstance()
-        "CBT" -> CBTTest.newInstance()
+        "CBT" -> CBTTest.newInstance(patientId = patientId)
         "MRT" -> MRTTest.newInstance()
 
         else -> throw RuntimeException("Unknown test name")

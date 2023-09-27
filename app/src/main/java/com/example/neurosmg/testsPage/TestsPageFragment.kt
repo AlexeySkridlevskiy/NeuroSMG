@@ -32,7 +32,7 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
 
     private var mainActivityListener: MainActivityListener? = null
 
-    private var patientId: Int? = -1
+    private var patientId: Int = -1
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -45,7 +45,7 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
 
     override fun onResume() {
         super.onResume()
-        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT)
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
     override fun onCreateView(
@@ -75,7 +75,7 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
 
         parentFragmentManager
             .beginTransaction()
-            .replace(R.id.container, item.title.toFragment())
+            .replace(R.id.container, item.title.toFragment(patientId))
             .addToBackStack(Screen.TESTS_PAGE)
             .commit()
     }
@@ -86,8 +86,6 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
     }
 
     companion object {
-
-//        private const val PATIENT_ID = "patientId"
 
         @JvmStatic
         fun newInstance(
