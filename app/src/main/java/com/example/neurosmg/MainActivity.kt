@@ -1,10 +1,13 @@
 package com.example.neurosmg
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
@@ -16,7 +19,6 @@ import com.example.neurosmg.doctorProfile.DoctorProfile
 import com.example.neurosmg.login.LoginFragment
 import com.example.neurosmg.patientTestList.PatientListFragment
 import com.example.neurosmg.patientTestList.StatePatientViewModel
-import com.example.neurosmg.testsPage.TestsPageFragment
 
 class MainActivity : AppCompatActivity(), MainActivityListener {
 
@@ -37,7 +39,8 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             replaceFragment(PatientListFragment.newInstance(), Screen.PATIENTS)
         },
         R.id.questionnaires to {
-            Toast.makeText(this, "Страница 'Опросники' находится в разработке", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Страница 'Опросники' находится в разработке", Toast.LENGTH_SHORT)
+                .show()
         },
         R.id.patients to {
             navigateToPatientTestList(false)
@@ -411,5 +414,9 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             .replace(R.id.container, fragment)
             .addToBackStack(tagBackStack)
             .commit()
+    }
+
+    companion object {
+        private const val REQUEST_PERMISSIONS_CODE = 123
     }
 }

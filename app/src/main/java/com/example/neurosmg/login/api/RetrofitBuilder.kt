@@ -16,11 +16,15 @@ class RetrofitBuilder {
 
     fun retrofitCreate(): ApiService {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://neuro.fdev.by")
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(okHttpClient)
             .build()
 
         return retrofit.create(ApiService::class.java)
+    }
+
+    companion object {
+        private const val BASE_URL = "https://neuro.fdev.by"
     }
 }

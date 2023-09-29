@@ -6,18 +6,22 @@ import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.csvdatauploader.CSVWriter
+import com.example.neurosmg.csvdatauploader.DataUploadCallback
+import com.example.neurosmg.csvdatauploader.FileUploaderViewModel
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
@@ -43,6 +47,11 @@ class CBTTest : Fragment() {
     private var touchEndTimeMillis: Long = 0
     private var touchDurationSeconds: Long = 0
     private val data = mutableListOf<MutableList<String>>()
+    private var patientId: Int = -1
+
+    private val viewModelUploaderFile by lazy {
+        ViewModelProvider(requireActivity())[FileUploaderViewModel::class.java]
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -53,8 +62,10 @@ class CBTTest : Fragment() {
             throw RuntimeException("$context must implement MainActivityListener")
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
     override fun onCreateView(
@@ -65,6 +76,7 @@ class CBTTest : Fragment() {
         educationAnimation()
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivityListener?.updateToolbarState(ToolbarState.CBTTest)
@@ -87,7 +99,7 @@ class CBTTest : Fragment() {
     }
 
     private fun startTest() {
-        if(stepsIndex>maxStepsIndex){
+        if (stepsIndex > maxStepsIndex) {
             finishTest()
         }
         binding.tvSteps.text = stepsIndex.toString()
@@ -99,7 +111,8 @@ class CBTTest : Fragment() {
             square.visibility = View.VISIBLE
         }
 
-        sequence = visibleSquares.shuffled().take(currentSequenceLength).map { visibleSquares.indexOf(it) }
+        sequence =
+            visibleSquares.shuffled().take(currentSequenceLength).map { visibleSquares.indexOf(it) }
         sequenceSquares = sequence.map { visibleSquares[it] }
 
         binding.root.postDelayed({
@@ -116,7 +129,7 @@ class CBTTest : Fragment() {
         if (index >= sequence.size) {
             resetSquares()
             isShowingSequence = false
-            if(stepsIndex==2){
+            if (stepsIndex == 2) {
                 soundPlayer?.playSound(R.raw.cbt_first_seq)
             }
             touchStartTimeMillis = System.currentTimeMillis()
@@ -164,7 +177,7 @@ class CBTTest : Fragment() {
                     sequenceSquares = emptyList()
                     expectedIndex = 0
                     currentSequenceLength++
-                    when(currentSequenceLength){
+                    when (currentSequenceLength) {
                         4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
                         5 -> soundPlayer?.playSound(R.raw.cbt_seq_5)
                         6 -> soundPlayer?.playSound(R.raw.cbt_seq_6)
@@ -184,7 +197,7 @@ class CBTTest : Fragment() {
                     sequenceSquares = emptyList()
                     expectedIndex = 0
                 }
-                when(currentSequenceLength){
+                when (currentSequenceLength) {
                     4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
                     5 -> soundPlayer?.playSound(R.raw.cbt_seq_5)
                 }
@@ -196,28 +209,17 @@ class CBTTest : Fragment() {
     private fun finishTest() {
         binding.gridLayout.visibility = View.INVISIBLE
         binding.linearLayout.visibility = View.INVISIBLE
-        infoDialogFinishTest()
+
+        saveDataToFileCSV()
     }
 
     private fun saveData(touchDurationSeconds: Long) {
-//        val dataToUpload = "Name, Age, Email\nJohn Doe, 30, john@example.com\nJane Smith, 25, jane@example.com"
-//
-//        viewModel.generateAndUploadCSV(dataToUpload, object : DataUploadCallback {
-//            override fun onSuccess() {
-//                Log.d("MyLog", "Данные успешно отправлены на сервер.")
-//            }
-//
-//            override fun onFailure(errorMessage: String) {
-//                Log.d("MyLog", "Произошла ошибка: $errorMessage")
-//            }
-//        }) //todo: тут отправка данных на сервер (csv)
-
         val dynamicRow = mutableListOf(
-            (stepsIndex-1).toString(), expectedIndex.toString(), touchDurationSeconds.toString()
+            (stepsIndex - 1).toString(), expectedIndex.toString(), touchDurationSeconds.toString()
         )
         data.add(dynamicRow)
 
-        Log.d("MyLog", "${stepsIndex-1}, $expectedIndex, $touchDurationSeconds")
+        Log.d("MyLog", "${stepsIndex - 1}, $expectedIndex, $touchDurationSeconds")
     }
 
     override fun onDetach() {
@@ -228,10 +230,6 @@ class CBTTest : Fragment() {
         }
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = CBTTest()
-    }
 
     private fun infoDialogStartTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
@@ -262,16 +260,17 @@ class CBTTest : Fragment() {
     }
 
     private fun infoDialogFinishTest() {
-        val outputPath = "/storage/emulated/0/Download/output.csv"
-        val csvWriter = CSVWriter(outputPath)
-        csvWriter.writeDataToCsv(data)
 
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+
+            viewModelUploaderFile.uploadFile(patientId)
+
             dialog.dismiss()
+
             parentFragmentManager
                 .beginTransaction()
                 .replace(R.id.container, TestsPageFragment.newInstance())
@@ -310,8 +309,45 @@ class CBTTest : Fragment() {
         }
     }
 
+    private fun saveDataToFileCSV() {
+        val csvWriter = CSVWriter(context = requireContext())
+        csvWriter.writeDataToCsv(data) {
+            when (it) {
+                DataUploadCallback.OnFailure -> {
+
+                    //todo: тут как-то обработай тип сори, не смогли отправить данные на сервер
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Неудачно сохранились файлы",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                DataUploadCallback.OnSuccess -> {
+                    infoDialogFinishTest()
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         soundPlayer?.stopSound()
     }
+
+    companion object {
+
+        @JvmStatic
+        fun newInstance(
+            patientId: Int = -1
+        ): CBTTest {
+            val fragment = CBTTest()
+            val args = Bundle()
+            args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
 }
