@@ -5,6 +5,7 @@ import com.example.neurosmg.tests.cbt.CBTTest
 import com.example.neurosmg.tests.fot.FOTTest
 import com.example.neurosmg.tests.gng.GNGTest
 import com.example.neurosmg.tests.iat.IATTest
+import com.example.neurosmg.tests.iat2.IATTest2
 import com.example.neurosmg.tests.mrt.MRTTest
 import com.example.neurosmg.tests.rat.RATTest
 import com.example.neurosmg.tests.sct.SCTTest
@@ -15,7 +16,7 @@ fun String.toFragment(patientId: Int): Fragment =
         "FOT" -> FOTTest.newInstance()
         "RAT" -> RATTest.newInstance()
         "IAT" -> IATTest.newInstance()
-//        "IAT 2" -> IAT2Test.newInstance()
+        "IAT 2" -> IATTest2.newInstance()
         "GNG" -> GNGTest.newInstance()
         "SCT" -> SCTTest.newInstance()
         "TMT" -> TMTTest.newInstance()

@@ -121,6 +121,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             ToolbarState.FOTTest -> setupToolbarForFOTTest()
             ToolbarState.RATTest -> setupToolbarForRATTest()
             ToolbarState.IATTest -> setupToolbarForIATTest()
+            ToolbarState.IATTest2 -> setupToolbarForIATTest2()
             ToolbarState.GNGTest -> setupToolbarForGNGTest()
             ToolbarState.SCTTest -> setupToolbarForSCTTest()
             ToolbarState.TMTTest -> setupToolbarForTMTTest()
@@ -307,6 +308,23 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     }
 
     private fun setupToolbarForIATTest() {
+        with(binding.includeToolbar) {
+            visibilityToolbar(true)
+            setSupportActionBar(toolbar)
+            toolbar.title = null
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_back)
+            toolbarTitleCenter.text = getString(R.string.iat_test)
+            subtitle.text = getString(R.string.iat_test_subtitle)
+            subtitle.isVisible = true
+            idSettings.isVisible = false
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressed()
+            }
+        }
+    }
+
+    private fun setupToolbarForIATTest2() {
         with(binding.includeToolbar) {
             visibilityToolbar(true)
             setSupportActionBar(toolbar)

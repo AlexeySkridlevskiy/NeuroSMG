@@ -9,6 +9,7 @@ sealed class ToolbarState {
     object FOTTest: ToolbarState()
     object RATTest: ToolbarState()
     object IATTest: ToolbarState()
+    object IATTest2: ToolbarState()
     object GNGTest: ToolbarState()
     object SCTTest: ToolbarState()
     object TMTTest: ToolbarState()

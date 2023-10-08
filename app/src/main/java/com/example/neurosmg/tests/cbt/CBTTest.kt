@@ -25,6 +25,7 @@ import com.example.neurosmg.csvdatauploader.FileUploaderViewModel
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
+import kotlinx.coroutines.launch
 
 class CBTTest : Fragment() {
     lateinit var binding: FragmentCBTTestBinding
@@ -41,7 +42,7 @@ class CBTTest : Fragment() {
     private var isShowingSequence = false
     private var expectedIndex = 0
     private var stepsIndex = 1
-    private val maxStepsIndex = 20
+    private val maxStepsIndex = 1
     private var soundPlayer: SoundPlayer? = null
     private var touchStartTimeMillis: Long = 0
     private var touchEndTimeMillis: Long = 0
@@ -267,7 +268,13 @@ class CBTTest : Fragment() {
         alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
 
-            viewModelUploaderFile.uploadFile(patientId)
+            viewModelUploaderFile.uploadFile(patientId, successCallback = {
+                Log.d("viewModelUploaderFile", "uploadFile: Success")
+            },
+                errorCallback = { errorMessage ->
+                    Log.d("viewModelUploaderFile", "uploadFile: $errorMessage")
+                }
+            )
 
             dialog.dismiss()
 
