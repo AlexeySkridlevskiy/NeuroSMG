@@ -1,5 +1,8 @@
 package com.example.neurosmg.api
 
+import com.example.neurosmg.common.State
+import com.example.neurosmg.csvdatauploader.RequestSendIdFile
+import com.example.neurosmg.csvdatauploader.ResponseSendIds
 import com.example.neurosmg.csvdatauploader.UploadFileResponse
 import com.example.neurosmg.doctorProfile.UserResponse
 import com.example.neurosmg.login.api.AuthData
@@ -10,6 +13,7 @@ import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
 import com.example.neurosmg.patientTestList.patientProfile.UpdatePatientRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -53,8 +57,14 @@ interface ApiService {
 
     @Multipart
     @POST("/api/upload")
-    fun uploadFile(
+    suspend fun uploadFile(
         @Header("Authorization") authHeader: String,
-        @Part files: MultipartBody.Part
-    ): Call<UploadFileResponse>
+        @Part file: MultipartBody.Part
+    ): Response<List<UploadFileResponse>>
+
+    @POST("/api/datafiles")
+    suspend fun sendIdFile(
+        @Header("Authorization") authHeader: String,
+        @Body data: RequestSendIdFile
+    ): Response<ResponseSendIds>
 }

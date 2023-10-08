@@ -21,11 +21,10 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.csvdatauploader.CSVWriter
 import com.example.neurosmg.csvdatauploader.DataUploadCallback
-import com.example.neurosmg.csvdatauploader.FileUploaderViewModel
+import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
-import kotlinx.coroutines.launch
 
 class CBTTest : Fragment() {
     lateinit var binding: FragmentCBTTestBinding
@@ -51,7 +50,7 @@ class CBTTest : Fragment() {
     private var patientId: Int = -1
 
     private val viewModelUploaderFile by lazy {
-        ViewModelProvider(requireActivity())[FileUploaderViewModel::class.java]
+        ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
     }
 
     override fun onAttach(context: Context) {
@@ -66,6 +65,7 @@ class CBTTest : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModelUploaderFile.setInitialState()
         patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
@@ -96,6 +96,35 @@ class CBTTest : Fragment() {
 
         binding.btnStart.setOnClickListener {
             infoDialogInstruction()
+        }
+
+        viewModelUploaderFile.uploadFileLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UploadState.Error -> {
+                    binding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                is UploadState.Success.SuccessGetIdFile -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                UploadState.Success.SuccessSendFile -> {
+                    binding.progressBar.isVisible = false
+
+                    parentFragmentManager
+                        .beginTransaction()
+                        .replace(R.id.container, TestsPageFragment.newInstance())
+                        .addToBackStack(Screen.MAIN_PAGE)
+                        .commit()
+                }
+
+                UploadState.Initial -> {}
+            }
         }
     }
 
@@ -264,25 +293,11 @@ class CBTTest : Fragment() {
 
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
-        alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-
-            viewModelUploaderFile.uploadFile(patientId, successCallback = {
-                Log.d("viewModelUploaderFile", "uploadFile: Success")
-            },
-                errorCallback = { errorMessage ->
-                    Log.d("viewModelUploaderFile", "uploadFile: $errorMessage")
-                }
-            )
-
+        alertDialogBuilder.setTitle(R.string.dialog_test_success_title)
+        alertDialogBuilder.setMessage(R.string.dialog_test_success_subtitle)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
+            viewModelUploaderFile.sendFile(idPatient = patientId)
             dialog.dismiss()
-
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, TestsPageFragment.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
