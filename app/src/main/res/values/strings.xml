@@ -54,4 +54,8 @@
     <string name="patient_date_of_birthd">Дата рождения</string>
     <string name="dialog_fail_add_patient">Пациент не создан! Попробуйте еще раз!</string>
     <string name="dialog_ok">Окей</string>
+
+    //загрузка файла
+    <string name="dialog_test_success_title">Тестирование пройдено</string>
+    <string name="dialog_test_success_subtitle">Данные будут сохранены в папке</string>
 </resources>
