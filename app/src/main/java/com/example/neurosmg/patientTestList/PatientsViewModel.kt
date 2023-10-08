@@ -25,8 +25,8 @@ class PatientsViewModel(application: Application) : AndroidViewModel(application
 
     private val userId = idController.getUserId()
 
-    private val _userPatients: MutableLiveData<State<List<Patient>>> = MutableLiveData()
-    val userPatients: LiveData<State<List<Patient>>> = _userPatients
+    private val _userPatients: MutableLiveData<State<List<Int>>> = MutableLiveData()
+    val userPatients: LiveData<State<List<Int>>> = _userPatients
 
     fun fetchUserPatients() {
         val jwtToken = tokenController.getUserToken()

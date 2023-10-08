@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.neurosmg.csvdatauploader.UploadState
-import com.example.neurosmg.data.repository.DataStorageSendFiles
+import com.example.neurosmg.data.repository.SendFilesDataSource
 import com.example.neurosmg.data.useCase.SendFileUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 class CbtTestViewModel(private val application: Application) : AndroidViewModel(application) {
 
     private val baseContext: Context = application.baseContext
-    private val dataStorageSendFiles = DataStorageSendFiles(baseContext)
+    private val dataStorageSendFiles = SendFilesDataSource(baseContext)
     private val uploadFileUseCase = SendFileUseCase(dataStorageSendFiles)
 
     private val _uploadFileLiveData: MutableLiveData<UploadState> = MutableLiveData()

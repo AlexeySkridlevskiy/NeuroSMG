@@ -71,7 +71,7 @@ class PatientListFragment : Fragment() {
 
                 is State.Success -> {
                     progressBar.isVisible = false
-                    adapter.addPatient(state.data)
+                    adapter.addItem(state.data)
                     rcView.adapter = adapter
                 }
 
