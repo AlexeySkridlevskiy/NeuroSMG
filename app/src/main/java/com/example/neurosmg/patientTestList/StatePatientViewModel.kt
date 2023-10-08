@@ -11,18 +11,11 @@ class StatePatientViewModel : ViewModel() {
 
     fun getStatePatientList(): StatePatientList = statePatientList
 
-    fun navToArchive() {
-        val archive = statePatientList.copy(
-            navigateTo = ScreenNavigationMenu.TO_ARCHIVE
+    fun navTo(screenNavigationMenu: ScreenNavigationMenu) {
+        val state = statePatientList.copy(
+            navigateTo = screenNavigationMenu
         )
-        statePatientList = archive
-    }
-
-    fun navToPatientList() {
-        val archive = statePatientList.copy(
-            navigateTo = ScreenNavigationMenu.TO_PATIENT_LIST
-        )
-        statePatientList = archive
+        statePatientList = state
     }
 }
 
