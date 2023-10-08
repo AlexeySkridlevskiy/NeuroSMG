@@ -1,6 +1,9 @@
 package com.example.neurosmg.login
 
 import com.example.neurosmg.api.ApiService
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -14,10 +17,13 @@ class RetrofitBuilder {
         })
         .build()
 
+    private val gson: Gson = GsonBuilder()
+        .setLenient()
+        .create()
     fun retrofitCreate(): ApiService {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()
 

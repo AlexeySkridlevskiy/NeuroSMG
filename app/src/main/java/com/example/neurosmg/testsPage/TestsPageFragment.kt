@@ -68,7 +68,7 @@ class TestsPageFragment : Fragment(), ItemOnClickListener {
         rcView.layoutManager = LinearLayoutManager(requireContext())
         adapter.addTest(testItem = viewModel.getTests())
         rcView.adapter = adapter
-        Toast.makeText(requireContext(), "ID пациента ${arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT)}", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(requireContext(), "ID пациента ${arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT)}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onItemClick(item: TestItem) {

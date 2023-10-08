@@ -8,6 +8,7 @@ import java.io.FileOutputStream
 import java.io.FileWriter
 import java.io.IOException
 import java.io.OutputStreamWriter
+import kotlin.reflect.typeOf
 
 class CSVWriter(
     private val context: Context

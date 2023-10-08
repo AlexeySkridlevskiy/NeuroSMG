@@ -9,8 +9,11 @@ import com.example.neurosmg.patientTestList.addPatient.PatientRequest
 import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
 import com.example.neurosmg.patientTestList.patientProfile.UpdatePatientRequest
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.*
+import java.io.File
 
 interface ApiService {
     @POST("/api/auth/local")
@@ -50,9 +53,8 @@ interface ApiService {
 
     @Multipart
     @POST("/api/upload")
-    suspend fun uploadFile(
+    fun uploadFile(
         @Header("Authorization") authHeader: String,
-        @Query("id") id: Int,
-        @Part file: MultipartBody.Part
-    ): UploadFileResponse
+        @Part files: MultipartBody.Part
+    ): Call<UploadFileResponse>
 }
