@@ -13,6 +13,7 @@ import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.archive.ArchivePatientFragment
 import com.example.neurosmg.common.State
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.patientTestList.addPatient.AddPatient
@@ -25,7 +26,7 @@ class PatientListFragment : Fragment() {
 
     private lateinit var fragment: Fragment
     private val bundle: Bundle = Bundle()
-    private val adapter = PatientAdapter()
+    private val adapter = RecyclerAdapter()
 
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[PatientsViewModel::class.java]
@@ -106,11 +107,11 @@ class PatientListFragment : Fragment() {
 
         init()
 
-        adapter.onPatientItemClick = object : PatientAdapter.OnPatientClickListener {
+        adapter.onPatientItemClick = object : RecyclerAdapter.OnPatientClickListener {
             override fun onPatientIdClick(patient: Int) {
                 fragment = when (patientStateViewModel.getStatePatientList().navigateTo) {
                     ScreenNavigationMenu.TO_ARCHIVE -> {
-                        PatientProfile.newInstance()
+                        ArchivePatientFragment.newInstance(patientId = patient)
                     }
 
                     ScreenNavigationMenu.TO_PATIENT_LIST -> {

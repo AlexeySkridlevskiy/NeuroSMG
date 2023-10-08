@@ -57,4 +57,11 @@ interface ApiService {
         @Header("Authorization") authHeader: String,
         @Part files: MultipartBody.Part
     ): Call<UploadFileResponse>
+
+    @POST("/api/patients/{id}")
+    fun getArchivePatient(
+        @Header("Authorization") authHeader: String,
+        @Path("id") id: Int,
+        @Query("populate") populate: String = "datafiles"
+    ): Call<UploadFileResponse>
 }

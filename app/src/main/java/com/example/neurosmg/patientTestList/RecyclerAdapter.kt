@@ -9,7 +9,7 @@ import com.example.neurosmg.R
 import com.example.neurosmg.databinding.ListItemBinding
 import com.example.neurosmg.patientTestList.entity.Patient
 
-class PatientAdapter() : RecyclerView.Adapter<PatientAdapter.ViewHolder>() {
+class RecyclerAdapter() : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
 
 
     private val patientList = mutableListOf<Patient>()
