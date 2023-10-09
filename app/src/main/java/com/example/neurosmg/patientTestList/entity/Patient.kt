@@ -4,11 +4,11 @@ import com.example.neurosmg.patientTestList.PatientListResponse
 
 data class Patient(val id: Int)
 
-fun PatientListResponse?.mapToListOfPatients(): List<Patient> {
-    val listOfPatients = mutableListOf<Patient>()
+fun PatientListResponse?.mapToListOfPatients(): List<Int> {
+    val listOfPatients = mutableListOf<Int>()
 
     this?.id_patient?.mapTo(listOfPatients) { patient ->
-        Patient(patient.id)
+        patient.id
     }
 
     return listOfPatients

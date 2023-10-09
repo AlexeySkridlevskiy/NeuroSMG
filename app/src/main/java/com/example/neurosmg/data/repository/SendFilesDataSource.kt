@@ -1,24 +1,19 @@
 package com.example.neurosmg.data.repository
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.neurosmg.api.TokenController
 import com.example.neurosmg.csvdatauploader.BodyRequest
 import com.example.neurosmg.csvdatauploader.RequestSendIdFile
-import com.example.neurosmg.csvdatauploader.UploadFileResponse
 import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.login.RetrofitBuilder
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.io.File
 
-class DataStorageSendFiles(private val context: Context) {
+class SendFilesDataSource(private val context: Context) {
 
     private val authToken = TokenController(context).getUserToken()
     private val apiService = RetrofitBuilder().retrofitCreate()

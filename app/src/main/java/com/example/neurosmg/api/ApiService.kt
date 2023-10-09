@@ -4,6 +4,7 @@ import com.example.neurosmg.common.State
 import com.example.neurosmg.csvdatauploader.RequestSendIdFile
 import com.example.neurosmg.csvdatauploader.ResponseSendIds
 import com.example.neurosmg.csvdatauploader.UploadFileResponse
+import com.example.neurosmg.data.entity.ArchiveResponse
 import com.example.neurosmg.doctorProfile.UserResponse
 import com.example.neurosmg.login.api.AuthData
 import com.example.neurosmg.login.api.AuthResponse
@@ -67,4 +68,11 @@ interface ApiService {
         @Header("Authorization") authHeader: String,
         @Body data: RequestSendIdFile
     ): Response<ResponseSendIds>
+
+    @GET("/api/patients/{patientId}")
+    suspend fun getArchivePatient(
+        @Header("Authorization") authHeader: String,
+        @Path("patientId") patientId: Int,
+        @Query("populate") populate: String = "datafiles"
+    ): Response<ArchiveResponse>
 }
