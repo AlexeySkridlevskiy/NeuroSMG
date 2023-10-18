@@ -1,10 +1,9 @@
 package com.example.neurosmg.api
 
-import com.example.neurosmg.common.State
+import FileData
 import com.example.neurosmg.csvdatauploader.RequestSendIdFile
 import com.example.neurosmg.csvdatauploader.ResponseSendIds
 import com.example.neurosmg.csvdatauploader.UploadFileResponse
-import com.example.neurosmg.data.entity.ArchiveResponse
 import com.example.neurosmg.doctorProfile.UserResponse
 import com.example.neurosmg.login.api.AuthData
 import com.example.neurosmg.login.api.AuthResponse
@@ -13,12 +12,9 @@ import com.example.neurosmg.patientTestList.addPatient.PatientRequest
 import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
 import com.example.neurosmg.patientTestList.patientProfile.UpdatePatientRequest
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
-import java.io.File
 
 interface ApiService {
     @POST("/api/auth/local")
@@ -73,6 +69,6 @@ interface ApiService {
     suspend fun getArchivePatient(
         @Header("Authorization") authHeader: String,
         @Path("patientId") patientId: Int,
-        @Query("populate") populate: String = "datafiles"
-    ): Response<ArchiveResponse>
+        @Query("populate") populate: String = "datafiles.file"
+    ): Response<FileData>
 }

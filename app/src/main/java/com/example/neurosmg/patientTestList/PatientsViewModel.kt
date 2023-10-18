@@ -1,7 +1,6 @@
 package com.example.neurosmg.patientTestList
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,7 +8,6 @@ import com.example.neurosmg.api.IdController
 import com.example.neurosmg.api.TokenController
 import com.example.neurosmg.common.State
 import com.example.neurosmg.login.RetrofitBuilder
-import com.example.neurosmg.patientTestList.entity.Patient
 import com.example.neurosmg.patientTestList.entity.mapToListOfPatients
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,8 +23,8 @@ class PatientsViewModel(application: Application) : AndroidViewModel(application
 
     private val userId = idController.getUserId()
 
-    private val _userPatients: MutableLiveData<State<List<Int>>> = MutableLiveData()
-    val userPatients: LiveData<State<List<Int>>> = _userPatients
+    private val _userPatients: MutableLiveData<State<List<String>>> = MutableLiveData()
+    val userPatients: LiveData<State<List<String>>> = _userPatients
 
     fun fetchUserPatients() {
         val jwtToken = tokenController.getUserToken()

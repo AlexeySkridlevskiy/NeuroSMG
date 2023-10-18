@@ -1,7 +1,8 @@
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.neurosmg.archive.ArchiveState
-import com.example.neurosmg.archive.mapToList
+import com.example.neurosmg.archive.mapToListOfNames
 import com.example.neurosmg.common.State
 import com.example.neurosmg.data.datasource.ArchivePatientDataSource
 
@@ -18,14 +19,9 @@ class GetArchive(
         archiveLiveData.value = State.Loading
 
         if (archive.isSuccessful) {
-            val archiveIds = archive.body()
-                ?.data
-                ?.attributes
-                ?.datafiles
-                ?.data
-                ?.mapToList()
+            val archiveIds = archive.body().mapToListOfNames()
 
-            if (archiveIds.isNullOrEmpty()) {
+            if (archiveIds.isEmpty()) {
                 archiveLiveData.value = State.Empty
             } else {
                 val successState = State.Success(

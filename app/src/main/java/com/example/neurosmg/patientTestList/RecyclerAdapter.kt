@@ -8,16 +8,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.neurosmg.R
 import com.example.neurosmg.databinding.ListItemBinding
 
-class RecyclerAdapter() : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
+class RecyclerAdapter<T> : RecyclerView.Adapter<RecyclerAdapter<T>.ViewHolder>() {
 
-    private val patientList = mutableListOf<Int>()
+    private val itemList = mutableListOf<T>()
+    var onItemClick: OnItemClickListener<T>? = null
 
-    var onPatientItemClick: OnPatientClickListener? = null
-
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = ListItemBinding.bind(itemView)
-        fun bind(patient: Int) = with(binding) {
-            tvTitle.text = patient.toString()
+
+        fun bind(item: T) {
+            with(binding) {
+                tvTitle.text = item.toString()
+            }
         }
     }
 
@@ -27,26 +29,26 @@ class RecyclerAdapter() : RecyclerView.Adapter<RecyclerAdapter.ViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(patientList[position])
+        holder.bind(itemList[position])
 
-        val patient = patientList[position]
+        val item = itemList[position]
         holder.itemView.setOnClickListener {
-            onPatientItemClick?.onPatientIdClick(patient)
+            onItemClick?.onItemClick(item)
         }
     }
 
     override fun getItemCount(): Int {
-        return patientList.size
+        return itemList.size
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun addItem(patient: List<Int>) {
-        patientList.clear()
-        patientList.addAll(patient)
+    fun addItem(items: List<T>) {
+        itemList.clear()
+        itemList.addAll(items)
         notifyDataSetChanged()
     }
 
-    interface OnPatientClickListener {
-        fun onPatientIdClick(patient: Int)
+    interface OnItemClickListener<T> {
+        fun onItemClick(item: T)
     }
 }

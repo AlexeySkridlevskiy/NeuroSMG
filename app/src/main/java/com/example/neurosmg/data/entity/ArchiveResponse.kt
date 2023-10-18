@@ -1,10 +1,8 @@
-package com.example.neurosmg.data.entity
-
-data class ArchiveResponse(
-    val data: ArchiveData,
+data class FileData(
+    val id: Int,
+    val data: Data?
 )
-
-data class ArchiveData(
+data class Data(
     val id: Int,
     val attributes: Attributes
 )
@@ -21,10 +19,10 @@ data class Attributes(
 )
 
 data class DataFiles(
-    val data: List<DataFile>
+    val data: List<DataFileItem>
 )
 
-data class DataFile(
+data class DataFileItem(
     val id: Int,
     val attributes: FileAttributes
 )
@@ -32,5 +30,19 @@ data class DataFile(
 data class FileAttributes(
     val createdAt: String,
     val updatedAt: String,
-    val publishedAt: String
+    val publishedAt: String,
+    val file: FileDetails
+)
+
+data class FileDetails(
+    val data: List<DataItem>?
+)
+
+data class DataItem(
+    val id: Int,
+    val attributes: FileAttributesDetails
+)
+
+data class FileAttributesDetails(
+    val name: String
 )

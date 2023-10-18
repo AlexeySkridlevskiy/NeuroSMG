@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".archive.ArchivePatientFragment">
 
+    <TextView
+        android:id="@+id/tv_empty_list_warning"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="Простите, список пуст"
+        android:visibility="gone"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
