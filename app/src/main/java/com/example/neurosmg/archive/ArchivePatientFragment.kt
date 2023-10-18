@@ -20,7 +20,7 @@ class ArchivePatientFragment : Fragment() {
     private lateinit var binding: FragmentArchivePatientBinding
 
     private var patientId: Int = -1
-    private val adapter = RecyclerAdapter()
+    private val adapter = RecyclerAdapter<Int>()
 
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[ArchivePatientViewModel::class.java]

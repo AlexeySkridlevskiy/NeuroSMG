@@ -26,7 +26,7 @@ class PatientListFragment : Fragment() {
 
     private lateinit var fragment: Fragment
     private val bundle: Bundle = Bundle()
-    private val adapter = RecyclerAdapter()
+    private val adapter = RecyclerAdapter<Int>()
 
     private val viewModel by lazy {
         ViewModelProvider(requireActivity())[PatientsViewModel::class.java]
@@ -71,7 +71,8 @@ class PatientListFragment : Fragment() {
 
                 is State.Success -> {
                     progressBar.isVisible = false
-                    adapter.addItem(state.data)
+                    //todo: подумать еще!
+                    adapter.addItem(state.data.map { it.toInt() })
                     rcView.adapter = adapter
                 }
 
@@ -107,22 +108,22 @@ class PatientListFragment : Fragment() {
 
         init()
 
-        adapter.onPatientItemClick = object : RecyclerAdapter.OnPatientClickListener {
-            override fun onPatientIdClick(patient: Int) {
+        adapter.onItemClick = object : RecyclerAdapter.OnItemClickListener<Int> {
+            override fun onItemClick(item: Int) {
                 fragment = when (patientStateViewModel.getStatePatientList().navigateTo) {
                     ScreenNavigationMenu.TO_ARCHIVE -> {
-                        ArchivePatientFragment.newInstance(patientId = patient)
+                        ArchivePatientFragment.newInstance(patientId = item)
                     }
 
                     ScreenNavigationMenu.TO_PATIENT_LIST -> {
                         val patientProfileFragment = PatientProfile.newInstance()
-                        bundle.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patient)
+                        bundle.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, item)
                         patientProfileFragment.arguments = bundle
                         patientProfileFragment
                     }
 
                     ScreenNavigationMenu.TO_CHOOSED_TEST -> {
-                        TestsPageFragment.newInstance(patient)
+                        TestsPageFragment.newInstance(item)
                     }
                 }
 
