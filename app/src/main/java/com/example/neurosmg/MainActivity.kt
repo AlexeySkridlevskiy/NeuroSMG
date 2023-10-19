@@ -18,6 +18,7 @@ import com.example.neurosmg.login.LoginFragment
 import com.example.neurosmg.patientTestList.PatientListFragment
 import com.example.neurosmg.patientTestList.ScreenNavigationMenu
 import com.example.neurosmg.patientTestList.StatePatientViewModel
+import com.example.neurosmg.questionnaires.QuestionnaireAudit
 
 class MainActivity : AppCompatActivity(), MainActivityListener {
 
@@ -42,6 +43,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         R.id.questionnaires to {
             Toast.makeText(this, "Страница 'Опросники' находится в разработке", Toast.LENGTH_SHORT)
                 .show()
+            replaceFragment(QuestionnaireAudit.newInstance(), Screen.ABOUT_APP)
         },
         R.id.patients to {
             viewModelState.navTo(ScreenNavigationMenu.TO_PATIENT_LIST)

@@ -60,9 +60,14 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
         canvasView.setCanvasViewCallback(this)
         binding.startBtn.setOnClickListener {
-            if (!TestActive.KEY_ACTIVE_FOT_TEST) {
-                onPause()
-                infoDialog()
+            if(testRound>0){
+                binding.canvasView.clearPoints()
+                binding.startBtn.visibility = View.INVISIBLE
+            }else{
+                if (!TestActive.KEY_ACTIVE_FOT_TEST) {
+                    onPause()
+                    infoDialog()
+                }
             }
         }
 
@@ -74,7 +79,6 @@ class FOTTest : Fragment(), CanvasViewCallback {
         binding.startBtn.visibility = View.INVISIBLE
         TestActive.KEY_ACTIVE_FOT_TEST = true
         touchCount = 0
-        binding.canvasView.clearPoints()
         isStartTimer = true
         countDownTimer = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
@@ -94,14 +98,14 @@ class FOTTest : Fragment(), CanvasViewCallback {
         if (testRound == 0) {
             TestActive.KEY_ACTIVE_FOT_TEST = false
             endTime = System.currentTimeMillis()
-
+            canvasView.touchEnabled = false
             val touchesPerSecond = touchCount.toDouble() / 30 //todo: тут частота нажатий
             binding.tvClicks.text = touchCount.toString()
             handIndex = "left"
             binding.lblHandTv.text = "Левая рука"
+            testRound++
             onPause()
             infoDialogToLeft()
-            testRound++
         } else if (testRound != 0) {
             TestActive.KEY_ACTIVE_FOT_TEST = false
             infoDialogEndAllTest()
@@ -111,7 +115,11 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
     override fun onPause() {
         super.onPause()
-        binding.canvasView.clearPoints()
+        if(testRound>0){
+            binding.canvasView.clearPointsLeft()
+        }else{
+            binding.canvasView.clearPoints()
+        }
     }
 
     override fun onDetach() {
@@ -137,11 +145,22 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     override fun onCanvasFirstTouch() {
-        startTest()
+        if(testRound>0){
+            startTest()
+        }else{
+            startTest()
+        }
     }
 
     override fun onCanvasClickNoTest() {
-        if (!TestActive.KEY_ACTIVE_FOT_TEST) {
+
+        if(testRound==1 && !TestActive.KEY_ACTIVE_FOT_TEST){
+            if (viewDialog == 0) {
+                viewDialog++
+                infoDialogStartTest()
+            }
+        }
+        else if (!TestActive.KEY_ACTIVE_FOT_TEST) {
             if (viewDialog == 0) {
                 viewDialog++
                 infoDialogStartTest()
@@ -168,6 +187,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
         alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Для начала тестирования коснитесь экрана") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
         }
 
@@ -193,10 +213,14 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private fun infoDialogToLeft() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.fot_left)
+        binding.startBtn.visibility = View.VISIBLE
         alertDialogBuilder.setTitle("Время вышло") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Продолжите исследование для левой руки") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             canvasView.touchEnabled = true
+            infoDialogStartTest()
+            Log.d("MyLog", "${TestActive.KEY_ACTIVE_FOT_TEST}")
             dialog.dismiss()
         }
 
@@ -211,6 +235,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()

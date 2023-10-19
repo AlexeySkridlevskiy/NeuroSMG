@@ -223,7 +223,9 @@ class IATTest : Fragment() {
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.iat)
+                soundPlayer?.playSound(R.raw.iat_prestart)
                 okBtn.setOnClickListener {
+                    soundPlayer?.stopSound()
                     root.isVisible = false
                     activity?.exitFullScreenMode()
                     constraintLayout3.isVisible = true
@@ -247,9 +249,11 @@ class IATTest : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun infoDialogInstructionTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat_ready_btn_ok)
         alertDialogBuilder.setTitle("Правило тестирования") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между напитками и алкоголем. Отнесите товар к определенной категории.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
 
             binding.btnLeft.setOnTouchListener { _, motionEvent ->
@@ -293,9 +297,11 @@ class IATTest : Fragment() {
 
     private fun infoDialogStep1() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat_step_1)
         alertDialogBuilder.setTitle("Этап 1") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь” и “Напитки”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -307,9 +313,11 @@ class IATTest : Fragment() {
 
     private fun infoDialogStep2() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat_step_2)
         alertDialogBuilder.setTitle("Этап 2") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Хорошим” и “Плохим”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -321,9 +329,11 @@ class IATTest : Fragment() {
 
     private fun infoDialogStep3() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat_step_3)
         alertDialogBuilder.setTitle("Этап 3") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Напитки + Хорошо” и “Алкоголь + Плохо”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -335,9 +345,11 @@ class IATTest : Fragment() {
 
     private fun infoDialogStep4() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat_step_4)
         alertDialogBuilder.setTitle("Этап 4") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Напитки + Хорошо” и “Алкоголь + Плохо”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -349,9 +361,11 @@ class IATTest : Fragment() {
 
     private fun infoDialogStep5() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat_step_5)
         alertDialogBuilder.setTitle("Этап 5") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь” и “Напитки”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -363,9 +377,11 @@ class IATTest : Fragment() {
 
     private fun infoDialogStep6() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat_step_6)
         alertDialogBuilder.setTitle("Этап 6") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Хорошо” и “Напитки + Плохо”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -377,9 +393,11 @@ class IATTest : Fragment() {
 
     private fun infoDialogStep7() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat_step_7)
         alertDialogBuilder.setTitle("Этап 7") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Хорошо” и “Напитки + Плохо”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -395,6 +413,7 @@ class IATTest : Fragment() {
         alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()

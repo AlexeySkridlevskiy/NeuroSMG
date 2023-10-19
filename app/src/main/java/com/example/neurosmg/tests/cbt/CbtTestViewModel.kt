@@ -2,6 +2,7 @@ package com.example.neurosmg.tests.cbt
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,10 +23,11 @@ class CbtTestViewModel(private val application: Application) : AndroidViewModel(
     val uploadFileLiveData: LiveData<UploadState> = _uploadFileLiveData
 
     fun sendFile(idPatient: Int) {
+//        val filename = "$test+_+$unixTimestamp.csv"
         viewModelScope.launch(Dispatchers.IO) {
             val sendFile = uploadFileUseCase.invoke(
                 patientId = idPatient,
-                fileName = "output.csv" //todo: для теста CBT назовешь файл как тебе надо
+                fileName = "outputnone.csv" //todo: для теста CBT назовешь файл как тебе надо
             )
 
             _uploadFileLiveData.postValue(sendFile.value)

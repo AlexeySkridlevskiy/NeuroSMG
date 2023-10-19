@@ -41,17 +41,21 @@ class CBTTest : Fragment() {
     private var isShowingSequence = false
     private var expectedIndex = 0
     private var stepsIndex = 1
-    private val maxStepsIndex = 1
+    private val maxStepsIndex = 5
     private var soundPlayer: SoundPlayer? = null
     private var touchStartTimeMillis: Long = 0
     private var touchEndTimeMillis: Long = 0
     private var touchDurationSeconds: Long = 0
     private val data = mutableListOf<MutableList<String>>()
     private var patientId: Int = -1
+    private var flagIndex: Boolean = true
+    private var squareIndex: Int = -1
 
     private val viewModelUploaderFile by lazy {
         ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
     }
+
+    private val fixedSequence = (0 until 9).toList()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -129,9 +133,6 @@ class CBTTest : Fragment() {
     }
 
     private fun startTest() {
-        if (stepsIndex > maxStepsIndex) {
-            finishTest()
-        }
         binding.tvSteps.text = stepsIndex.toString()
         stepsIndex++
         expectedIndex = 0
@@ -141,8 +142,7 @@ class CBTTest : Fragment() {
             square.visibility = View.VISIBLE
         }
 
-        sequence =
-            visibleSquares.shuffled().take(currentSequenceLength).map { visibleSquares.indexOf(it) }
+        sequence = fixedSequence.take(currentSequenceLength)
         sequenceSquares = sequence.map { visibleSquares[it] }
 
         binding.root.postDelayed({
@@ -163,6 +163,8 @@ class CBTTest : Fragment() {
                 soundPlayer?.playSound(R.raw.cbt_first_seq)
             }
             touchStartTimeMillis = System.currentTimeMillis()
+//                binding.root.isClickable = true
+
             return
         }
 
@@ -187,25 +189,41 @@ class CBTTest : Fragment() {
     }
 
     private fun showNextRandomSquares() {
+        flagIndex = true
         visibleSquares.forEach { square ->
             square.visibility = View.INVISIBLE
         }
 
-        startTest()
+        binding.root.postDelayed({
+            startTest()
+        }, 1000L)
     }
 
     private fun onSquareClick(square: TextView) {
+        soundPlayer?.stopSound()
         if (!isShowingSequence) {
-            if (square == sequenceSquares[expectedIndex]) {
-                square.setBackgroundResource(R.color.cbt_color_square_user)
-                expectedIndex++
-                touchEndTimeMillis = System.currentTimeMillis()
-                touchDurationSeconds = touchEndTimeMillis - touchStartTimeMillis
-                saveData(touchDurationSeconds)
-                touchStartTimeMillis = System.currentTimeMillis()
-                if (expectedIndex == sequenceSquares.size) {
-                    sequenceSquares = emptyList()
-                    expectedIndex = 0
+            if (square !== sequenceSquares[expectedIndex]) {
+                flagIndex = false
+            }
+            square.setBackgroundResource(R.color.cbt_color_square_user)
+            expectedIndex++
+            touchEndTimeMillis = System.currentTimeMillis()
+            touchDurationSeconds = touchEndTimeMillis - touchStartTimeMillis
+
+            squareIndex = visibleSquares.indexOf(square)
+
+            saveData(touchDurationSeconds)
+
+            touchStartTimeMillis = System.currentTimeMillis()
+
+            if (expectedIndex == sequenceSquares.size) {
+                if (stepsIndex > maxStepsIndex) {
+                    finishTest()
+                    return
+                }
+                sequenceSquares = emptyList()
+                expectedIndex = 0
+                if (flagIndex) {
                     currentSequenceLength++
                     when (currentSequenceLength) {
                         4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
@@ -218,20 +236,21 @@ class CBTTest : Fragment() {
                     if (currentSequenceLength > maxSequenceLength) {
                         finishTest()
                     } else {
+                        binding.root.isClickable = false
                         showNextRandomSquares()
                     }
+                } else {
+                    if (currentSequenceLength > 5) {
+                        currentSequenceLength = 5
+                        sequenceSquares = emptyList()
+                        expectedIndex = 0
+                    }
+                    when (currentSequenceLength) {
+                        4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
+                        5 -> soundPlayer?.playSound(R.raw.cbt_seq_5)
+                    }
+                    showNextRandomSquares()
                 }
-            } else {
-                if (currentSequenceLength > 5) {
-                    currentSequenceLength = 5
-                    sequenceSquares = emptyList()
-                    expectedIndex = 0
-                }
-                when (currentSequenceLength) {
-                    4 -> soundPlayer?.playSound(R.raw.cbt_seq_4)
-                    5 -> soundPlayer?.playSound(R.raw.cbt_seq_5)
-                }
-                showNextRandomSquares()
             }
         }
     }
@@ -249,7 +268,7 @@ class CBTTest : Fragment() {
         )
         data.add(dynamicRow)
 
-        Log.d("MyLog", "${stepsIndex - 1}, $expectedIndex, $touchDurationSeconds")
+        Log.d("MyLog", "${stepsIndex - 1}, ${squareIndex+1}, $touchDurationSeconds")
     }
 
     override fun onDetach() {
@@ -259,7 +278,6 @@ class CBTTest : Fragment() {
             timer.cancel()
         }
     }
-
 
     private fun infoDialogStartTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
@@ -292,10 +310,13 @@ class CBTTest : Fragment() {
     private fun infoDialogFinishTest() {
 
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.stopSound()
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle(R.string.dialog_test_success_title)
         alertDialogBuilder.setMessage(R.string.dialog_test_success_subtitle)
         alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
+//            val unixTimestamp = System.currentTimeMillis()
+//            val test = "CBT"
             viewModelUploaderFile.sendFile(idPatient = patientId)
             dialog.dismiss()
         }
@@ -306,10 +327,8 @@ class CBTTest : Fragment() {
     }
 
     private fun educationAnimation() {
-//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
             soundPlayer?.playSound(R.raw.cbt_anim)
-//            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.cbt)
@@ -318,7 +337,6 @@ class CBTTest : Fragment() {
                     soundPlayer?.playSound(R.raw.cbt_start_btn)
                     root.isVisible = false
                     activity?.exitFullScreenMode()
-//                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
                     linearLayout.isVisible = true
                     gridLayout.isVisible = true
                     btnStart.isVisible = true
@@ -336,9 +354,6 @@ class CBTTest : Fragment() {
         csvWriter.writeDataToCsv(data) {
             when (it) {
                 DataUploadCallback.OnFailure -> {
-
-                    //todo: тут как-то обработай тип сори, не смогли отправить данные на сервер
-
                     Toast.makeText(
                         requireContext(),
                         "Неудачно сохранились файлы",
@@ -359,7 +374,6 @@ class CBTTest : Fragment() {
     }
 
     companion object {
-
         @JvmStatic
         fun newInstance(
             patientId: Int = -1
@@ -371,5 +385,4 @@ class CBTTest : Fragment() {
             return fragment
         }
     }
-
 }
