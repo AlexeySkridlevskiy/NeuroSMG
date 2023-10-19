@@ -2,7 +2,6 @@ package com.example.neurosmg
 
 object Screen {
     const val MAIN_PAGE = "MainPage"
-    const val LOGIN = "LOGIN"
     const val IAT_TEST = "IAT_TEST"
     const val CBT_TEST = "CBT_TEST"
     const val FOT_TEST = "FOT_TEST"
@@ -18,4 +17,5 @@ object Screen {
     const val ARCHIVE = "ARCHIVE"
     const val DOCTOR_PROFILE = "ARCHIVE"
     const val ADD_PATIENT = "ARCHIVE"
+    const val INITIAL = "INITIAL"
 }
