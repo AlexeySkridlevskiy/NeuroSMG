@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.os.Handler
 import android.os.SystemClock
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 
@@ -27,7 +28,7 @@ class CanvasView @JvmOverloads constructor(
     private val points = mutableListOf<Pair<Float, Float>>()
     private var touchCount: Int = 0
     private var canvasViewCallback: CanvasViewCallback? = null
-    private var startIndex: Int = 2
+    var startIndex: Int = 2
     var touchEnabled = true
 
     private var startTime: Long = 0
@@ -55,9 +56,7 @@ class CanvasView @JvmOverloads constructor(
     private val updateTimer: Runnable = object : Runnable {
         override fun run() {
             elapsedTime = SystemClock.uptimeMillis() - startTime
-            // Здесь вы можете обновлять интерфейс с текущим временем
-            // Например, отобразить время на вашем экране или выполнить другие действия с ним
-            timerHandler.postDelayed(this, 10) // Обновление каждую секунду
+            timerHandler.postDelayed(this, 10)
         }
     }
 
@@ -66,13 +65,14 @@ class CanvasView @JvmOverloads constructor(
         if(!touchEnabled){
             return false
         }
-
+        Log.d("MyLog", "${startIndex}")
         if (startIndex == 0){
             canvasViewCallback?.onCanvasFirstTouch()
             startIndex++
         }else{
             canvasViewCallback?.onCanvasClickNoTest()
         }
+
         if (TestActive.KEY_ACTIVE_FOT_TEST){
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -101,6 +101,13 @@ class CanvasView @JvmOverloads constructor(
     fun clearPoints() {
         touchCount = 0
         startIndex = 0
+        points.clear()
+        invalidate()
+    }
+
+    fun clearPointsLeft() {
+        touchCount = 0
+        startIndex = 2
         points.clear()
         invalidate()
     }

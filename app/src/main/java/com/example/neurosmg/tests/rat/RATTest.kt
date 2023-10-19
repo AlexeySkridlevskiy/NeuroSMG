@@ -120,6 +120,7 @@ class RATTest : Fragment() {
         indexTouchAttempt++
         sizeBall+=2
         val shouldPop = indexPop == ballProbabilities[colorIndex]
+        Log.d("MyLog", "$indexPop")
         touchStartTimeUnixTimestamp = System.currentTimeMillis()
 
         if (shouldPop) with(binding) {
@@ -188,6 +189,7 @@ class RATTest : Fragment() {
         ballView.requestLayout()
 
     }
+    @SuppressLint("ClickableViewAccessibility")
     private fun addRandomBall(container: ConstraintLayout) {
         if(indexTouch==0){
             binding.btnStop.isEnabled = false
@@ -212,12 +214,33 @@ class RATTest : Fragment() {
         layoutParams.topMargin = topMargin
         ball.layoutParams = layoutParams
 
-        ball.setOnClickListener {
-            if (Random.nextInt(ballProbabilities[colorIndex]) == 0) {
-                popBall(ball)
-            } else {
-                growBall(ball)
+        val ballsContainer: ConstraintLayout = binding.ballsContainer
+
+        ball.setOnTouchListener { view, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
+                }
+                MotionEvent.ACTION_UP -> {
+                    touchDuration = System.currentTimeMillis() - touchStartTimeUnixTimestamp
+
+                    indexTouch++
+                    if (indexTouch > 0) {
+                        binding.btnStop.isEnabled = true
+                    }
+                    val ballCount = ballsContainer.childCount
+                    if (ballCount > 0) {
+                        val lastBall = ballsContainer.getChildAt(ballCount - 1)
+                        val isPopped = popBall(lastBall)
+                        if (!isPopped) {
+                            growBall(lastBall)
+                        }
+                    } else {
+                        addRandomBall(ballsContainer)
+                    }
+                }
             }
+            true
         }
     }
     private fun createRandomBallDrawable(colorIndex: Int): ShapeDrawable {

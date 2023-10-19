@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -21,7 +20,6 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
 import com.example.neurosmg.databinding.FragmentIATTest2Binding
-import com.example.neurosmg.databinding.FragmentIATTestBinding
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
@@ -51,8 +49,8 @@ class IATTest2 : Fragment() {
     private var touchEndTimeMillis: Long = 0
     private var touchDurationSeconds: Long = 0
     private var touchCategory: String = ""
-    private var touchLeftCategory: String = "fruit"
-    private var touchRightCategory: String = "alco"
+    private var touchLeftCategory: String = "alco"
+    private var touchRightCategory: String = "fruit"
     private var correctAnswer: String = ""
 
     override fun onAttach(context: Context) {
@@ -119,7 +117,7 @@ class IATTest2 : Fragment() {
                 if((0..1).random()==0) smilePic else grimacePic
             }
         }else if(currentStep==5){
-            if((0..1).random()==0) alcoholPic else fruitsPic
+            if((0..1).random()==0) smilePic else grimacePic
         }else if(currentStep==6||currentStep==7){
             if((0..1).random()==0){
                 if((0..1).random()==0) alcoholPic else fruitsPic
@@ -157,28 +155,28 @@ class IATTest2 : Fragment() {
                     infoDialogStep2()
                     touchLeftCategory = "smile"
                     touchRightCategory = "grimace"
-                    binding.btnLeft.text = "Улыбка"
-                    binding.btnRight.text = "Гримаса"
+                    binding.btnLeft.text = "Улыбки"
+                    binding.btnRight.text = "Гримасы"
                 }else if(currentStep==3){
                     infoDialogStep3()
-                    touchLeftCategory = "smilefruit"
-                    touchRightCategory = "grimacealco"
-                    binding.btnLeft.text = "Улыбка или фрукт"
-                    binding.btnRight.text = "Гримаса или алкоголь"
+                    touchLeftCategory = "smilealco"
+                    touchRightCategory = "grimacefruit"
+                    binding.btnLeft.text = "Улыбки или алкоголь"
+                    binding.btnRight.text = "Гримасы или фрукты"
                 }else if(currentStep==4){
                     infoDialogStep4()
                 }else if(currentStep==5){
                     infoDialogStep5()
-                    touchLeftCategory = "alco"
-                    touchRightCategory = "fruit"
-                    binding.btnLeft.text = "Алкоголь"
-                    binding.btnRight.text = "Фрукт"
+                    touchLeftCategory = "grimace"
+                    touchRightCategory = "smile"
+                    binding.btnLeft.text = "Гримасы"
+                    binding.btnRight.text = "Улыбки"
                 }else if(currentStep==6){
                     infoDialogStep6()
-                    touchLeftCategory = "smilealco"
-                    touchRightCategory = "grimacefruit"
-                    binding.btnLeft.text = "Алкоголь или улыбка"
-                    binding.btnRight.text = "Фрукт или Гримаса"
+                    touchLeftCategory = "grimacealco"
+                    touchRightCategory = "smilefruit"
+                    binding.btnLeft.text = "Гримасы или алкоголь"
+                    binding.btnRight.text = "Улыбки или фрукты"
                 }else if(currentStep==7){
                     infoDialogStep7()
                 }
@@ -194,11 +192,11 @@ class IATTest2 : Fragment() {
     private fun checkAnswer(selectedCategory: Int) {
         var correctCategory = -1
         correctCategory = if(currentStep==5){
-            if (currentWordList.contentEquals(alcoholPic)) 0 else 1
+            if (currentWordList.contentEquals(smilePic)) 0 else 1
         }else if(currentStep>=6){
-            if (currentWordList.contentEquals(alcoholPic)||currentWordList.contentEquals(smilePic)) 0 else 1
-        }else{
             if (currentWordList.contentEquals(fruitsPic)||currentWordList.contentEquals(smilePic)) 0 else 1
+        }else{
+            if (currentWordList.contentEquals(fruitsPic)||currentWordList.contentEquals(grimacePic)) 0 else 1
         }
 
         if (selectedCategory == correctCategory) {
@@ -226,7 +224,8 @@ class IATTest2 : Fragment() {
         binding.apply {
             lottieLayout.run {
                 root.isVisible = true
-                animationLottie.setAnimation(R.raw.iat)
+                soundPlayer?.playSound(R.raw.iat2_prestart)
+                animationLottie.setAnimation(R.raw.iat2)
                 okBtn.setOnClickListener {
                     root.isVisible = false
                     activity?.exitFullScreenMode()
@@ -254,6 +253,7 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setTitle("Правило тестирования") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между фруктами и алкоголем. Отнесите товар к определенной категории.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
 
             binding.btnLeft.setOnTouchListener { _, motionEvent ->
@@ -266,7 +266,7 @@ class IATTest2 : Fragment() {
                     MotionEvent.ACTION_UP -> {
                         touchEndTimeMillis = System.currentTimeMillis()
                         calculateTouchDuration()
-                        checkAnswer(0)
+                        checkAnswer(1)
                     }
                 }
                 false
@@ -282,7 +282,7 @@ class IATTest2 : Fragment() {
                     MotionEvent.ACTION_UP -> {
                         touchEndTimeMillis = System.currentTimeMillis()
                         calculateTouchDuration()
-                        checkAnswer(1)
+                        checkAnswer(0)
                     }
                 }
                 false
@@ -297,9 +297,11 @@ class IATTest2 : Fragment() {
 
     private fun infoDialogStep1() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat2_step_1)
         alertDialogBuilder.setTitle("Этап 1") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь” и “Фрукты”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -311,9 +313,11 @@ class IATTest2 : Fragment() {
 
     private fun infoDialogStep2() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat2_step_2)
         alertDialogBuilder.setTitle("Этап 2") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между “Улыбками” и “Гримасами”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -325,9 +329,11 @@ class IATTest2 : Fragment() {
 
     private fun infoDialogStep3() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat2_step_3)
         alertDialogBuilder.setTitle("Этап 3") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Фрукты + Улыбки” и “Алкоголь + Гримасы”.") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Улыбки” и “Фрукты + Гримасы”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -339,9 +345,11 @@ class IATTest2 : Fragment() {
 
     private fun infoDialogStep4() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat2_step_4)
         alertDialogBuilder.setTitle("Этап 4") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Фрукты + Улыбки” и “Алкоголь + Гримасы”.") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Улыбки” и “Фрукты + Гримасы”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -353,9 +361,11 @@ class IATTest2 : Fragment() {
 
     private fun infoDialogStep5() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat2_step_5)
         alertDialogBuilder.setTitle("Этап 5") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь” и “Фрукты”.") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Сделайте выбор между “Улыбками” и “Гримасами”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -367,9 +377,11 @@ class IATTest2 : Fragment() {
 
     private fun infoDialogStep6() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat2_step_6)
         alertDialogBuilder.setTitle("Этап 6") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Улыбки” и “Фрукты + Гримасы”.") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Гримасы” и “Фрукты + Улыбки”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -381,9 +393,11 @@ class IATTest2 : Fragment() {
 
     private fun infoDialogStep7() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.iat2_step_7)
         alertDialogBuilder.setTitle("Этап 7") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Улыбки” и “Фрукты + Гримасы”.") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Гримасы” и “Фрукты + Улыбки”.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             updateWordList()
         }
@@ -399,6 +413,7 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            soundPlayer?.stopSound()
             dialog.dismiss()
             parentFragmentManager
                 .beginTransaction()

@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,11 +30,14 @@ class MRTTest : Fragment() {
     private var steps = 0
     private var flag = false
     private var soundPlayer: SoundPlayer? = null
+    private var resource = 1
     private val image1Resources = arrayOf(
         R.drawable.figure_1_1,
         R.drawable.figure_1_2,
         R.drawable.figure_1_3,
         R.drawable.figure_1_4,
+        R.drawable.figure_1_5,
+        R.drawable.figure_1_6,
     )
 
     private val image2Resources = arrayOf(
@@ -61,6 +65,15 @@ class MRTTest : Fragment() {
         R.drawable.figure_4_4,
         R.drawable.figure_4_5,
         R.drawable.figure_4_6,
+    )
+
+    private val image5Resources = arrayOf(
+        R.drawable.figure_5_1,
+        R.drawable.figure_5_2,
+        R.drawable.figure_5_3,
+        R.drawable.figure_5_4,
+        R.drawable.figure_5_5,
+        R.drawable.figure_5_6,
     )
 
     override fun onAttach(context: Context) {
@@ -154,51 +167,45 @@ class MRTTest : Fragment() {
             steps++
             binding.tvSteps.text = steps.toString()
 
-            var randomResource = randomImageResource()
-            var randomIndex = randomImageFromResource(randomResource)
-            if (randomResource == 1) {
-                binding.imgView1.setImageResource(image1Resources[randomIndex])
-            } else if (randomResource == 2) {
-                binding.imgView1.setImageResource(image2Resources[randomIndex])
-            } else if (randomResource == 3) {
-                binding.imgView1.setImageResource(image3Resources[randomIndex])
-            } else if (randomResource == 4) {
-                binding.imgView1.setImageResource(image4Resources[randomIndex])
+            when(steps){
+                11 -> resource = 2
+                21 -> resource = 3
+                31 -> resource = 4
+                41 -> resource = 5
             }
 
-            val randomResource1 = randomResource
-
-            randomResource = randomImageResource()
-            randomIndex = randomImageFromResource(randomResource)
-            if (randomResource == 1) {
-                binding.imgView2.setImageResource(image1Resources[randomIndex])
-            } else if (randomResource == 2) {
-                binding.imgView2.setImageResource(image2Resources[randomIndex])
-            } else if (randomResource == 3) {
-                binding.imgView2.setImageResource(image3Resources[randomIndex])
-            } else if (randomResource == 4) {
-                binding.imgView2.setImageResource(image4Resources[randomIndex])
+            var randomIndex = randomImageFromResource(resource)
+            when(resource){
+                1 -> binding.imgView1.setImageResource(image1Resources[randomIndex])
+                2 -> binding.imgView1.setImageResource(image2Resources[randomIndex])
+                3 -> binding.imgView1.setImageResource(image3Resources[randomIndex])
+                4 -> binding.imgView1.setImageResource(image4Resources[randomIndex])
+                5 -> binding.imgView1.setImageResource(image5Resources[randomIndex])
             }
 
-            val randomResource2 = randomResource
-            flag = randomResource1==randomResource2
+            val randomIndexOne = randomIndex%2
+            
+            randomIndex = randomImageFromResource(resource)
+            when(resource){
+                1 -> binding.imgView2.setImageResource(image1Resources[randomIndex])
+                2 -> binding.imgView2.setImageResource(image2Resources[randomIndex])
+                3 -> binding.imgView2.setImageResource(image3Resources[randomIndex])
+                4 -> binding.imgView2.setImageResource(image4Resources[randomIndex])
+                5 -> binding.imgView2.setImageResource(image5Resources[randomIndex])
+            }
+            flag = randomIndex%2 == randomIndexOne
         }
-    }
-
-    private fun randomImageResource(): Int {
-        return Random.nextInt(1..4)
     }
 
     private fun randomImageFromResource(randomResource: Int): Int {
         var randomIndex = 0
-        if(randomResource==1){
-            randomIndex = Random.nextInt(image1Resources.size)
-        }else if(randomResource==2){
-            randomIndex = Random.nextInt(image2Resources.size)
-        }else if(randomResource==3){
-            randomIndex = Random.nextInt(image3Resources.size)
-        }else if(randomResource==4){
-            randomIndex = Random.nextInt(image4Resources.size)
+
+        when(randomResource){
+            1 -> randomIndex = Random.nextInt(image1Resources.size)
+            2 -> randomIndex = Random.nextInt(image2Resources.size)
+            3 -> randomIndex = Random.nextInt(image3Resources.size)
+            4 -> randomIndex = Random.nextInt(image4Resources.size)
+            5 -> randomIndex = Random.nextInt(image5Resources.size)
         }
 
         return randomIndex

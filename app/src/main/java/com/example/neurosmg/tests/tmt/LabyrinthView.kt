@@ -1,5 +1,6 @@
 package com.example.neurosmg.tests.tmt
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -35,7 +36,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         isAntiAlias = true
     }
 
-    private val finishX = 12
+    private val finishX = 16
     private var finishY = 3
     private var isFinishMessageShown = false
     private var isCollisionLogged = false
@@ -46,73 +47,73 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
     private val paint = Paint()
     private var cellSize = 0
     private val labyrinth1 = mutableListOf(
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
-        listOf(0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1),
-        listOf(0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1),
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
     private val labyrinth2 = mutableListOf(
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
-        listOf(0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1),
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
     private val labyrinth3 = mutableListOf(
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
-        listOf(0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1),
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
     private val labyrinth4 = mutableListOf(
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1),
-        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1),
-        listOf(0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1),
-        listOf(0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1),
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
     private val labyrinth5 = mutableListOf(
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1),
-        listOf(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1),
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
     private val labyrinth6 = mutableListOf(
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1),
-        listOf(0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1),
-        listOf(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1),
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
     private val labyrinth7 = mutableListOf(
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1),
-        listOf(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1),
-        listOf(0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1),
-        listOf(0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0),
+        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
     private var labyrinthData = labyrinth1
     private val labyrinthList = listOf(labyrinth1, labyrinth2, labyrinth3, labyrinth4, labyrinth5, labyrinth6, labyrinth7)
@@ -184,6 +185,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
@@ -193,7 +195,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
                 if (isValidMove(x, y)) {
                     userPath.add(Point(x, y))
 
-                    invalidate()
+                    postInvalidate()
 
                     // Проверяем, достиг ли пользователь финишной точки
                     if (!isFinishMessageShown && x / cellSize == finishX && y / cellSize == finishY) {
@@ -209,9 +211,13 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
                 }
             }
             MotionEvent.ACTION_UP -> {
-                userPath.clear()
+                handler.postDelayed({
+                    userPath.clear() // Очистка пути после задержки
+                    postInvalidate()
+                }, 50) // 500 миллисекунд (или любой другой желаемый интервал)
                 isFinishMessageShown = false
                 isCollisionLogged = false
+                Log.d("MyLog", "Clear")
             }
         }
         return true
@@ -231,7 +237,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         }
 
         if (labyrinthData[row][col] == 1) {
-            Log.d("MyLog", "Столкновение")
+//            Log.d("MyLog", "Столкновение")
             return false
         }
 

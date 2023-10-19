@@ -81,10 +81,8 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     }
 
     private fun educationAnimation() {
-//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
             soundPlayer?.playSound(R.raw.tmt_anim)
-//            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.tmt)
@@ -94,7 +92,6 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
                     infoDialog()
                     root.isVisible = false
                     activity?.exitFullScreenMode()
-//                    mainActivityListener?.updateToolbarState(ToolbarState.SCTTest)
                     constraintLayout5.isVisible = true
                     labyrinthView.isVisible = true
                 }
