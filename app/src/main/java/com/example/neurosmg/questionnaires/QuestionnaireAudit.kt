@@ -23,23 +23,23 @@ class QuestionnaireAudit : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentQuestionnaireAuditBinding.inflate(inflater)
-
-        val firstQuestion = map.entries.first()
-        val questionText = firstQuestion.key
-        val answers = firstQuestion.value
-
-        Log.d("MyLog", questionText)
-        answers.forEachIndexed { index, answer ->
-            Log.d("MyLog", "${index + 1}. $answer")
-        }
-
-        return binding.root
-    }
+//    override fun onCreateView(
+//        inflater: LayoutInflater, container: ViewGroup?,
+//        savedInstanceState: Bundle?
+//    ): View {
+//        binding = FragmentQuestionnaireAuditBinding.inflate(inflater)
+//
+//        val firstQuestion = map.entries.first()
+//        val questionText = firstQuestion.key
+//        val answers = firstQuestion.value
+//
+//        Log.d("MyLog", questionText)
+//        answers.forEachIndexed { index, answer ->
+//            Log.d("MyLog", "${index + 1}. $answer")
+//        }
+//
+//        return binding.root
+//    }
 
     companion object {
         @JvmStatic
