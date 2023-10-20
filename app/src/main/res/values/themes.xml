@@ -20,6 +20,7 @@
     </style>
 
     <dimen name="ball_size">10dp</dimen>
+    <dimen name="h1_text_size">22dp</dimen>
 
     <style name="EditTextWithCalendarIcon">
         <item name="android:layout_width">match_parent</item>
@@ -27,7 +28,12 @@
         <item name="android:hint">Выберите дату</item>
         <item name="android:focusable">false</item>
         <item name="android:clickable">true</item>
-        <item name="android:background">@null</item> <!-- Убирает фон и рамки -->
-        <item name="android:inputType">none</item> <!-- Отключает ввод текста -->
+        <item name="android:background">@null</item>
+        <item name="android:inputType">none</item>
+    </style>
+
+    <style name="TextViewStyle">
+        <item name="android:textColor">@color/white</item>
+        <item name="fontFamily"></item>
     </style>
 </resources>

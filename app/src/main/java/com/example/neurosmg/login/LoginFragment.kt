@@ -56,7 +56,7 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainActivityListener?.updateToolbarState(ToolbarState.Initial)
+        mainActivityListener?.updateToolbarState(ToolbarState.Login)
 
         if (viewModel.isUserLoggedIn()) {
             goToMainScreen()

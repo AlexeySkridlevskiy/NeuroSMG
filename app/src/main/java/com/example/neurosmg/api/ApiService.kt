@@ -11,6 +11,7 @@ import com.example.neurosmg.patientTestList.PatientListResponse
 import com.example.neurosmg.patientTestList.addPatient.PatientRequest
 import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
 import com.example.neurosmg.patientTestList.patientProfile.UpdatePatientRequest
+import com.example.neurosmg.preloader.PersonData
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.Response
@@ -71,4 +72,9 @@ interface ApiService {
         @Path("patientId") patientId: Int,
         @Query("populate") populate: String = "datafiles.file"
     ): Response<FileData>
+
+    @GET("/api/patients")
+    suspend fun getPatients(
+        @Header("Authorization") authHeader: String
+    ): Response<PersonData>
 }

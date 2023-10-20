@@ -3,6 +3,7 @@ package com.example.neurosmg
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -14,10 +15,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.aboutProgramPage.AboutProgramPage
 import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.doctorProfile.DoctorProfile
-import com.example.neurosmg.login.LoginFragment
 import com.example.neurosmg.patientTestList.PatientListFragment
 import com.example.neurosmg.patientTestList.ScreenNavigationMenu
 import com.example.neurosmg.patientTestList.StatePatientViewModel
+import com.example.neurosmg.preloader.InitialFragment
 import com.example.neurosmg.questionnaires.QuestionnaireAudit
 
 class MainActivity : AppCompatActivity(), MainActivityListener {
@@ -68,14 +69,15 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             currentFragmentTag = savedInstanceState.getString(KeyOfArgument.KEY_OF_FRAGMENT) ?: ""
         }
 
-        if (currentFragmentTag != null) {
-            val fragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
-            if (fragment != null) {
-                setupFragment(fragment, currentFragmentTag ?: Screen.LOGIN)
-            }
-        } else {
-            setupFragment(LoginFragment.newInstance(), Screen.LOGIN)
-        }
+//        if (currentFragmentTag != null) {
+//            val fragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
+//            if (fragment != null) {
+//                setupFragment(fragment, currentFragmentTag ?: Screen.INITIAL)
+//            }
+//        } else {
+//            setupFragment(LoginFragment.newInstance(), Screen.INITIAL)
+//        }
+        setupFragment(InitialFragment.newInstance(), Screen.INITIAL)
 
         setupDrawerLayout()
     }
@@ -109,7 +111,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
 
     override fun updateToolbarState(toolbarState: ToolbarState) {
         when (toolbarState) {
-            ToolbarState.Initial -> setupToolbarForInitial()
+            ToolbarState.Login -> setupToolbarForLogin()
             ToolbarState.MainPage -> setupToolbarForMainPage()
             ToolbarState.DoctorProfile -> setupToolbarForDoctorProfile()
             ToolbarState.TestPage -> setupToolbarForTestPage()
@@ -127,6 +129,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             ToolbarState.Archive -> setupToolbarForArchive()
             ToolbarState.AboutProgramPage -> setupToolbarForAboutProgramPage()
             ToolbarState.HideToolbar -> visibilityToolbar(false)
+            ToolbarState.Initial -> initialToolbar()
         }
     }
 
@@ -134,7 +137,11 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         binding.includeToolbar.root.isVisible = isVisible
     }
 
-    private fun setupToolbarForInitial() {
+    private fun initialToolbar() {
+        visibilityToolbar(false)
+    }
+
+    private fun setupToolbarForLogin() {
         with(binding.includeToolbar) {
             visibilityToolbar(true)
             setSupportActionBar(toolbar)
@@ -428,9 +435,5 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             .replace(R.id.container, fragment)
             .addToBackStack(tagBackStack)
             .commit()
-    }
-
-    companion object {
-        private const val REQUEST_PERMISSIONS_CODE = 123
     }
 }

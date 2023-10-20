@@ -6,4 +6,5 @@
     <color name="primary">#CCC2DC</color>
     <color name="cbt_color_square">#2260FF</color>
     <color name="cbt_color_square_user">#FFCD29</color>
+    <color name="primary_dark">#6750A4</color>
 </resources>
