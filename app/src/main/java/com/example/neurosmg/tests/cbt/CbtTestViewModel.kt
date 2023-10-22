@@ -22,12 +22,11 @@ class CbtTestViewModel(private val application: Application) : AndroidViewModel(
     private val _uploadFileLiveData: MutableLiveData<UploadState> = MutableLiveData()
     val uploadFileLiveData: LiveData<UploadState> = _uploadFileLiveData
 
-    fun sendFile(idPatient: Int) {
-//        val filename = "$test+_+$unixTimestamp.csv"
-        viewModelScope.launch(Dispatchers.IO) {
+    fun sendFile(idPatient: Int, fileName: String) {
+        viewModelScope.launch {
             val sendFile = uploadFileUseCase.invoke(
                 patientId = idPatient,
-                fileName = "outputnone.csv" //todo: для теста CBT назовешь файл как тебе надо
+                fileName = fileName
             )
 
             _uploadFileLiveData.postValue(sendFile.value)

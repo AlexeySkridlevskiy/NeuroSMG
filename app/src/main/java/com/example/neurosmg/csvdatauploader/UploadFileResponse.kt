@@ -18,8 +18,4 @@ data class UploadFileResponse(
     val provider_metadata: Any?,
     val createdAt: String,
     val updatedAt: String
-) {
-    constructor() : this(
-        0, "", null, null, null, null, null, "", "", "", 0.0, "", null, "", null, "", ""
-    )
-}
+)

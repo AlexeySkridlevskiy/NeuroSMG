@@ -29,26 +29,22 @@ class SendFilesDataSource(private val context: Context) {
         val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
         val body = MultipartBody.Part.createFormData("files", file.name, requestFile)
 
-        if (authToken != null) {
-            val uploadFile = apiService.uploadFile("Bearer $authToken", body)
+        authToken?.let { token ->
+            val uploadFile = apiService.uploadFile("Bearer $token", body)
             if (uploadFile.isSuccessful) {
 
                 val fileId = uploadFile.body()?.first()?.id
 
-                if (fileId != null) {
-                    _uploadFileLiveData.postValue(UploadState.Success.SuccessGetIdFile(idFile = fileId))
-
+                fileId?.let {
+                    _uploadFileLiveData.postValue(UploadState.Success.SuccessSendFile)
                     sendIds(idPatient = patientId, idFile = fileId)
-                } else {
-                    _uploadFileLiveData.postValue(UploadState.Error("file id is null or zero"))
                 }
 
             } else {
-                _uploadFileLiveData.postValue(UploadState.Error(uploadFile.message().toString()))
+                _uploadFileLiveData.postValue(
+                    UploadState.Error(uploadFile.message().toString())
+                )
             }
-
-        } else {
-            _uploadFileLiveData.postValue(UploadState.Error("Error: authToken is null"))
         }
     }
 

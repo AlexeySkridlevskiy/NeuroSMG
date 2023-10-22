@@ -10,9 +10,14 @@ import java.io.OutputStreamWriter
 class CSVWriter(
     private val context: Context
 ) {
-    val filePath = File(context.getExternalFilesDir(null), "output.csv")
 
-    fun writeDataToCsv(data: List<List<String>>, response: (DataUploadCallback) -> Unit) {
+    fun writeDataToCsv(
+        data: List<List<String>>,
+        fileName: String,
+        response: (DataUploadCallback) -> Unit
+    ) {
+        val filePath = File(context.getExternalFilesDir(null), fileName)
+
         try {
             val outputStream = FileOutputStream(filePath)
             val writer = BufferedWriter(OutputStreamWriter(outputStream))
@@ -31,6 +36,5 @@ class CSVWriter(
             response(DataUploadCallback.OnFailure)
             e.printStackTrace()
         }
-
     }
 }
