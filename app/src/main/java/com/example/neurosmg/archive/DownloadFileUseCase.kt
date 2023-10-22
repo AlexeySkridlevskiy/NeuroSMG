@@ -1,6 +1,5 @@
 package com.example.neurosmg.archive
 
-import android.content.Context
 import com.example.neurosmg.api.ApiService
 import kotlinx.coroutines.flow.flow
 import java.io.File
@@ -11,15 +10,15 @@ import android.os.Environment.DIRECTORY_DOWNLOADS
 class DownloadFileUseCase(
     private val apiService: ApiService,
 ) {
-    suspend operator fun invoke(fileName: String) = flow<ArchiveViewState> {
-        val result = apiService.downloadFile(fileName)
+    suspend operator fun invoke(hashFile: String) = flow {
+        val result = apiService.downloadFile(hashFile)
 
         emit(ArchiveViewState.Loading)
         if (result.isSuccessful) {
             val body = result.body()
             if (body != null) {
                 val downloadDirectory = Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS)
-                val file = File(downloadDirectory, fileName)
+                val file = File(downloadDirectory, hashFile)
                 val outputStream = FileOutputStream(file)
                 val buffer = ByteArray(4096)
                 var bytesRead: Int
@@ -31,7 +30,7 @@ class DownloadFileUseCase(
                 emit(
                     ArchiveViewState.SuccessDownloadFile(
                         file = file,
-                        fileName = fileName
+                        fileName = hashFile
                     )
                 )
             } else {

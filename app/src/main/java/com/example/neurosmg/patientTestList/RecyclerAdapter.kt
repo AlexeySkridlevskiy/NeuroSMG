@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.neurosmg.R
+import com.example.neurosmg.archive.FileTest
 import com.example.neurosmg.databinding.ListItemBinding
 
 class RecyclerAdapter<T> : RecyclerView.Adapter<RecyclerAdapter<T>.ViewHolder>() {
@@ -18,7 +19,10 @@ class RecyclerAdapter<T> : RecyclerView.Adapter<RecyclerAdapter<T>.ViewHolder>()
 
         fun bind(item: T) {
             with(binding) {
-                tvTitle.text = item.toString()
+                when (item) {
+                    is FileTest -> tvTitle.text = item.name
+                    else -> tvTitle.text = item.toString()
+                }
             }
         }
     }

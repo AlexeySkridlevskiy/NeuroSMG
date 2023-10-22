@@ -44,5 +44,6 @@ data class DataItem(
 )
 
 data class FileAttributesDetails(
-    val name: String
+    val name: String,
+    val hash: String
 )
