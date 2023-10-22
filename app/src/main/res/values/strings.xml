@@ -58,4 +58,17 @@
     //загрузка файла
     <string name="dialog_test_success_title">Тестирование пройдено</string>
     <string name="dialog_test_success_subtitle">Данные будут сохранены в папке</string>
+
+    //Диалоговое окно startTest CBT
+    <string name="cbt_dialog_title">Начало</string>
+    <string name="cbt_dialog_message">Перед началом тестирования нажмите на кнопку старт.</string>
+    <string name="cbt_dialog_btn_ok">окей</string>
+
+    //Диалоговое окно инструкции CBT
+    <string name="cbt_dialog_inst_title">Инструкция</string>
+    <string name="cbt_dialog_inst_sumtitle">Длина последовательности - 3</string>
+
+
+    //errors
+    <string name="not_success_save_file">Извините, не удалось сохранить данные</string>
 </resources>

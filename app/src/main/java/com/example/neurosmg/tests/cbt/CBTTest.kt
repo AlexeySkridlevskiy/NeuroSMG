@@ -17,13 +17,11 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
-import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.csvdatauploader.CSVWriter
 import com.example.neurosmg.csvdatauploader.DataUploadCallback
 import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
-import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
 class CBTTest : Fragment() {
@@ -41,7 +39,7 @@ class CBTTest : Fragment() {
     private var isShowingSequence = false
     private var expectedIndex = 0
     private var stepsIndex = 1
-    private val maxStepsIndex = 5
+    private val maxStepsIndex = 2
     private var soundPlayer: SoundPlayer? = null
     private var touchStartTimeMillis: Long = 0
     private var touchEndTimeMillis: Long = 0
@@ -115,16 +113,12 @@ class CBTTest : Fragment() {
 
                 is UploadState.Success.SuccessGetIdFile -> {
                     binding.progressBar.isVisible = true
+                    Toast.makeText(requireContext(), "$state", Toast.LENGTH_SHORT).show()
                 }
 
                 UploadState.Success.SuccessSendFile -> {
                     binding.progressBar.isVisible = false
-
-                    parentFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.container, TestsPageFragment.newInstance())
-                        .addToBackStack(Screen.MAIN_PAGE)
-                        .commit()
+                    parentFragmentManager.popBackStack()
                 }
 
                 UploadState.Initial -> {}
@@ -268,7 +262,7 @@ class CBTTest : Fragment() {
         )
         data.add(dynamicRow)
 
-        Log.d("MyLog", "${stepsIndex - 1}, ${squareIndex+1}, $touchDurationSeconds")
+        Log.d("MyLog", "${stepsIndex - 1}, ${squareIndex + 1}, $touchDurationSeconds")
     }
 
     override fun onDetach() {
@@ -281,9 +275,9 @@ class CBTTest : Fragment() {
 
     private fun infoDialogStartTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Перед началом тестирования нажмите на кнопку старт.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(requireContext().getString(R.string.cbt_dialog_title))
+        alertDialogBuilder.setMessage(requireContext().getString(R.string.cbt_dialog_message))
+        alertDialogBuilder.setPositiveButton(requireContext().getString(R.string.dialog_ok)) { dialog, _ ->
             dialog.dismiss()
         }
 
@@ -294,9 +288,9 @@ class CBTTest : Fragment() {
 
     private fun infoDialogInstruction() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Инструкция") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Длина последовательности - 3") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(requireContext().getString(R.string.cbt_dialog_inst_title))
+        alertDialogBuilder.setMessage(requireContext().getString(R.string.cbt_dialog_inst_sumtitle))
+        alertDialogBuilder.setPositiveButton(requireContext().getString(R.string.dialog_ok)) { dialog, _ ->
             dialog.dismiss()
             startTest()
             binding.btnStart.visibility = View.INVISIBLE
@@ -307,7 +301,7 @@ class CBTTest : Fragment() {
         alertDialog.setCanceledOnTouchOutside(false)
     }
 
-    private fun infoDialogFinishTest() {
+    private fun infoDialogFinishTest(fileName: String) {
 
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.stopSound()
@@ -315,9 +309,7 @@ class CBTTest : Fragment() {
         alertDialogBuilder.setTitle(R.string.dialog_test_success_title)
         alertDialogBuilder.setMessage(R.string.dialog_test_success_subtitle)
         alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
-//            val unixTimestamp = System.currentTimeMillis()
-//            val test = "CBT"
-            viewModelUploaderFile.sendFile(idPatient = patientId)
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             dialog.dismiss()
         }
 
@@ -351,18 +343,20 @@ class CBTTest : Fragment() {
 
     private fun saveDataToFileCSV() {
         val csvWriter = CSVWriter(context = requireContext())
-        csvWriter.writeDataToCsv(data) {
+        val unixTime = System.currentTimeMillis()
+        val fileName = "$TEST_NAME.${unixTime}.$TEST_FILE_EXTENSION" //поменять файл на нужный
+        csvWriter.writeDataToCsv(data, fileName = fileName) {
             when (it) {
                 DataUploadCallback.OnFailure -> {
                     Toast.makeText(
                         requireContext(),
-                        "Неудачно сохранились файлы",
+                        requireContext().getString(R.string.not_success_save_file),
                         Toast.LENGTH_SHORT
                     ).show()
                 }
 
                 DataUploadCallback.OnSuccess -> {
-                    infoDialogFinishTest()
+                    infoDialogFinishTest(fileName)
                 }
             }
         }
@@ -374,6 +368,9 @@ class CBTTest : Fragment() {
     }
 
     companion object {
+        private const val TEST_NAME = "CBT"
+        private const val TEST_FILE_EXTENSION = ".csv"
+
         @JvmStatic
         fun newInstance(
             patientId: Int = -1
