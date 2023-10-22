@@ -13,6 +13,7 @@ import com.example.neurosmg.patientTestList.patientProfile.PatientResponse
 import com.example.neurosmg.patientTestList.patientProfile.UpdatePatientRequest
 import com.example.neurosmg.preloader.PersonData
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -77,4 +78,9 @@ interface ApiService {
     suspend fun getPatients(
         @Header("Authorization") authHeader: String
     ): Response<PersonData>
+
+    @GET("/uploads/{fileName}")
+    suspend fun downloadFile(
+        @Path("fileName") patientId: String
+    ): Response<ResponseBody>
 }

@@ -2,44 +2,43 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.neurosmg.archive.ArchiveState
+import com.example.neurosmg.archive.ArchiveViewState
 import com.example.neurosmg.archive.mapToListOfNames
 import com.example.neurosmg.common.State
 import com.example.neurosmg.data.datasource.ArchivePatientDataSource
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
+import java.util.concurrent.Flow
 
 class GetArchive(
     private val archivePatientDataSource: ArchivePatientDataSource
 ) {
 
-    private val archiveLiveData: MutableLiveData<State<ArchiveState>> = MutableLiveData()
-
-    suspend fun getArchivePatient(patientId: Int): LiveData<State<ArchiveState>> {
+    suspend fun getArchivePatient(patientId: Int) = flow<ArchiveViewState>() {
 
         val archive = archivePatientDataSource.getArchivePatient(patientId)
 
-        archiveLiveData.value = State.Loading
+        val loading = ArchiveViewState.Loading
+        emit(loading)
 
         if (archive.isSuccessful) {
             val archiveIds = archive.body().mapToListOfNames()
 
             if (archiveIds.isEmpty()) {
-                archiveLiveData.value = State.Empty
+                val emptyArchive = ArchiveViewState.ListFromServerIsEmpty
+                emit(emptyArchive)
             } else {
                 val successState = State.Success(
                     data = ArchiveState(
                         listOfArchive = archiveIds
                     )
                 )
-                archiveLiveData.value = successState
+                val success = ArchiveViewState.SuccessGetListFiles(successState.data.listOfArchive)
+                emit(success)
             }
         } else {
-            val errorState = State.Error(
-                data = ArchiveState(
-                    errorMessage = archive.message()
-                )
-            )
-            archiveLiveData.value = errorState
+            val errorState = ArchiveViewState.ErrorGetListFiles(archive.message())
+            emit(errorState)
         }
-
-        return archiveLiveData
     }
 }

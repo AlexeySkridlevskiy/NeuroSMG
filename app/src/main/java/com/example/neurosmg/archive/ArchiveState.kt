@@ -4,7 +4,7 @@ import FileData
 
 data class ArchiveState(
     val listOfArchive: List<String> = mutableListOf(),
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )
 
 fun FileData?.mapToListOfNames(): List<String> {
