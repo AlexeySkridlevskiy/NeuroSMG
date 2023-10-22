@@ -131,13 +131,9 @@ class ArchivePatientFragment : Fragment() {
         val intent = Intent(Intent.ACTION_SEND)
         intent.type = "text/*"
         intent.putExtra(Intent.EXTRA_STREAM, contentUri)
-
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-        // Добавьте следующую строку, чтобы указать действие отправки файла
         intent.action = Intent.ACTION_SEND
-
         return Intent.createChooser(intent, chooserTitle)
     }
 
