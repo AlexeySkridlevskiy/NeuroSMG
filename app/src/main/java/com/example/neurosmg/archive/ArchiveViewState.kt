@@ -13,7 +13,7 @@ sealed class ArchiveViewState {
     ) : ArchiveViewState()
 
     data class SuccessGetListFiles(
-        val listOfArchive: List<String> = mutableListOf()
+        val listOfArchive: List<FileTest> = mutableListOf()
     ) : ArchiveViewState()
 
     data class ErrorGetListFiles(

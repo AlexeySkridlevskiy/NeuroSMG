@@ -1,14 +1,9 @@
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.example.neurosmg.archive.ArchiveState
 import com.example.neurosmg.archive.ArchiveViewState
 import com.example.neurosmg.archive.mapToListOfNames
 import com.example.neurosmg.common.State
 import com.example.neurosmg.data.datasource.ArchivePatientDataSource
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
-import java.util.concurrent.Flow
 
 class GetArchive(
     private val archivePatientDataSource: ArchivePatientDataSource
