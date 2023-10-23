@@ -5,6 +5,6 @@ data class RequestSendIdFile(
 )
 
 data class BodyRequest(
-    val fileIds: List<Int>,
+    val file: List<Int>,
     val patient: Int
 )

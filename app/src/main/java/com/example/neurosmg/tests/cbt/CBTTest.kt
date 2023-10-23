@@ -344,7 +344,7 @@ class CBTTest : Fragment() {
     private fun saveDataToFileCSV() {
         val csvWriter = CSVWriter(context = requireContext())
         val unixTime = System.currentTimeMillis()
-        val fileName = "$TEST_NAME.${unixTime}.$TEST_FILE_EXTENSION" //поменять файл на нужный
+        val fileName = "$TEST_NAME.${unixTime}$TEST_FILE_EXTENSION" //поменять файл на нужный
         csvWriter.writeDataToCsv(data, fileName = fileName) {
             when (it) {
                 DataUploadCallback.OnFailure -> {

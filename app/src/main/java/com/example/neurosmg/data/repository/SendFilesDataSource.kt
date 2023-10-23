@@ -54,7 +54,7 @@ class SendFilesDataSource(private val context: Context) {
     ) {
         val requestBody = RequestSendIdFile(
             data = BodyRequest(
-                fileIds = listOf(idFile),
+                file = listOf(idFile),
                 patient = idPatient
             )
         )

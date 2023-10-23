@@ -56,7 +56,6 @@ class ArchivePatientFragment : Fragment() {
 
         lifecycleScope.launch(Dispatchers.Main) {
             viewModel.archive.collect { state ->
-                Log.d("stateOfArchive", "onViewCreated: $state")
                 when (state) {
                     is ArchiveViewState.EmptyDownloadedFile -> {
                         binding.progressBar.isVisible = false
