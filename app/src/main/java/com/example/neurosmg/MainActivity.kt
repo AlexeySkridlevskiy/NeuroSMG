@@ -70,15 +70,14 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             currentFragmentTag = savedInstanceState.getString(KeyOfArgument.KEY_OF_FRAGMENT) ?: ""
         }
 
-//        if (currentFragmentTag != null) {
-//            val fragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
-//            if (fragment != null) {
-//                setupFragment(fragment, currentFragmentTag ?: Screen.INITIAL)
-//            }
-//        } else {
-//            setupFragment(LoginFragment.newInstance(), Screen.INITIAL)
-//        }
-        setupFragment(InitialFragment.newInstance(), Screen.INITIAL)
+        if (currentFragmentTag != null) {
+            val fragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
+            if (fragment != null) {
+                setupFragment(fragment, currentFragmentTag ?: Screen.INITIAL)
+            }
+        } else {
+            setupFragment(InitialFragment.newInstance(), Screen.INITIAL)
+        }
 
         setupDrawerLayout()
     }
