@@ -27,5 +27,6 @@ data class StatePatientList(
 enum class ScreenNavigationMenu {
     TO_ARCHIVE,
     TO_PATIENT_LIST,
-    TO_CHOOSED_TEST
+    TO_CHOOSED_TEST,
+    TO_QUESTIONNAIRE
 }

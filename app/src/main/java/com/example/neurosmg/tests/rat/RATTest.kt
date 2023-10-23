@@ -17,11 +17,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.csvdatauploader.CSVWriter
+import com.example.neurosmg.csvdatauploader.DataUploadCallback
+import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentRATTestBinding
+import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 import kotlin.random.Random
@@ -29,6 +35,12 @@ import kotlin.random.Random
 class RATTest : Fragment() {
     lateinit var binding: FragmentRATTestBinding
     private var mainActivityListener: MainActivityListener? = null
+
+    private val viewModelUploaderFile by lazy {
+        ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
+    }
+    private val data = mutableListOf<MutableList<String>>()
+    private var patientId: Int = -1
 
     private val ballColors = listOf(Color.RED, Color.YELLOW, Color.GREEN)
     private val ballProbabilities = listOf(8, 32, 128)
@@ -56,11 +68,41 @@ class RATTest : Fragment() {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModelUploaderFile.setInitialState()
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentRATTestBinding.inflate(inflater)
+        viewModelUploaderFile.uploadFileLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UploadState.Error -> {
+                    binding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                is UploadState.Success.SuccessGetIdFile -> {
+                    binding.progressBar.isVisible = true
+                    Toast.makeText(requireContext(), "$state", Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Success.SuccessSendFile -> {
+                    binding.progressBar.isVisible = false
+                    parentFragmentManager.popBackStack()
+                }
+
+                UploadState.Initial -> {}
+            }
+        }
         return binding.root
     }
 
@@ -254,17 +296,17 @@ class RATTest : Fragment() {
 
     private fun saveData(){
         val bankCount = String.format("%.2f", bankIndexCount)
-        Log.d("MyLog", "$touchStartTimeUnixTimestamp, $attemptIndex, ${ballProbabilities[colorIndex]}, $indexPop, $sizeBall, $currentIndexCircle, $indexTouchAttempt, $indexTouch, $touchDuration, $stateBall, $bankCount")
+        val dynamicRow = mutableListOf(
+            touchStartTimeUnixTimestamp.toString(), attemptIndex.toString(), ballProbabilities[colorIndex].toString(),
+            indexPop.toString(), sizeBall.toString(), currentIndexCircle.toString(), indexTouchAttempt.toString(),
+            indexTouch.toString(), touchDuration.toString(), stateBall, bankCount
+        )
+        data.add(dynamicRow)
     }
 
     override fun onDetach() {
         super.onDetach()
         mainActivityListener = null
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = RATTest()
     }
 
     private fun newAttempt(){
@@ -278,7 +320,7 @@ class RATTest : Fragment() {
                 binding.currentCircle.text = currentIndexCircle.toString()
                 binding.bankCurrentCount.text = "0"
                 if (attemptIndex==3){
-                    infoDialogEndTest()
+                    finishTest()
                 }else if(attemptIndex==2){
                     attemptIndex++
                     infoDialogAttempt3()
@@ -287,6 +329,33 @@ class RATTest : Fragment() {
                     infoDialogAttempt2()
                 }
 
+            }
+        }
+    }
+
+    private fun finishTest() {
+        binding.constraintMain.visibility = View.INVISIBLE
+
+        saveDataToFileCSV()
+    }
+
+    private fun saveDataToFileCSV() {
+        val csvWriter = CSVWriter(context = requireContext())
+        val unixTime = System.currentTimeMillis()
+        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        csvWriter.writeDataToCsv(data, fileName = fileName) {
+            when (it) {
+                DataUploadCallback.OnFailure -> {
+                    Toast.makeText(
+                        requireContext(),
+                        requireContext().getString(R.string.not_success_save_file),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                DataUploadCallback.OnSuccess -> {
+                    infoDialogEndTest(fileName)
+                }
             }
         }
     }
@@ -349,18 +418,14 @@ class RATTest : Fragment() {
         alertDialog.setCanceledOnTouchOutside(false)
     }
 
-    private fun infoDialogEndTest() {
+    private fun infoDialogEndTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             dialog.dismiss()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, TestsPageFragment.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -394,5 +459,18 @@ class RATTest : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         soundPlayer?.stopSound()
+    }
+
+    companion object {
+        private const val TEST_NAME = "RAT"
+        private const val TEST_FILE_EXTENSION = ".csv"
+        @JvmStatic
+        fun newInstance(patientId: Int = -1): RATTest{
+            val fragment = RATTest()
+            val args = Bundle()
+            args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

@@ -18,6 +18,8 @@ import com.example.neurosmg.common.State
 import com.example.neurosmg.databinding.FragmentPatientTestListBinding
 import com.example.neurosmg.patientTestList.addPatient.AddPatient
 import com.example.neurosmg.patientTestList.patientProfile.PatientProfile
+import com.example.neurosmg.questionnaires.QuestionnaireAudit
+import com.example.neurosmg.questionnaires.QuestionnaireList
 import com.example.neurosmg.testsPage.TestsPageFragment
 
 class PatientListFragment : Fragment() {
@@ -124,6 +126,13 @@ class PatientListFragment : Fragment() {
 
                     ScreenNavigationMenu.TO_CHOOSED_TEST -> {
                         TestsPageFragment.newInstance(item)
+                    }
+
+                    ScreenNavigationMenu.TO_QUESTIONNAIRE -> {
+                        val questionnaireListFragment = QuestionnaireList.newInstance()
+                        bundle.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, item)
+                        questionnaireListFragment.arguments = bundle
+                        questionnaireListFragment
                     }
                 }
 

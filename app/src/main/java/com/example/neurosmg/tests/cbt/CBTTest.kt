@@ -69,6 +69,7 @@ class CBTTest : Fragment() {
         super.onCreate(savedInstanceState)
         viewModelUploaderFile.setInitialState()
         patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
+        Log.d("MyLog", "$patientId")
     }
 
     override fun onCreateView(
