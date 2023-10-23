@@ -12,11 +12,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
+import com.example.neurosmg.csvdatauploader.CSVWriter
+import com.example.neurosmg.csvdatauploader.DataUploadCallback
+import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentFOTTestBinding
+import com.example.neurosmg.tests.cbt.CBTTest
+import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
@@ -25,6 +32,12 @@ class FOTTest : Fragment(), CanvasViewCallback {
     lateinit var binding: FragmentFOTTestBinding
 
     private var mainActivityListener: MainActivityListener? = null
+
+    private val viewModelUploaderFile by lazy {
+        ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
+    }
+    private val data = mutableListOf<MutableList<String>>()
+    private var patientId: Int = -1
 
     private lateinit var countDownTimer: CountDownTimer
     private lateinit var canvasView: CanvasView
@@ -50,6 +63,12 @@ class FOTTest : Fragment(), CanvasViewCallback {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModelUploaderFile.setInitialState()
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -68,6 +87,31 @@ class FOTTest : Fragment(), CanvasViewCallback {
                     onPause()
                     infoDialog()
                 }
+            }
+        }
+
+        viewModelUploaderFile.uploadFileLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UploadState.Error -> {
+                    binding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                is UploadState.Success.SuccessGetIdFile -> {
+                    binding.progressBar.isVisible = true
+                    Toast.makeText(requireContext(), "$state", Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Success.SuccessSendFile -> {
+                    binding.progressBar.isVisible = false
+                    parentFragmentManager.popBackStack()
+                }
+
+                UploadState.Initial -> {}
             }
         }
 
@@ -108,7 +152,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
             infoDialogToLeft()
         } else if (testRound != 0) {
             TestActive.KEY_ACTIVE_FOT_TEST = false
-            infoDialogEndAllTest()
+            finishTest()
         }
 
     }
@@ -129,12 +173,6 @@ class FOTTest : Fragment(), CanvasViewCallback {
             countDownTimer.cancel()
         }
         mainActivityListener = null
-    }
-
-    companion object {
-        const val TAG_FRAGMENT = Screen.FOT_TEST
-        @JvmStatic
-        fun newInstance() = FOTTest()
     }
 
     override fun onCanvasViewTouch() {
@@ -174,7 +212,12 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     override fun onCanvasDataMotion(timeInSeconds: Long, durationMillis: Long) {
-        Log.d("MyLog", "$durationMillis, $secPerStart, $timeInSeconds, $EventX , $EventY, $handIndex")
+        val dynamicRow = mutableListOf(
+            durationMillis.toString(), secPerStart.toString(), secPerStart.toString(), timeInSeconds.toString(),
+            EventX.toString(), EventY.toString(), handIndex
+        )
+        data.add(dynamicRow)
+//        Log.d("MyLog", "$durationMillis, $secPerStart, $timeInSeconds, $EventX , $EventY, $handIndex")
     }
 
     private fun updateTouchCountTextView() {
@@ -229,19 +272,20 @@ class FOTTest : Fragment(), CanvasViewCallback {
         alertDialog.setCanceledOnTouchOutside(false)
     }
 
-    private fun infoDialogEndAllTest() {
+    private fun infoDialogEndAllTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             soundPlayer?.stopSound()
             dialog.dismiss()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, TestsPageFragment.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
+//            parentFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.container, TestsPageFragment.newInstance())
+//                .addToBackStack(Screen.MAIN_PAGE)
+//                .commit()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -276,8 +320,49 @@ class FOTTest : Fragment(), CanvasViewCallback {
         }
     }
 
+    private fun finishTest() {
+        binding.constraintMain.visibility = View.INVISIBLE
+
+        saveDataToFileCSV()
+    }
+
+    private fun saveDataToFileCSV() {
+        val csvWriter = CSVWriter(context = requireContext())
+        val unixTime = System.currentTimeMillis()
+        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        csvWriter.writeDataToCsv(data, fileName = fileName) {
+            when (it) {
+                DataUploadCallback.OnFailure -> {
+                    Toast.makeText(
+                        requireContext(),
+                        requireContext().getString(R.string.not_success_save_file),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                DataUploadCallback.OnSuccess -> {
+                    infoDialogEndAllTest(fileName)
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         soundPlayer?.stopSound()
+    }
+
+    companion object {
+        private const val TEST_NAME = "FOT"
+        private const val TEST_FILE_EXTENSION = ".csv"
+        const val TAG_FRAGMENT = Screen.FOT_TEST
+        @JvmStatic
+        fun newInstance(patientId: Int = -1): FOTTest {
+            val fragment = FOTTest()
+            val args = Bundle()
+            args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

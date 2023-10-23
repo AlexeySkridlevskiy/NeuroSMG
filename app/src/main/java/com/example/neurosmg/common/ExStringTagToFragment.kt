@@ -1,6 +1,7 @@
 package com.example.neurosmg.common
 
 import androidx.fragment.app.Fragment
+import com.example.neurosmg.questionnaires.QuestionnaireAudit
 import com.example.neurosmg.tests.cbt.CBTTest
 import com.example.neurosmg.tests.fot.FOTTest
 import com.example.neurosmg.tests.gng.GNGTest
@@ -13,8 +14,8 @@ import com.example.neurosmg.tests.tmt.TMTTest
 
 fun String.toFragment(patientId: Int): Fragment =
     when (this) {
-        "FOT" -> FOTTest.newInstance()
-        "RAT" -> RATTest.newInstance()
+        "FOT" -> FOTTest.newInstance(patientId = patientId)
+        "RAT" -> RATTest.newInstance(patientId = patientId)
         "IAT" -> IATTest.newInstance()
         "IAT 2" -> IATTest2.newInstance()
         "GNG" -> GNGTest.newInstance()
@@ -22,6 +23,7 @@ fun String.toFragment(patientId: Int): Fragment =
         "TMT" -> TMTTest.newInstance()
         "CBT" -> CBTTest.newInstance(patientId = patientId)
         "MRT" -> MRTTest.newInstance()
+        "AUDIT" -> QuestionnaireAudit.newInstance(patientId = patientId)
 
         else -> throw RuntimeException("Unknown test name")
     }

@@ -11,7 +11,7 @@ object Screen {
     const val SCT_TEST = "SCT_TEST"
     const val TMT_TEST = "TMT_TEST"
     const val TESTS_PAGE = "TESTS_TEST"
-    const val QUESTIONS = "QUESTIONS"
+    const val QUESTIONNAIRE = "QUESTIONNAIRES"
     const val ABOUT_APP = "ABOUT_APP"
     const val PATIENTS = "PATIENTS"
     const val ARCHIVE = "ARCHIVE"

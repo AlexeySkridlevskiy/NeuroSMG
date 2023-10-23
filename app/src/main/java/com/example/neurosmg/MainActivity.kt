@@ -42,9 +42,10 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             replaceFragment(fragment, Screen.TESTS_PAGE)
         },
         R.id.questionnaires to {
-            Toast.makeText(this, "Страница 'Опросники' находится в разработке", Toast.LENGTH_SHORT)
-                .show()
-            replaceFragment(QuestionnaireAudit.newInstance(), Screen.ABOUT_APP)
+            viewModelState.navTo(ScreenNavigationMenu.TO_QUESTIONNAIRE)
+            fragment = PatientListFragment.newInstance()
+            replaceFragment(fragment, Screen.QUESTIONNAIRE)
+//            replaceFragment(QuestionnaireAudit.newInstance(), Screen.ABOUT_APP)
         },
         R.id.patients to {
             viewModelState.navTo(ScreenNavigationMenu.TO_PATIENT_LIST)

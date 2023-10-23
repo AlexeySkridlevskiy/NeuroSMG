@@ -65,7 +65,6 @@ class CanvasView @JvmOverloads constructor(
         if(!touchEnabled){
             return false
         }
-        Log.d("MyLog", "${startIndex}")
         if (startIndex == 0){
             canvasViewCallback?.onCanvasFirstTouch()
             startIndex++

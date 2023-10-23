@@ -8,7 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.databinding.FragmentQuestionnaireAuditBinding
+import com.example.neurosmg.tests.cbt.CBTTest
 
 class QuestionnaireAudit : Fragment() {
     lateinit var binding: FragmentQuestionnaireAuditBinding
@@ -16,10 +19,16 @@ class QuestionnaireAudit : Fragment() {
     private var currentQuestion: String = ""
     private val answers: MutableList<String> = mutableListOf()
     private var indexOfQuestion: Int = 0
+    private var patientId: Int = -1
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         this.context = context
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
     override fun onCreateView(
@@ -132,6 +141,14 @@ class QuestionnaireAudit : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = QuestionnaireAudit()
+        fun newInstance(
+            patientId: Int = -1
+        ): QuestionnaireAudit {
+            val fragment = QuestionnaireAudit()
+            val args = Bundle()
+            args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

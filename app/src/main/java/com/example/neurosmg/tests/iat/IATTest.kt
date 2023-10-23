@@ -21,6 +21,7 @@ import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
 import com.example.neurosmg.databinding.FragmentIATTestBinding
+import com.example.neurosmg.tests.rat.RATTest
 import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
@@ -96,11 +97,6 @@ class IATTest : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         reenterTransition = true
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = IATTest()
     }
 
     private fun updateWordList() {
@@ -430,5 +426,12 @@ class IATTest : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         soundPlayer?.stopSound()
+    }
+
+    companion object {
+        private const val TEST_NAME = "RAT"
+        private const val TEST_FILE_EXTENSION = ".csv"
+        @JvmStatic
+        fun newInstance() = IATTest()
     }
 }
