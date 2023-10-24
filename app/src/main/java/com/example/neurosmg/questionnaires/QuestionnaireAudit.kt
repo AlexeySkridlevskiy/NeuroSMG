@@ -1,17 +1,25 @@
 package com.example.neurosmg.questionnaires
 
+import SoundPlayer
 import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.KeyOfArgument
+import com.example.neurosmg.R
+import com.example.neurosmg.csvdatauploader.CSVWriter
+import com.example.neurosmg.csvdatauploader.DataUploadCallback
+import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentQuestionnaireAuditBinding
-import com.example.neurosmg.tests.cbt.CBTTest
+import com.example.neurosmg.tests.cbt.CbtTestViewModel
 
 class QuestionnaireAudit : Fragment() {
     lateinit var binding: FragmentQuestionnaireAuditBinding
@@ -19,6 +27,13 @@ class QuestionnaireAudit : Fragment() {
     private var currentQuestion: String = ""
     private val answers: MutableList<String> = mutableListOf()
     private var indexOfQuestion: Int = 0
+
+    private var soundPlayer: SoundPlayer? = null
+
+    private val viewModelUploaderFile by lazy {
+        ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
+    }
+    private val data = mutableListOf<MutableList<String>>()
     private var patientId: Int = -1
 
     override fun onAttach(context: Context) {
@@ -28,6 +43,7 @@ class QuestionnaireAudit : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModelUploaderFile.setInitialState()
         patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
@@ -36,7 +52,7 @@ class QuestionnaireAudit : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentQuestionnaireAuditBinding.inflate(inflater)
-        val map = readQuestionsFromCSVFile("questions.csv")
+        val map = readQuestionsFromCSVFile("audit.csv")
         val questionsIterator = map.keys.iterator()
         val tvQuestion = binding.tvQuestion
         val btnAnsw1 = binding.btnAnsw1
@@ -47,12 +63,51 @@ class QuestionnaireAudit : Fragment() {
 
         showNextQuestion(map, questionsIterator)
 
-        btnAnsw1.setOnClickListener { showNextQuestion(map, questionsIterator) }
-        btnAnsw2.setOnClickListener { showNextQuestion(map, questionsIterator) }
-        btnAnsw3.setOnClickListener { showNextQuestion(map, questionsIterator) }
-        btnAnsw4.setOnClickListener { showNextQuestion(map, questionsIterator) }
-        btnAnsw5.setOnClickListener { showNextQuestion(map, questionsIterator) }
+        btnAnsw1.setOnClickListener {
+            saveData(1)
+            showNextQuestion(map, questionsIterator)
+        }
+        btnAnsw2.setOnClickListener {
+            saveData(2)
+            showNextQuestion(map, questionsIterator)
+        }
+        btnAnsw3.setOnClickListener {
+            saveData(3)
+            showNextQuestion(map, questionsIterator)
+        }
+        btnAnsw4.setOnClickListener {
+            saveData(4)
+            showNextQuestion(map, questionsIterator)
+        }
+        btnAnsw5.setOnClickListener {
+            saveData(5)
+            showNextQuestion(map, questionsIterator)
+        }
 
+        viewModelUploaderFile.uploadFileLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UploadState.Error -> {
+                    binding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                is UploadState.Success.SuccessGetIdFile -> {
+                    binding.progressBar.isVisible = true
+                    Toast.makeText(requireContext(), "$state", Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Success.SuccessSendFile -> {
+                    binding.progressBar.isVisible = false
+                    parentFragmentManager.popBackStack()
+                }
+
+                UploadState.Initial -> {}
+            }
+        }
         return binding.root
     }
 
@@ -67,7 +122,7 @@ class QuestionnaireAudit : Fragment() {
             answers.clear()
             answers.addAll(map[currentQuestion] ?: emptyList())
         } else {
-            // todo: Завершение опросника
+            finishTest()
         }
 
         val tvQuestion = binding.tvQuestion
@@ -118,6 +173,42 @@ class QuestionnaireAudit : Fragment() {
         }
     }
 
+    private fun saveData(i: Int) {
+        val unixTimestamp = System.currentTimeMillis()
+        val dynamicRow = mutableListOf(
+            indexOfQuestion.toString(), unixTimestamp.toString(),
+            i.toString()
+        )
+        data.add(dynamicRow)
+    }
+
+    private fun finishTest() {
+        binding.constraintMain.visibility = View.INVISIBLE
+
+        saveDataToFileCSV()
+    }
+
+    private fun saveDataToFileCSV() {
+        val csvWriter = CSVWriter(context = requireContext())
+        val unixTime = System.currentTimeMillis()
+        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        csvWriter.writeDataToCsv(data, fileName = fileName) {
+            when (it) {
+                DataUploadCallback.OnFailure -> {
+                    Toast.makeText(
+                        requireContext(),
+                        requireContext().getString(R.string.not_success_save_file),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                DataUploadCallback.OnSuccess -> {
+                    infoDialogEndTest(fileName)
+                }
+            }
+        }
+    }
+
     private fun readQuestionsFromCSVFile(filename: String): Map<String, List<String>> {
         val map = mutableMapOf<String, List<String>>()
         try {
@@ -139,7 +230,25 @@ class QuestionnaireAudit : Fragment() {
         return map
     }
 
+    private fun infoDialogEndTest(fileName: String) {
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+        soundPlayer?.playSound(R.raw.finish)
+        alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
+        alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
+            soundPlayer?.stopSound()
+            dialog.dismiss()
+        }
+
+        val alertDialog: AlertDialog = alertDialogBuilder.create()
+        alertDialog.show()
+        alertDialog.setCanceledOnTouchOutside(false)
+    }
+
     companion object {
+        private const val TEST_NAME = "AUDIT"
+        private const val TEST_FILE_EXTENSION = ".csv"
         @JvmStatic
         fun newInstance(
             patientId: Int = -1

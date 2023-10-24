@@ -16,7 +16,7 @@ import android.widget.Toast
 class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     interface LabyrinthCompletionListener {
-        fun onLabyrinthCompleted(steps: Int)
+        fun onLabyrinthCompleted(steps: Int, data: MutableList<MutableList<String>>)
     }
 
     fun setLabyrinthCompletionListener(listener: LabyrinthCompletionListener) {
@@ -25,7 +25,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
 
 
     private var completionListener: LabyrinthCompletionListener? = null
-
+    private val data = mutableListOf<MutableList<String>>()
 
     private val userPath = mutableListOf<Point>()
     private var tvLabSteps = 1
@@ -136,7 +136,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
 
     private fun handleLabyrinthCompletion() {
         tvLabSteps++
-        completionListener?.onLabyrinthCompleted(tvLabSteps)
+        completionListener?.onLabyrinthCompleted(tvLabSteps, data)
         if(tvLabSteps==21){
             userPath.clear()
             isFinishMessageShown = false
@@ -205,22 +205,33 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
                     }
 
                     if (!isCollisionLogged && !isValidMove(x, y)) {
-                        Log.d("MyLog", "Столкновение")
-                        isCollisionLogged = true // Устанавливаем флаг, чтобы сообщение больше не выводилось
+                        Log.d("MyLog", "collision")
+                        isCollisionLogged = true
                     }
                 }
+
+//                Log.d("MyLog", "move")
+                saveData("move", x, y)
             }
             MotionEvent.ACTION_UP -> {
                 handler.postDelayed({
-                    userPath.clear() // Очистка пути после задержки
+                    userPath.clear()
                     postInvalidate()
-                }, 50) // 500 миллисекунд (или любой другой желаемый интервал)
+                }, 50)
                 isFinishMessageShown = false
                 isCollisionLogged = false
-                Log.d("MyLog", "Clear")
             }
         }
         return true
+    }
+
+    private fun saveData(s: String, x: Int, y: Int) {
+        val unixTimestamp = System.currentTimeMillis()
+        val dynamicRow = mutableListOf(
+            unixTimestamp.toString(), tvLabSteps.toString(),
+            x.toString(), y.toString(), s
+        )
+        data.add(dynamicRow)
     }
 
     private fun showToast(message: String) {
@@ -237,7 +248,8 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         }
 
         if (labyrinthData[row][col] == 1) {
-//            Log.d("MyLog", "Столкновение")
+//            Log.d("MyLog", "collision")
+            saveData("collision", x, y)
             return false
         }
 

@@ -14,21 +14,30 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
+import com.example.neurosmg.csvdatauploader.CSVWriter
+import com.example.neurosmg.csvdatauploader.DataUploadCallback
+import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentIATTestBinding
-import com.example.neurosmg.tests.rat.RATTest
-import com.example.neurosmg.testsPage.TestsPageFragment
+import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
 
 class IATTest : Fragment() {
 
     lateinit var binding: FragmentIATTestBinding
     private var mainActivityListener: MainActivityListener? = null
+
+    private val viewModelUploaderFile by lazy {
+        ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
+    }
+    private val data = mutableListOf<MutableList<String>>()
+    private var patientId: Int = -1
 
     private val totalRounds = 20
     private var currentRound = 1
@@ -73,6 +82,30 @@ class IATTest : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentIATTestBinding.inflate(inflater)
+        viewModelUploaderFile.uploadFileLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UploadState.Error -> {
+                    binding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                is UploadState.Success.SuccessGetIdFile -> {
+                    binding.progressBar.isVisible = true
+                    Toast.makeText(requireContext(), "$state", Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Success.SuccessSendFile -> {
+                    binding.progressBar.isVisible = false
+                    parentFragmentManager.popBackStack()
+                }
+
+                UploadState.Initial -> {}
+            }
+        }
         educationAnimation()
         return binding.root
     }
@@ -97,6 +130,8 @@ class IATTest : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         reenterTransition = true
+        viewModelUploaderFile.setInitialState()
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
     private fun updateWordList() {
@@ -176,7 +211,7 @@ class IATTest : Fragment() {
                     }
                     binding.tvStep.text = currentStep.toString()
                 }else{
-                    infoDialogEndTest()
+                    finishTest()
                     binding.btnLeft.isEnabled = false
                     binding.btnRight.isEnabled = false
                 }
@@ -211,7 +246,39 @@ class IATTest : Fragment() {
         }else{
             touchRightCategory
         }
-        Log.d("MyLog", "$touchStartTimeUnixTimestamp, $currentStep-${currentRound-1}, $touchDurationSeconds, $touchCategory, $touchNameCategory, $correctAnswer, $presentWord")
+
+        val dynamicRow = mutableListOf(
+            touchStartTimeUnixTimestamp.toString(), (currentStep-(currentRound-1)).toString(),
+            touchDurationSeconds.toString(), touchCategory, touchNameCategory, correctAnswer, presentWord
+        )
+        data.add(dynamicRow)
+    }
+
+    private fun finishTest() {
+        binding.constraintMain.visibility = View.INVISIBLE
+
+        saveDataToFileCSV()
+    }
+
+    private fun saveDataToFileCSV() {
+        val csvWriter = CSVWriter(context = requireContext())
+        val unixTime = System.currentTimeMillis()
+        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        csvWriter.writeDataToCsv(data, fileName = fileName) {
+            when (it) {
+                DataUploadCallback.OnFailure -> {
+                    Toast.makeText(
+                        requireContext(),
+                        requireContext().getString(R.string.not_success_save_file),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                DataUploadCallback.OnSuccess -> {
+                    infoDialogEndTest(fileName)
+                }
+            }
+        }
     }
 
     private fun educationAnimation() {
@@ -403,19 +470,15 @@ class IATTest : Fragment() {
         alertDialog.setCanceledOnTouchOutside(false)
     }
 
-    private fun infoDialogEndTest() {
+    private fun infoDialogEndTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             soundPlayer?.stopSound()
             dialog.dismiss()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, TestsPageFragment.newInstance())
-                .addToBackStack(Screen.TESTS_PAGE)
-                .commit()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -429,9 +492,15 @@ class IATTest : Fragment() {
     }
 
     companion object {
-        private const val TEST_NAME = "RAT"
+        private const val TEST_NAME = "IAT"
         private const val TEST_FILE_EXTENSION = ".csv"
         @JvmStatic
-        fun newInstance() = IATTest()
+        fun newInstance(patientId: Int = -1): IATTest{
+            val fragment = IATTest()
+            val args = Bundle()
+            args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }

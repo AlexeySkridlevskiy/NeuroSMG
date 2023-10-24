@@ -11,13 +11,17 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
-import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
+import com.example.neurosmg.csvdatauploader.CSVWriter
+import com.example.neurosmg.csvdatauploader.DataUploadCallback
+import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentTMTTestBinding
-import com.example.neurosmg.testsPage.TestsPageFragment
+import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
 
 class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
@@ -26,6 +30,12 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     private var mainActivityListener: MainActivityListener? = null
     private lateinit var labyrinthView: LabyrinthView
     private var soundPlayer: SoundPlayer? = null
+
+    private val viewModelUploaderFile by lazy {
+        ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
+    }
+    private var data = mutableListOf<MutableList<String>>()
+    private var patientId: Int = -1
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -41,6 +51,8 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         reenterTransition = true
+        viewModelUploaderFile.setInitialState()
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
     override fun onDestroyView() {
@@ -53,6 +65,30 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTMTTestBinding.inflate(inflater)
+        viewModelUploaderFile.uploadFileLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UploadState.Error -> {
+                    binding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                is UploadState.Success.SuccessGetIdFile -> {
+                    binding.progressBar.isVisible = true
+                    Toast.makeText(requireContext(), "$state", Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Success.SuccessSendFile -> {
+                    binding.progressBar.isVisible = false
+                    parentFragmentManager.popBackStack()
+                }
+
+                UploadState.Initial -> {}
+            }
+        }
         return binding.root
     }
 
@@ -62,22 +98,45 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
         educationAnimation()
     }
 
-    override fun onLabyrinthCompleted(steps: Int) {
+    override fun onLabyrinthCompleted(steps: Int, data: MutableList<MutableList<String>>) {
         if(steps==21){
-            infoDialogEndTest()
+            this.data = data
+            finishTest()
         }else{
             binding.tvLabSteps.text = steps.toString()
+        }
+    }
+
+    private fun finishTest() {
+        binding.constraintMain.visibility = View.INVISIBLE
+
+        saveDataToFileCSV()
+    }
+
+    private fun saveDataToFileCSV() {
+        val csvWriter = CSVWriter(context = requireContext())
+        val unixTime = System.currentTimeMillis()
+        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        csvWriter.writeDataToCsv(data, fileName = fileName) {
+            when (it) {
+                DataUploadCallback.OnFailure -> {
+                    Toast.makeText(
+                        requireContext(),
+                        requireContext().getString(R.string.not_success_save_file),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                DataUploadCallback.OnSuccess -> {
+                    infoDialogEndTest(fileName)
+                }
+            }
         }
     }
 
     override fun onDetach() {
         super.onDetach()
         mainActivityListener = null
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = TMTTest()
     }
 
     private fun educationAnimation() {
@@ -117,18 +176,14 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
         alertDialog.setCanceledOnTouchOutside(false)
     }
 
-    private fun infoDialogEndTest() {
+    private fun infoDialogEndTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             dialog.dismiss()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, TestsPageFragment.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -139,5 +194,18 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     override fun onDestroy() {
         super.onDestroy()
         soundPlayer?.stopSound()
+    }
+
+    companion object {
+        private const val TEST_NAME = "TMT"
+        private const val TEST_FILE_EXTENSION = ".csv"
+        @JvmStatic
+        fun newInstance(patientId: Int = -1): TMTTest{
+            val fragment = TMTTest()
+            val args = Bundle()
+            args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
