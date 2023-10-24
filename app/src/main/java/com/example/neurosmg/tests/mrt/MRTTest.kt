@@ -12,25 +12,37 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
-import com.example.neurosmg.Screen
 import com.example.neurosmg.ToolbarState
 import com.example.neurosmg.common.setScreenOrientation
+import com.example.neurosmg.csvdatauploader.CSVWriter
+import com.example.neurosmg.csvdatauploader.DataUploadCallback
+import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentMRTTestBinding
-import com.example.neurosmg.testsPage.TestsPageFragment
+import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
 import kotlin.random.Random
-import kotlin.random.nextInt
 
 class MRTTest : Fragment() {
     lateinit var binding: FragmentMRTTestBinding
     private var mainActivityListener: MainActivityListener? = null
 
+    private val viewModelUploaderFile by lazy {
+        ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
+    }
+    private val data = mutableListOf<MutableList<String>>()
+    private var patientId: Int = -1
+
     private var steps = 0
     private var flag = false
+    private var typeFigure = "A"
     private var soundPlayer: SoundPlayer? = null
     private var resource = 1
+    private var startTime: Long = 0
+    private var endTime: Long = 0
     private val image1Resources = arrayOf(
         R.drawable.figure_1_1,
         R.drawable.figure_1_2,
@@ -90,6 +102,8 @@ class MRTTest : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         reenterTransition = true
+        viewModelUploaderFile.setInitialState()
+        patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
     override fun onDestroyView() {
@@ -105,6 +119,7 @@ class MRTTest : Fragment() {
         binding.buttonLeft.isVisible = false
         binding.buttonRight.isVisible = false
         binding.buttonLeft.setOnClickListener {
+            saveData("left")
 //            if(flag){
 //                binding.textView12.text = "true"
 //            }else{
@@ -113,12 +128,38 @@ class MRTTest : Fragment() {
             startTest()
         }
         binding.buttonRight.setOnClickListener {
+            saveData("right")
 //            if(flag){
 //                binding.textView12.text = "false"
 //            }else{
 //                binding.textView12.text = "true"
 //            }
             startTest()
+        }
+
+        viewModelUploaderFile.uploadFileLiveData.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is UploadState.Error -> {
+                    binding.progressBar.isVisible = false
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Loading -> {
+                    binding.progressBar.isVisible = true
+                }
+
+                is UploadState.Success.SuccessGetIdFile -> {
+                    binding.progressBar.isVisible = true
+                    Toast.makeText(requireContext(), "$state", Toast.LENGTH_SHORT).show()
+                }
+
+                UploadState.Success.SuccessSendFile -> {
+                    binding.progressBar.isVisible = false
+                    parentFragmentManager.popBackStack()
+                }
+
+                UploadState.Initial -> {}
+            }
         }
 
         return binding.root
@@ -133,11 +174,6 @@ class MRTTest : Fragment() {
     override fun onDetach() {
         super.onDetach()
         mainActivityListener = null
-    }
-
-    companion object {
-        @JvmStatic
-        fun newInstance() = MRTTest()
     }
 
     private fun educationAnimation() {
@@ -164,14 +200,27 @@ class MRTTest : Fragment() {
         if(steps==50){
             endTest()
         }else {
+            startTime = System.currentTimeMillis()
             steps++
             binding.tvSteps.text = steps.toString()
 
             when(steps){
-                11 -> resource = 2
-                21 -> resource = 3
-                31 -> resource = 4
-                41 -> resource = 5
+                11 -> {
+                    resource = 2
+                    typeFigure = "B"
+                }
+                21 -> {
+                    resource = 3
+                    typeFigure = "C"
+                }
+                31 -> {
+                    resource = 4
+                    typeFigure = "D"
+                }
+                41 -> {
+                    resource = 5
+                    typeFigure = "E"
+                }
             }
 
             var randomIndex = randomImageFromResource(resource)
@@ -212,21 +261,59 @@ class MRTTest : Fragment() {
     }
 
     private fun endTest(){
-        infoDialogEndTest()
+        finishTest()
     }
 
-    private fun infoDialogEndTest() {
+    private fun saveData(s: String) {
+        endTime = System.currentTimeMillis()
+        val durationTime = endTime - startTime
+        var result = ""
+        if(s == "left" && flag){
+            result = "true answer"
+        }else{
+            result = "false answer"
+        }
+        val dynamicRow = mutableListOf(
+            steps.toString(), typeFigure, durationTime.toString(), flag.toString(), result
+        )
+        data.add(dynamicRow)
+    }
+
+    private fun finishTest() {
+        binding.constraintMain.visibility = View.INVISIBLE
+
+        saveDataToFileCSV()
+    }
+
+    private fun saveDataToFileCSV() {
+        val csvWriter = CSVWriter(context = requireContext())
+        val unixTime = System.currentTimeMillis()
+        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        csvWriter.writeDataToCsv(data, fileName = fileName) {
+            when (it) {
+                DataUploadCallback.OnFailure -> {
+                    Toast.makeText(
+                        requireContext(),
+                        requireContext().getString(R.string.not_success_save_file),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                DataUploadCallback.OnSuccess -> {
+                    infoDialogEndTest(fileName)
+                }
+            }
+        }
+    }
+
+    private fun infoDialogEndTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование окончено!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные сохранены в папке!") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             dialog.dismiss()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, TestsPageFragment.newInstance())
-                .addToBackStack(Screen.MAIN_PAGE)
-                .commit()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -253,5 +340,18 @@ class MRTTest : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         soundPlayer?.stopSound()
+    }
+
+    companion object {
+        private const val TEST_NAME = "MRT"
+        private const val TEST_FILE_EXTENSION = ".csv"
+        @JvmStatic
+        fun newInstance(patientId: Int = -1): MRTTest{
+            val fragment = MRTTest()
+            val args = Bundle()
+            args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
