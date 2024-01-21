@@ -71,4 +71,11 @@
 
     //errors
     <string name="not_success_save_file">Извините, не удалось сохранить данные</string>
+
+    //интернет подключение
+    <string name="internet_connection_title_success">Интернет подключен</string>
+    <string name="internet_connection_subtitle_success">Отлично, вы успешно подключены к интернету.</string>
+
+    <string name="internet_connection_title_error">Отсутствует подключение</string>
+    <string name="internet_connection_subtitle_error">Пожалуйста, проверьте ваше интернет-соединение и попробуйте снова.</string>
 </resources>

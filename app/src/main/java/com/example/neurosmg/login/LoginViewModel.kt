@@ -7,8 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import com.example.neurosmg.api.IdController
 import com.example.neurosmg.api.TokenController
 import com.example.neurosmg.common.State
-import com.example.neurosmg.login.api.AuthData
-import com.example.neurosmg.login.api.AuthResponse
+import com.example.neurosmg.data.api.RetrofitBuilder
+import com.example.neurosmg.login.entity.AuthData
+import com.example.neurosmg.login.entity.AuthResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -17,7 +18,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
     private val tokenController = TokenController(application.baseContext)
     private val idController = IdController(application.baseContext)
-    private val retrofitBuilder = RetrofitBuilder()
+    private val retrofitBuilder = RetrofitBuilder(application.baseContext)
     private val apiService = retrofitBuilder.retrofitCreate()
 
     private val mutableLoginLD: MutableLiveData<State<String>> = MutableLiveData()
@@ -40,7 +41,6 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         login: String,
         password: String
     ) {
-
         val authData = AuthData(login, password)
         mutableLoginLD.value = State.Loading
         apiService.login(authData).enqueue(object : Callback<AuthResponse> {

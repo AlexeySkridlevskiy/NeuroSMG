@@ -2,9 +2,6 @@ package com.example.neurosmg
 
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.util.Log
-import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -13,13 +10,13 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.aboutProgramPage.AboutProgramPage
+import com.example.neurosmg.data.CheckInternetConnectionManager
 import com.example.neurosmg.databinding.ActivityMainBinding
 import com.example.neurosmg.doctorProfile.DoctorProfile
 import com.example.neurosmg.patientTestList.PatientListFragment
 import com.example.neurosmg.patientTestList.ScreenNavigationMenu
 import com.example.neurosmg.patientTestList.StatePatientViewModel
 import com.example.neurosmg.preloader.InitialFragment
-import com.example.neurosmg.questionnaires.QuestionnaireAudit
 
 class MainActivity : AppCompatActivity(), MainActivityListener {
 
@@ -30,6 +27,8 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     private lateinit var fragment: Fragment
     private var currentFragmentTag: String? = null
+
+    private val checkInternetConnectionManager = CheckInternetConnectionManager(this)
 
     private val viewModelState by lazy {
         ViewModelProvider(this)[StatePatientViewModel::class.java]
@@ -45,7 +44,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
             viewModelState.navTo(ScreenNavigationMenu.TO_QUESTIONNAIRE)
             fragment = PatientListFragment.newInstance()
             replaceFragment(fragment, Screen.QUESTIONNAIRE)
-//            replaceFragment(QuestionnaireAudit.newInstance(), Screen.ABOUT_APP)
         },
         R.id.patients to {
             viewModelState.navTo(ScreenNavigationMenu.TO_PATIENT_LIST)
@@ -78,6 +76,8 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         } else {
             setupFragment(InitialFragment.newInstance(), Screen.INITIAL)
         }
+
+        checkInternetConnectionManager.checkInternetConnection()
 
         setupDrawerLayout()
     }

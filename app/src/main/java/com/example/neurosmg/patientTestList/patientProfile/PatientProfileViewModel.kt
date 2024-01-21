@@ -1,22 +1,19 @@
 package com.example.neurosmg.patientTestList.patientProfile
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.neurosmg.api.TokenController
 import com.example.neurosmg.common.State
-import com.example.neurosmg.doctorProfile.ProfileDoctorState
-import com.example.neurosmg.login.RetrofitBuilder
+import com.example.neurosmg.data.api.RetrofitBuilder
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class PatientProfileViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val tokenController = TokenController(application.baseContext)
-    private val retrofitBuilder = RetrofitBuilder()
+    private val retrofitBuilder = RetrofitBuilder(application.baseContext)
     private val apiService = retrofitBuilder.retrofitCreate()
 
     private val _patientData: MutableLiveData<State<PatientProfileState>> = MutableLiveData()
@@ -25,8 +22,7 @@ class PatientProfileViewModel(application: Application) : AndroidViewModel(appli
     private fun fetchPatientById(id: Int) {
         _patientData.value = State.Loading
 
-        val jwtToken = tokenController.getUserToken()
-        apiService.getPatientById("Bearer $jwtToken", id).enqueue(object : Callback<PatientResponse> {
+        apiService.getPatientById(id).enqueue(object : Callback<PatientResponse> {
             override fun onResponse(call: Call<PatientResponse>, response: Response<PatientResponse>) {
                 if (response.isSuccessful) {
                     patientResponce = response.body()
@@ -57,8 +53,7 @@ class PatientProfileViewModel(application: Application) : AndroidViewModel(appli
     fun updatePatientData(updatedData: UpdatePatientRequest, id: Int) {
         _patientData.value = State.Loading
 
-        val jwtToken = tokenController.getUserToken()
-        apiService.updatePatient("Bearer $jwtToken", id, updatedData).enqueue(object : Callback<PatientResponse> {
+        apiService.updatePatient(id, updatedData).enqueue(object : Callback<PatientResponse> {
             override fun onResponse(call: Call<PatientResponse>, response: Response<PatientResponse>) {
                 if (response.isSuccessful) {
                     val stateSuccess = PatientProfileState(

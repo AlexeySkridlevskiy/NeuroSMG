@@ -3,11 +3,10 @@ package com.example.neurosmg.data.repository
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.neurosmg.api.TokenController
 import com.example.neurosmg.csvdatauploader.BodyRequest
 import com.example.neurosmg.csvdatauploader.RequestSendIdFile
 import com.example.neurosmg.csvdatauploader.UploadState
-import com.example.neurosmg.login.RetrofitBuilder
+import com.example.neurosmg.data.api.RetrofitBuilder
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -15,8 +14,7 @@ import java.io.File
 
 class SendFilesDataSource(private val context: Context) {
 
-    private val authToken = TokenController(context).getUserToken()
-    private val apiService = RetrofitBuilder().retrofitCreate()
+    private val apiService = RetrofitBuilder(context).retrofitCreate()
 
     private val _uploadFileLiveData: MutableLiveData<UploadState> = MutableLiveData()
     val uploadFileLiveData: LiveData<UploadState> = _uploadFileLiveData
@@ -29,23 +27,23 @@ class SendFilesDataSource(private val context: Context) {
         val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
         val body = MultipartBody.Part.createFormData("files", file.name, requestFile)
 
-        authToken?.let { token ->
-            val uploadFile = apiService.uploadFile("Bearer $token", body)
-            if (uploadFile.isSuccessful) {
 
-                val fileId = uploadFile.body()?.first()?.id
+        val uploadFile = apiService.uploadFile(body)
+        if (uploadFile.isSuccessful) {
 
-                fileId?.let {
-                    _uploadFileLiveData.postValue(UploadState.Success.SuccessSendFile)
-                    sendIds(idPatient = patientId, idFile = fileId)
-                }
+            val fileId = uploadFile.body()?.first()?.id
 
-            } else {
+            fileId?.let {
+                _uploadFileLiveData.postValue(UploadState.Success.SuccessSendFile)
+                sendIds(idPatient = patientId, idFile = fileId)
+            }
+
+        } else {
                 _uploadFileLiveData.postValue(
                     UploadState.Error(uploadFile.message().toString())
                 )
             }
-        }
+
     }
 
     private suspend fun sendIds(
@@ -59,7 +57,7 @@ class SendFilesDataSource(private val context: Context) {
             )
         )
 
-        val response = apiService.sendIdFile("Bearer $authToken", requestBody)
+        val response = apiService.sendIdFile(requestBody)
 
         if (response.isSuccessful) {
             _uploadFileLiveData.postValue(UploadState.Success.SuccessSendFile)
