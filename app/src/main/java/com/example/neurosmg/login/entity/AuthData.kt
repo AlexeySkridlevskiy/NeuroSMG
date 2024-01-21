@@ -1,4 +1,4 @@
-package com.example.neurosmg.login.api
+package com.example.neurosmg.login.entity
 
 data class AuthData(
     val identifier: String,
