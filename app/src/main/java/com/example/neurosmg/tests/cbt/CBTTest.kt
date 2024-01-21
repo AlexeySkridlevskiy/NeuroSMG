@@ -39,7 +39,7 @@ class CBTTest : Fragment() {
     private var isShowingSequence = false
     private var expectedIndex = 0
     private var stepsIndex = 1
-    private val maxStepsIndex = 2
+    private val maxStepsIndex = 20
     private var soundPlayer: SoundPlayer? = null
     private var touchStartTimeMillis: Long = 0
     private var touchEndTimeMillis: Long = 0
