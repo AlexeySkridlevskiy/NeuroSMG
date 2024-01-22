@@ -15,7 +15,7 @@ class RetrofitBuilder(val context: Context) {
 
     private val tokenController = TokenController(context)
 
-    private val okHttpClient = OkHttpClient.Builder()
+    private val okHttpClientWithInterceptor = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val originalRequest = chain.request()
             val newRequestBuilder: Request.Builder = originalRequest.newBuilder()
@@ -28,15 +28,27 @@ class RetrofitBuilder(val context: Context) {
         })
         .build()
 
+    private val okHttpClientWithoutInterceptor = OkHttpClient.Builder()
+        .addInterceptor(HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        })
+        .build()
+
     private val gson: Gson = GsonBuilder()
         .setLenient()
         .create()
 
-    fun retrofitCreate(): ApiService {
+    fun retrofitCreate(clientWithInterceptor: Boolean = true): ApiService {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
-            .client(okHttpClient)
+            .client(
+                if (clientWithInterceptor) {
+                    okHttpClientWithInterceptor
+                } else {
+                    okHttpClientWithoutInterceptor
+                }
+            )
             .build()
 
         return retrofit.create(ApiService::class.java)

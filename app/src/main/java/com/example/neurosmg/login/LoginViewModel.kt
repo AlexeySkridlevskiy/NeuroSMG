@@ -19,7 +19,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private val tokenController = TokenController(application.baseContext)
     private val idController = IdController(application.baseContext)
     private val retrofitBuilder = RetrofitBuilder(application.baseContext)
-    private val apiService = retrofitBuilder.retrofitCreate()
+    private val apiService = retrofitBuilder.retrofitCreate(false)
 
     private val mutableLoginLD: MutableLiveData<State<String>> = MutableLiveData()
     val loginLD: LiveData<State<String>> = mutableLoginLD
@@ -59,6 +59,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
                 } else {
                     mutableLoginLD.value = State.Error("")
+                    tokenController.clearToken()
                 }
             }
 
