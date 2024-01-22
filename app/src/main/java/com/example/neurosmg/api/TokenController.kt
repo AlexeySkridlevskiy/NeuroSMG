@@ -17,6 +17,11 @@ class TokenController(private val context: Context) {
         editor.apply()
     }
 
+    fun clearToken() {
+        editor.putString("token", null)
+        editor.apply()
+    }
+
     fun getUserToken(): String? {
         return sharedPreferences.getString("token", null)
     }
