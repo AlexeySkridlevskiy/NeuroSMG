@@ -158,8 +158,6 @@ class CBTTest : Fragment() {
                 soundPlayer?.playSound(R.raw.cbt_first_seq)
             }
             touchStartTimeMillis = System.currentTimeMillis()
-//                binding.root.isClickable = true
-
             return
         }
 
@@ -236,7 +234,6 @@ class CBTTest : Fragment() {
                     }
                 } else {
                     if (currentSequenceLength > 5) {
-                        currentSequenceLength = 5
                         sequenceSquares = emptyList()
                         expectedIndex = 0
                     }
