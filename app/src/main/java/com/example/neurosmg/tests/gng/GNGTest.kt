@@ -45,6 +45,7 @@ class GNGTest : Fragment() {
     private var touchStartTime: Long = 0
     private var touchEndTime: Long = 0
     private var randomTimeView: Long = 0
+    private var currentStimulus: String = ""
 
     private val viewModelUploaderFile by lazy {
         ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
@@ -128,16 +129,13 @@ class GNGTest : Fragment() {
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     binding.btnCross.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF7260A3"))
-                    // Когда начинается нажатие
                     touchStartTime = System.currentTimeMillis()
                     return@setOnTouchListener true
                 }
                 MotionEvent.ACTION_UP -> {
                     binding.btnCross.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF6750A4"))
-                    // Когда нажатие заканчивается
                     touchEndTime = System.currentTimeMillis()
                     val pressDuration = touchEndTime - touchStartTime
-                    // Здесь вы можете использовать pressDuration по вашему усмотрению
                     flagClickBtn = pressDuration.toInt()
                     return@setOnTouchListener true
                 }
@@ -183,7 +181,7 @@ class GNGTest : Fragment() {
 
     private fun timerForData(){
         handler.postDelayed({
-            timer = object : CountDownTimer(125000, 2500) { // Здесь задается интервал 1.5 секунды
+            timer = object : CountDownTimer(125000, 2500) {
                 override fun onTick(millisUntilFinished: Long) {
                     saveData()
                     flagClickBtn = 0
@@ -199,9 +197,9 @@ class GNGTest : Fragment() {
         binding.btnStart.visibility = View.INVISIBLE
         binding.btnCross.visibility = View.VISIBLE
         handler.postDelayed({
-            timer = object : CountDownTimer(125000, 2500) { // Здесь задается интервал 1.5 секунды
+            timer = object : CountDownTimer(125000, 2500) {
                 override fun onTick(millisUntilFinished: Long) {
-                    if(indexStep==0){
+                    if (indexStep == 0) {
                         timerForData()
                     }
 
@@ -209,18 +207,25 @@ class GNGTest : Fragment() {
                     touchStartTimeUnixTimestamp = System.currentTimeMillis()
                     val randomSquare = (1..4).random()
                     val randomCross = (0..1).random()
-                    indexGoNogo = if(randomCross==0){
+                    indexGoNogo = if (randomCross == 0) {
                         "go"
-                    }else{
+                    } else {
                         "nogo"
                     }
-                    randomTimeView = (1000..2000).random().toLong()
+                    randomTimeView = (500..2000).random().toLong()
+
+                    if (currentStimulus == plus && randomCross == 1 && (1..100).random() <= 20) {
+                        currentStimulus = cross
+                    } else {
+                        currentStimulus = if (randomCross == 0) plus else cross
+                    }
+
                     when (randomSquare) {
                         1 -> {
                             binding.square1.setImageResource(
-                                if (randomCross == 0) R.drawable.cross else R.drawable.plus
+                                if (currentStimulus == plus) R.drawable.plus else R.drawable.cross
                             )
-                            answer = randomCross == 0
+                            answer = currentStimulus == plus
                             handler.postDelayed({
                                 binding.square1.setImageResource(R.drawable.zoom)
                             }, randomTimeView)
@@ -228,9 +233,9 @@ class GNGTest : Fragment() {
 
                         2 -> {
                             binding.square2.setImageResource(
-                                if (randomCross == 0) R.drawable.cross else R.drawable.plus
+                                if (currentStimulus == plus) R.drawable.plus else R.drawable.cross
                             )
-                            answer = randomCross == 0
+                            answer = currentStimulus == plus
                             handler.postDelayed({
                                 binding.square2.setImageResource(R.drawable.zoom)
                             }, randomTimeView)
@@ -238,9 +243,9 @@ class GNGTest : Fragment() {
 
                         3 -> {
                             binding.square3.setImageResource(
-                                if (randomCross == 0) R.drawable.cross else R.drawable.plus
+                                if (currentStimulus == plus) R.drawable.plus else R.drawable.cross
                             )
-                            answer = randomCross == 0
+                            answer = currentStimulus == plus
                             handler.postDelayed({
                                 binding.square3.setImageResource(R.drawable.zoom)
                             }, randomTimeView)
@@ -248,9 +253,9 @@ class GNGTest : Fragment() {
 
                         4 -> {
                             binding.square4.setImageResource(
-                                if (randomCross == 0) R.drawable.cross else R.drawable.plus
+                                if (currentStimulus == plus) R.drawable.plus else R.drawable.cross
                             )
-                            answer = randomCross == 0
+                            answer = currentStimulus == plus
                             handler.postDelayed({
                                 binding.square4.setImageResource(R.drawable.zoom)
                             }, randomTimeView)
@@ -264,6 +269,7 @@ class GNGTest : Fragment() {
             }.start()
         }, 2000)
     }
+
 
     // Переопределение метода onDetach для отключения связи с активностью
     override fun onDetach() {
@@ -281,9 +287,9 @@ class GNGTest : Fragment() {
 
     private fun infoDialogStart() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Для начала тестирования нажмите кнопку Начать") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.cbt_dialog_title)
+        alertDialogBuilder.setMessage(R.string.cbt_dialog_message_start)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_btn_ok) { dialog, _ ->
             dialog.dismiss()
         }
 
@@ -294,9 +300,9 @@ class GNGTest : Fragment() {
 
     private fun infoDialogInstruction() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Инструкция") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Перед вами на экране будет представлен шар определенного цвета, который при касании экрана увеличивается в размере. По прошествии определенного количества касаний шар лопается. Каждое касание приносит") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.gng_dialog_title)
+        alertDialogBuilder.setMessage(R.string.gng_dialog_message)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             dialog.dismiss()
             infoDialogStart()
         }
@@ -309,9 +315,9 @@ class GNGTest : Fragment() {
     private fun infoDialogEndTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
-        alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.gng_dialog_title_success)
+        alertDialogBuilder.setMessage(R.string.gng_dialog_save)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             dialog.dismiss()
         }
