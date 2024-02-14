@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,9 +21,7 @@ import com.example.neurosmg.csvdatauploader.CSVWriter
 import com.example.neurosmg.csvdatauploader.DataUploadCallback
 import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentFOTTestBinding
-import com.example.neurosmg.tests.cbt.CBTTest
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
-import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.exitFullScreenMode
 
 class FOTTest : Fragment(), CanvasViewCallback {
@@ -213,11 +210,14 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
     override fun onCanvasDataMotion(timeInSeconds: Long, durationMillis: Long) {
         val dynamicRow = mutableListOf(
-            durationMillis.toString(), secPerStart.toString(), secPerStart.toString(), timeInSeconds.toString(),
-            EventX.toString(), EventY.toString(), handIndex
+            durationMillis.toString(),
+            secPerStart.toString(),
+            timeInSeconds.toString(),
+            EventX.toString(),
+            EventY.toString(),
+            handIndex
         )
         data.add(dynamicRow)
-//        Log.d("MyLog", "$durationMillis, $secPerStart, $timeInSeconds, $EventX , $EventY, $handIndex")
     }
 
     private fun updateTouchCountTextView() {
@@ -227,9 +227,9 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private fun infoDialog() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         binding.startBtn.visibility = View.INVISIBLE
-        alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Для начала тестирования коснитесь экрана") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.fot_dialog_title)
+        alertDialogBuilder.setMessage(R.string.fot_dialog_subtitle)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             soundPlayer?.stopSound()
             dialog.dismiss()
         }
@@ -241,9 +241,9 @@ class FOTTest : Fragment(), CanvasViewCallback {
 
     private fun infoDialogStartTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Предупреждение") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Перед началом теста нажмите кнопку начать") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.fot_dialog_title_warning)
+        alertDialogBuilder.setMessage(R.string.fot_dialog_subtitle_warning)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             dialog.dismiss()
             viewDialog = 0
         }
@@ -257,13 +257,12 @@ class FOTTest : Fragment(), CanvasViewCallback {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.fot_left)
         binding.startBtn.visibility = View.VISIBLE
-        alertDialogBuilder.setTitle("Время вышло") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Продолжите исследование для левой руки") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.fot_dialog_title_end_time)
+        alertDialogBuilder.setMessage(R.string.fot_dialog_subtitle_left_hand)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             soundPlayer?.stopSound()
             canvasView.touchEnabled = true
             infoDialogStartTest()
-            Log.d("MyLog", "${TestActive.KEY_ACTIVE_FOT_TEST}")
             dialog.dismiss()
         }
 
@@ -275,17 +274,12 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private fun infoDialogEndAllTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
-        alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.dialog_test_success_title)
+        alertDialogBuilder.setMessage(R.string.dialog_test_success_subtitle)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             soundPlayer?.stopSound()
             dialog.dismiss()
-//            parentFragmentManager
-//                .beginTransaction()
-//                .replace(R.id.container, TestsPageFragment.newInstance())
-//                .addToBackStack(Screen.MAIN_PAGE)
-//                .commit()
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -294,10 +288,8 @@ class FOTTest : Fragment(), CanvasViewCallback {
     }
 
     private fun educationAnimation() {
-//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
             soundPlayer?.playSound(R.raw.fot_anim)
-//            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.fot)
@@ -306,7 +298,6 @@ class FOTTest : Fragment(), CanvasViewCallback {
                     soundPlayer?.playSound(R.raw.fot_start_btn)
                     root.isVisible = false
                     activity?.exitFullScreenMode()
-//                    mainActivityListener?.updateToolbarState(ToolbarState.FOTTest)
                     startBtn.isVisible = true
                     canvasView.isVisible = true
                     lblHandTv.isVisible = true
@@ -329,7 +320,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
     private fun saveDataToFileCSV() {
         val csvWriter = CSVWriter(context = requireContext())
         val unixTime = System.currentTimeMillis()
-        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}"
         csvWriter.writeDataToCsv(data, fileName = fileName) {
             when (it) {
                 DataUploadCallback.OnFailure -> {
@@ -355,7 +346,7 @@ class FOTTest : Fragment(), CanvasViewCallback {
     companion object {
         private const val TEST_NAME = "FOT"
         private const val TEST_FILE_EXTENSION = ".csv"
-        const val TAG_FRAGMENT = Screen.FOT_TEST
+        const val TAG = Screen.FOT_TEST
         @JvmStatic
         fun newInstance(patientId: Int = -1): FOTTest {
             val fragment = FOTTest()
