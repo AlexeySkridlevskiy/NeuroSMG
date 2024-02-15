@@ -1,3 +1,6 @@
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
 data class FileData(
     val id: Int,
     val data: Data?
@@ -43,7 +46,8 @@ data class DataItem(
     val attributes: FileAttributesDetails
 )
 
+@Entity
 data class FileAttributesDetails(
-    val name: String,
+    @PrimaryKey val name: String,
     val hash: String
 )
