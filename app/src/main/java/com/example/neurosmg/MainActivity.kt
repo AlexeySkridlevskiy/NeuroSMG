@@ -64,20 +64,24 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val isFirstCreation = savedInstanceState == null
+
         if (savedInstanceState != null) {
             currentFragmentTag = savedInstanceState.getString(KeyOfArgument.KEY_OF_FRAGMENT) ?: ""
         }
 
-        if (currentFragmentTag != null) {
+        if (isFirstCreation) {
+            setupFragment(InitialFragment.newInstance(), Screen.INITIAL)
+        } else {
             val fragment = supportFragmentManager.findFragmentByTag(currentFragmentTag)
             if (fragment != null) {
                 setupFragment(fragment, currentFragmentTag ?: Screen.INITIAL)
             }
-        } else {
-            setupFragment(InitialFragment.newInstance(), Screen.INITIAL)
         }
 
-        checkInternetConnectionManager.checkInternetConnection()
+        if (isFirstCreation) {
+            checkInternetConnectionManager.checkInternetConnection()
+        }
 
         setupDrawerLayout()
     }

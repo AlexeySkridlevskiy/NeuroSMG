@@ -135,13 +135,29 @@ class IATTest : Fragment() {
     }
 
     private fun chooseWordList(): List<String> {
+        val randomIndex = (0..1).random()
+
         return when (currentStep) {
-            1 -> if ((0..1).random() == 0) drinksWords else alcoholWords
-            2 -> if ((0..1).random() == 0) goodWords else badWords
-            3, 4 -> if ((0..1).random() == 0) drinksWords else alcoholWords
-            5 -> if ((0..1).random() == 0) alcoholWords else drinksWords
-            6, 7 -> if ((0..1).random() == 0) alcoholWords else drinksWords
-            else -> if ((0..1).random() == 0) drinksWords else alcoholWords
+            1 -> if (randomIndex == 0) drinksWords else alcoholWords
+            2 -> if (randomIndex == 0) goodWords else badWords
+            3, 4 -> chooseListForSteps(randomIndex, drinksWords, alcoholWords, goodWords, badWords)
+            5 -> if (randomIndex == 0) alcoholWords else drinksWords
+            6, 7 -> chooseListForSteps(randomIndex, alcoholWords, drinksWords, badWords, goodWords)
+            else -> if (randomIndex == 0) drinksWords else alcoholWords
+        }
+    }
+
+    private fun chooseListForSteps(
+        randomIndex: Int,
+        list1: List<String>,
+        list2: List<String>,
+        list3: List<String>,
+        list4: List<String>
+    ): List<String> {
+        return if (randomIndex == 0) {
+            if ((0..1).random() == 0) list1 else list2
+        } else {
+            if ((0..1).random() == 0) list3 else list4
         }
     }
 
