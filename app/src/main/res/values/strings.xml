@@ -100,4 +100,12 @@
     <string name="sct_dialog_subtitle">Для начала тестирования коснитесь экрана</string>
     <string name="sct_dialog_message">Перед вами на экране будет представлен шар определенного цвета, который при касании экрана увеличивается в размере. По прошествии определенного количества касаний шар лопается. Каждое касание приносит</string>
     <string name="sct_dialog_save">Данные будут сохранены в папку</string>
+
+    //FOT
+    <string name="fot_dialog_title">Начало</string>
+    <string name="fot_dialog_title_warning">Предупреждение</string>
+    <string name="fot_dialog_title_end_time">Время вышло</string>
+    <string name="fot_dialog_subtitle_warning">Перед началом теста нажмите кнопку начать</string>
+    <string name="fot_dialog_subtitle">Для начала тестирования коснитесь экрана</string>
+    <string name="fot_dialog_subtitle_left_hand">Продолжите исследование для левой руки</string>
 </resources>
