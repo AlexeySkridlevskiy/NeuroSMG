@@ -23,7 +23,5 @@ fun String.toFragment(patientId: Int): Fragment =
         "TMT" -> TMTTest.newInstance(patientId = patientId)
         "CBT" -> CBTTest.newInstance(patientId = patientId)
         "MRT" -> MRTTest.newInstance(patientId = patientId)
-        "AUDIT" -> QuestionnaireAudit.newInstance(patientId = patientId)
-
-        else -> throw RuntimeException("Unknown test name")
+        else -> QuestionnaireAudit.newInstance(patientId = patientId)
     }
