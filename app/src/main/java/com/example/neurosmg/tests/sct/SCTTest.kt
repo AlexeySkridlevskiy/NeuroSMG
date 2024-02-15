@@ -7,8 +7,6 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -17,6 +15,7 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
@@ -44,7 +43,9 @@ class SCTTest : Fragment() {
     private var patientId: Int = -1
 
     private val colors = listOf(Color.RED, Color.BLUE)
-    private val words = listOf("Красный", "Синий")
+    private val words = listOf(
+        R.string.color_red, R.string.color_blue
+    )
 
     private var score = 0
     private var totalAttempts = 0
@@ -132,60 +133,68 @@ class SCTTest : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun setupButtonClickListeners() {
         buttonRed.setOnTouchListener { _, motionEvent ->
-            touchBtnLR = "left"
-            touchBtnLRColor = "red"
+            touchBtnLR = getString(R.string.left_side)
+            touchBtnLRColor = getString(R.string.color_red_en)
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
+                    buttonBlue.isEnabled = false
                     touchStartTimeMillis = System.currentTimeMillis()
                 }
+
                 MotionEvent.ACTION_UP -> {
                     touchEndTimeMillis = System.currentTimeMillis()
+                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
                     calculateTouchDuration()
                     binding.tvColorText.visibility = View.INVISIBLE
                     checkAnswer(Color.RED)
+                    buttonBlue.isEnabled = true
                 }
             }
             false
         }
 
         buttonBlue.setOnTouchListener { _, motionEvent ->
-            touchBtnLR = "right"
-            touchBtnLRColor = "blue"
+            touchBtnLR = getString(R.string.right_side)
+            touchBtnLRColor = getString(R.string.color_blue_en)
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
+                    buttonRed.isEnabled = false
                     touchStartTimeMillis = System.currentTimeMillis()
                 }
+
                 MotionEvent.ACTION_UP -> {
                     touchEndTimeMillis = System.currentTimeMillis()
+                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
                     calculateTouchDuration()
                     binding.tvColorText.visibility = View.INVISIBLE
                     checkAnswer(Color.BLUE)
+                    buttonRed.isEnabled = true
                 }
             }
             false
         }
     }
+
     private fun calculateTouchDuration() {
         val touchDurationMillis = touchEndTimeMillis - touchStartTimeMillis
-        touchDurationSeconds = touchDurationMillis // Преобразовать в секунды с точностью до тысячных миллисекунд
+        touchDurationSeconds = touchDurationMillis
     }
+
     private fun showRandomWord() {
         val randomIndex = Random.nextInt(0, words.size)
         val randomWord = words[randomIndex]
         randomColor = colors[Random.nextInt(0, colors.size)]
         if(totalAttempts<10){
-            randomColor = if (randomWord=="Красный"){
+            randomColor = if (randomWord == R.string.color_red) {
                 Color.RED
-            }else{
+            } else {
                 Color.BLUE
             }
         }
 
         handler.postDelayed({
             textView.visibility = View.VISIBLE
-            textView.text = randomWord
+            textView.text = getString(randomWord)
             textView.setTextColor(randomColor)
         }, 100)
     }
@@ -209,10 +218,10 @@ class SCTTest : Fragment() {
 
     private fun saveData() {
         var randomColorView = ""
-        randomColorView = if(randomColor == Color.RED){
-            "red"
-        }else{
-            "blue"
+        randomColorView = if (randomColor == Color.RED) {
+            getString(R.string.color_red_en)
+        } else {
+            getString(R.string.color_blue_en)
         }
 
         val dynamicRow = mutableListOf(
@@ -250,10 +259,6 @@ class SCTTest : Fragment() {
     }
 
     private fun showTestResult() {
-//        textView.visibility = View.VISIBLE
-//        val accuracy = score * 100 / totalAttempts
-//        val resultText = "Тест завершен!\n\nТочность: $accuracy%"
-//        textView.text = resultText
         finishTest()
         buttonRed.isEnabled = false
         buttonBlue.isEnabled = false
@@ -265,9 +270,9 @@ class SCTTest : Fragment() {
 
     private fun infoDialogStartTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Начало") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Для начала тестирования коснитесь экрана") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.sct_dialog_title)
+        alertDialogBuilder.setMessage(R.string.sct_dialog_subtitle)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             dialog.dismiss()
         }
 
@@ -278,9 +283,9 @@ class SCTTest : Fragment() {
 
     private fun infoDialogReady() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Исследование начато") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Приготовьтесь") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.sct_dialog_title_start)
+        alertDialogBuilder.setMessage(R.string.sct_dialog_subtitle_start)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             dialog.dismiss()
             setupTest()
         }
@@ -293,9 +298,9 @@ class SCTTest : Fragment() {
     private fun infoDialogEndTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
-        alertDialogBuilder.setTitle("Тестирование пройдено, спасибо!") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Данные будут сохранены в папке") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.dialog_test_success_title)
+        alertDialogBuilder.setMessage(R.string.dialog_test_success_subtitle)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
             dialog.dismiss()
         }
@@ -306,10 +311,8 @@ class SCTTest : Fragment() {
     }
 
     private fun educationAnimation() {
-//        mainActivityListener?.updateToolbarState(ToolbarState.HideToolbar)
         binding.apply {
             soundPlayer?.playSound(R.raw.sct_anim)
-//            activity?.enterFullScreenMode()
             lottieLayout.run {
                 root.isVisible = true
                 animationLottie.setAnimation(R.raw.sct)
@@ -319,17 +322,14 @@ class SCTTest : Fragment() {
                     infoDialogStartTest()
                     root.isVisible = false
                     activity?.exitFullScreenMode()
-//                    mainActivityListener?.updateToolbarState(ToolbarState.SCTTest)
                     textView17.isVisible = true
                     btnRed.isVisible = true
                     btnBlue.isVisible = true
-//                    line.isVisible = true
                 }
             }
             textView17.isVisible = false
             btnRed.isVisible = false
             btnBlue.isVisible = false
-//            constraintLayout.isVisible = false
         }
     }
 
@@ -339,10 +339,12 @@ class SCTTest : Fragment() {
     }
 
     companion object {
+        private const val TAG = "SCTTest"
         private const val TEST_NAME = "SCT"
         private const val TEST_FILE_EXTENSION = ".csv"
+
         @JvmStatic
-        fun newInstance(patientId: Int = -1): SCTTest{
+        fun newInstance(patientId: Int = -1): SCTTest {
             val fragment = SCTTest()
             val args = Bundle()
             args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)
