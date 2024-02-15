@@ -50,7 +50,7 @@ class GNGTest : Fragment() {
     private val viewModelUploaderFile by lazy {
         ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
     }
-    private val data = mutableListOf<MutableList<String>>()
+    private val data = mutableListOf<List<String>>()
     private var patientId: Int = -1
 
     override fun onAttach(context: Context) {
@@ -63,7 +63,6 @@ class GNGTest : Fragment() {
         }
     }
 
-    // Переопределение метода onCreateView для создания интерфейса фрагмента
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -115,16 +114,6 @@ class GNGTest : Fragment() {
             startGeneratingCrossesAndPluses()
         }
 
-        binding.btnCross.setOnClickListener {
-            if (answer == true) {
-//                binding.tvAnswer.text = "TRUE"
-//                binding.tvAnswer.setTextColor(Color.GREEN)
-            } else {
-//                binding.tvAnswer.text = "FALSE"
-//                binding.tvAnswer.setTextColor(Color.RED)
-            }
-        }
-
         binding.btnCross.setOnTouchListener { view, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -146,7 +135,9 @@ class GNGTest : Fragment() {
 
     private fun saveData(){
         val dynamicRow = mutableListOf(
-            touchStartTimeUnixTimestamp.toString(), indexStep.toString(), indexGoNogo, flagClickBtn.toString(),
+            touchStartTimeUnixTimestamp.toString(), indexStep.toString(),
+            indexGoNogo,
+            flagClickBtn.toString(),
             randomTimeView.toString()
         )
         data.add(dynamicRow)
@@ -161,7 +152,7 @@ class GNGTest : Fragment() {
     private fun saveDataToFileCSV() {
         val csvWriter = CSVWriter(context = requireContext())
         val unixTime = System.currentTimeMillis()
-        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}"
         csvWriter.writeDataToCsv(data, fileName = fileName) {
             when (it) {
                 DataUploadCallback.OnFailure -> {
@@ -181,14 +172,13 @@ class GNGTest : Fragment() {
 
     private fun timerForData(){
         handler.postDelayed({
-            timer = object : CountDownTimer(125000, 2500) {
+            timer = object : CountDownTimer(TIMER_DURATION, TIMER_INTERVAL) {
                 override fun onTick(millisUntilFinished: Long) {
                     saveData()
                     flagClickBtn = 0
                 }
 
-                override fun onFinish() {
-                }
+                override fun onFinish() {}
             }.start()
         }, 2400)
     }
@@ -197,7 +187,7 @@ class GNGTest : Fragment() {
         binding.btnStart.visibility = View.INVISIBLE
         binding.btnCross.visibility = View.VISIBLE
         handler.postDelayed({
-            timer = object : CountDownTimer(125000, 2500) {
+            timer = object : CountDownTimer(TIMER_DURATION, TIMER_INTERVAL) {
                 override fun onTick(millisUntilFinished: Long) {
                     if (indexStep == 0) {
                         timerForData()
@@ -271,7 +261,6 @@ class GNGTest : Fragment() {
     }
 
 
-    // Переопределение метода onDetach для отключения связи с активностью
     override fun onDetach() {
         super.onDetach()
         mainActivityListener = null
@@ -287,8 +276,8 @@ class GNGTest : Fragment() {
 
     private fun infoDialogStart() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle(R.string.cbt_dialog_title)
-        alertDialogBuilder.setMessage(R.string.cbt_dialog_message_start)
+        alertDialogBuilder.setTitle(R.string.gng_dialog_title_start)
+        alertDialogBuilder.setMessage(R.string.gng_dialog_subtitle_start)
         alertDialogBuilder.setPositiveButton(R.string.dialog_btn_ok) { dialog, _ ->
             dialog.dismiss()
         }
@@ -359,8 +348,11 @@ class GNGTest : Fragment() {
     companion object {
         private const val TEST_NAME = "GNG"
         private const val TEST_FILE_EXTENSION = ".csv"
-        @JvmStatic
-        fun newInstance(patientId: Int = -1): GNGTest{
+
+        private val TIMER_INTERVAL = 2500L
+        private val TIMER_DURATION = 127500L
+
+        fun newInstance(patientId: Int = -1): GNGTest {
             val fragment = GNGTest()
             val args = Bundle()
             args.putInt(KeyOfArgument.KEY_OF_ID_PATIENT, patientId)

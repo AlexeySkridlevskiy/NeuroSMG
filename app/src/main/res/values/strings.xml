@@ -82,7 +82,10 @@
 
     //GNG
     <string name="gng_dialog_title">Инструкция</string>
+    <string name="gng_dialog_title_start">Инструкция</string>
     <string name="gng_dialog_title_success">"Тестирование пройдено!"</string>
+    <string name="gng_dialog_subtitle_start">"Для начала тестирования нажмите кнопку Начать"</string>
+
 
     <string name="gng_dialog_message">Перед вами на экране будет представлен шар определенного цвета, который при касании экрана увеличивается в размере. По прошествии определенного количества касаний шар лопается. Каждое касание приносит</string>
     <string name="gng_dialog_save">Данные будут сохранены в папку</string>
