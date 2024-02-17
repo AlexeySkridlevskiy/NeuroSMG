@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
     private lateinit var fragment: Fragment
     private var currentFragmentTag: String? = null
 
-    private val checkInternetConnectionManager = CheckInternetConnectionManager(this)
 
     private val viewModelState by lazy {
         ViewModelProvider(this)[StatePatientViewModel::class.java]
@@ -80,6 +79,7 @@ class MainActivity : AppCompatActivity(), MainActivityListener {
         }
 
         if (isFirstCreation) {
+            val checkInternetConnectionManager = CheckInternetConnectionManager(this)
             checkInternetConnectionManager.checkInternetConnection()
         }
 

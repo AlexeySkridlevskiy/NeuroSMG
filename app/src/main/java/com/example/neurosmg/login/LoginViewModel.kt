@@ -4,8 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.neurosmg.api.IdController
-import com.example.neurosmg.api.TokenController
+import com.example.neurosmg.data.api.IdController
+import com.example.neurosmg.data.api.TokenController
 import com.example.neurosmg.common.State
 import com.example.neurosmg.data.api.RetrofitBuilder
 import com.example.neurosmg.login.entity.AuthData
