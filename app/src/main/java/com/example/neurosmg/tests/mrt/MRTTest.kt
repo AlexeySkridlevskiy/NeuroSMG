@@ -188,7 +188,7 @@ class MRTTest : Fragment() {
     }
 
     private fun startTest() {
-        if (steps == 10) {
+        if (steps == 50) {
             finishTest()
         } else {
             startTime = System.currentTimeMillis()
