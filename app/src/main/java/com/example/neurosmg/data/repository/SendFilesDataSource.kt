@@ -7,12 +7,17 @@ import com.example.neurosmg.csvdatauploader.BodyRequest
 import com.example.neurosmg.csvdatauploader.RequestSendIdFile
 import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.data.api.RetrofitBuilder
+import com.example.neurosmg.data.local.db.NotSentDataDao
+import com.example.neurosmg.data.local.model.NotSavedTestEntity
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 
-class SendFilesDataSource(private val context: Context) {
+class SendFilesDataSource(
+    private val context: Context,
+    private val database: NotSentDataDao
+) {
 
     private val apiService = RetrofitBuilder(context).retrofitCreate()
 
@@ -21,29 +26,42 @@ class SendFilesDataSource(private val context: Context) {
 
     suspend fun uploadFile(
         patientId: Int,
-        fileName: String
+        fileName: String,
+        data: List<List<String>>
     ) {
         val file = File(context.getExternalFilesDir(null), fileName)
         val requestFile = file.asRequestBody("multipart/form-data".toMediaType())
         val body = MultipartBody.Part.createFormData("files", file.name, requestFile)
 
+        try {
+            val uploadFile = apiService.uploadFile(body)
+            if (uploadFile.isSuccessful) {
 
-        val uploadFile = apiService.uploadFile(body)
-        if (uploadFile.isSuccessful) {
+                val fileId = uploadFile.body()?.first()?.id
 
-            val fileId = uploadFile.body()?.first()?.id
+                fileId?.let {
+                    _uploadFileLiveData.postValue(UploadState.Success.SuccessSendFile)
+                    sendIds(idPatient = patientId, idFile = fileId)
+                }
 
-            fileId?.let {
-                _uploadFileLiveData.postValue(UploadState.Success.SuccessSendFile)
-                sendIds(idPatient = patientId, idFile = fileId)
-            }
-
-        } else {
+                database.removeFromNotSentData(fileName)
+            } else {
                 _uploadFileLiveData.postValue(
-                    UploadState.Error(uploadFile.message().toString())
+                    UploadState.Error(message = uploadFile.message().toString())
                 )
             }
-
+        } catch (exception: Exception) {
+            database.addTest(
+                NotSavedTestEntity(
+                    fileName = fileName,
+                    idPatient = patientId,
+                    data = data
+                )
+            )
+            _uploadFileLiveData.postValue(
+                UploadState.Error(message = exception.localizedMessage)
+            )
+        }
     }
 
     private suspend fun sendIds(

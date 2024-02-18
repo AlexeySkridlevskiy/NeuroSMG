@@ -23,6 +23,7 @@ import com.example.neurosmg.csvdatauploader.DataUploadCallback
 import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentCBTTestBinding
 import com.example.neurosmg.utils.exitFullScreenMode
+import com.example.neurosmg.utils.generateName
 
 class CBTTest : Fragment() {
     lateinit var binding: FragmentCBTTestBinding
@@ -307,7 +308,7 @@ class CBTTest : Fragment() {
         alertDialogBuilder.setTitle(R.string.dialog_test_success_title)
         alertDialogBuilder.setMessage(R.string.dialog_test_success_subtitle)
         alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
-            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName, data)
             dialog.dismiss()
         }
 
@@ -341,8 +342,7 @@ class CBTTest : Fragment() {
 
     private fun saveDataToFileCSV() {
         val csvWriter = CSVWriter(context = requireContext())
-        val unixTime = System.currentTimeMillis()
-        val fileName = "$TEST_NAME.${unixTime}$TEST_FILE_EXTENSION" //поменять файл на нужный
+        val fileName = generateName(TEST_NAME)
         csvWriter.writeDataToCsv(data, fileName = fileName) {
             when (it) {
                 DataUploadCallback.OnFailure -> {

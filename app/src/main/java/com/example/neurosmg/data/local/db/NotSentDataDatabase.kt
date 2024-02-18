@@ -1,14 +1,16 @@
 package com.example.neurosmg.data.local.db
 
-import FileAttributesDetails
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.neurosmg.data.local.model.NotSavedTestEntity
 
-@Database(entities = [FileAttributesDetails::class], version = 1, exportSchema = false)
+@Database(entities = [NotSavedTestEntity::class], version = 1, exportSchema = false)
+@TypeConverters(DataConverter::class)
 abstract class NotSentDataDatabase: RoomDatabase() {
-    abstract fun dataDao(): NotSentDataDao
+    abstract fun notSavedDataDao(): NotSentDataDao
 
     companion object {
 

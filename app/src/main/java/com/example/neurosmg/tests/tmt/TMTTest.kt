@@ -23,6 +23,7 @@ import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentTMTTestBinding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
+import com.example.neurosmg.utils.generateName
 
 class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
@@ -115,8 +116,7 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
     private fun saveDataToFileCSV() {
         val csvWriter = CSVWriter(context = requireContext())
-        val unixTime = System.currentTimeMillis()
-        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}" //поменять файл на нужный
+        val fileName = generateName(TEST_NAME)
         csvWriter.writeDataToCsv(data, fileName = fileName) {
             when (it) {
                 DataUploadCallback.OnFailure -> {
@@ -182,7 +182,7 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
         alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папке.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName, data)
             dialog.dismiss()
         }
 

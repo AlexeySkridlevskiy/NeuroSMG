@@ -27,6 +27,7 @@ import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentGNGTestBinding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
+import com.example.neurosmg.utils.generateName
 
 class GNGTest : Fragment() {
 
@@ -151,8 +152,7 @@ class GNGTest : Fragment() {
 
     private fun saveDataToFileCSV() {
         val csvWriter = CSVWriter(context = requireContext())
-        val unixTime = System.currentTimeMillis()
-        val fileName = "${TEST_NAME}.${unixTime}${TEST_FILE_EXTENSION}"
+        val fileName = generateName(TEST_NAME)
         csvWriter.writeDataToCsv(data, fileName = fileName) {
             when (it) {
                 DataUploadCallback.OnFailure -> {
@@ -307,7 +307,7 @@ class GNGTest : Fragment() {
         alertDialogBuilder.setTitle(R.string.gng_dialog_title_success)
         alertDialogBuilder.setMessage(R.string.gng_dialog_save)
         alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
-            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
+            viewModelUploaderFile.sendFile(idPatient = patientId, fileName, data)
             dialog.dismiss()
         }
 

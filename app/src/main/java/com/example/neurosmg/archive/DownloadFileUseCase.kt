@@ -1,11 +1,11 @@
 package com.example.neurosmg.archive
 
-import com.example.neurosmg.api.ApiService
+import android.os.Environment
+import android.os.Environment.DIRECTORY_DOWNLOADS
+import com.example.neurosmg.data.api.ApiService
 import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
-import android.os.Environment
-import android.os.Environment.DIRECTORY_DOWNLOADS
 
 class DownloadFileUseCase(
     private val apiService: ApiService,

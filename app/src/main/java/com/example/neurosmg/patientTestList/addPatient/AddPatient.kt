@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
 import com.example.neurosmg.ToolbarState
-import com.example.neurosmg.api.IdController
+import com.example.neurosmg.data.api.IdController
 import com.example.neurosmg.common.State
 import com.example.neurosmg.common.showToast
 import com.example.neurosmg.databinding.FragmentAddPatientBinding

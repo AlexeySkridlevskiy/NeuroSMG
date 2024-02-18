@@ -1,4 +1,4 @@
-package com.example.neurosmg.api
+package com.example.neurosmg.data.api
 
 import android.content.Context
 import android.content.SharedPreferences

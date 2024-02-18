@@ -236,7 +236,11 @@ class QuestionnaireAudit : Fragment() {
         alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            viewModelUploaderFile.sendFile(idPatient = patientId, fileName)
+            viewModelUploaderFile.sendFile(
+                idPatient = patientId,
+                fileName = fileName,
+                data = data
+            )
             soundPlayer?.stopSound()
             dialog.dismiss()
         }

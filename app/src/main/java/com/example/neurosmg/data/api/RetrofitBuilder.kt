@@ -1,8 +1,6 @@
 package com.example.neurosmg.data.api
 
 import android.content.Context
-import com.example.neurosmg.api.ApiService
-import com.example.neurosmg.api.TokenController
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
