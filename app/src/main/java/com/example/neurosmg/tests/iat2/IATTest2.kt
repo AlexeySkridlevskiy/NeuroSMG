@@ -27,6 +27,7 @@ import com.example.neurosmg.databinding.FragmentIATTest2Binding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.tests.iat.IATTest
 import com.example.neurosmg.testsPage.TestsPageFragment
+import com.example.neurosmg.utils.contentEquals
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
 
@@ -38,23 +39,23 @@ class IATTest2 : Fragment() {
     private val viewModelUploaderFile by lazy {
         ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
     }
-    private val data = mutableListOf<MutableList<String>>()
+    private val data = mutableListOf<List<String>>()
     private var patientId: Int = -1
 
     private val totalRounds = 20
     private var currentRound = 1
     private var currentStep = 1
 
-    private val fruitsPic = arrayOf(R.drawable.fruit_1, R.drawable.fruit_2, R.drawable.fruit_3,
+    private val fruitsPic = listOf(R.drawable.fruit_1, R.drawable.fruit_2, R.drawable.fruit_3,
         R.drawable.fruit_4, R.drawable.fruit_5, R.drawable.fruit_6, R.drawable.fruit_7)
-    private val alcoholPic = arrayOf(R.drawable.alco_1, R.drawable.alco_2, R.drawable.alco_3,
+    private val alcoholPic = listOf(R.drawable.alco_1, R.drawable.alco_2, R.drawable.alco_3,
         R.drawable.alco_4, R.drawable.alco_5, R.drawable.alco_6, R.drawable.alco_7)
-    private val smilePic = arrayOf(R.drawable.smile_1, R.drawable.smile_2, R.drawable.smile_3,
+    private val smilePic = listOf(R.drawable.smile_1, R.drawable.smile_2, R.drawable.smile_3,
         R.drawable.smile_4, R.drawable.smile_5, R.drawable.smile_6, R.drawable.smile_7)
-    private val grimacePic = arrayOf(R.drawable.grimace_1, R.drawable.grimace_2, R.drawable.grimace_3,
+    private val grimacePic = listOf(R.drawable.grimace_1, R.drawable.grimace_2, R.drawable.grimace_3,
         R.drawable.grimace_4, R.drawable.grimace_5, R.drawable.grimace_6, R.drawable.grimace_7)
 
-    private lateinit var currentWordList: Array<Int>
+    private lateinit var currentWordList: List<Int>
     private var soundPlayer: SoundPlayer? = null
 
     private var touchStartTimeUnixTimestamp: Long = 0
@@ -139,30 +140,36 @@ class IATTest2 : Fragment() {
         patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
-    private fun updateWordList() {
-        currentWordList = if(currentStep==1){
-            if((0..1).random()==0) fruitsPic else alcoholPic
-        }else if(currentStep==2){
-            if((0..1).random()==0) smilePic else grimacePic
-        }else if(currentStep==3||currentStep==4){
-            if((0..1).random()==0){
-                if((0..1).random()==0) fruitsPic else alcoholPic
-            }else{
-                if((0..1).random()==0) smilePic else grimacePic
-            }
-        }else if(currentStep==5){
-            if((0..1).random()==0) smilePic else grimacePic
-        }else if(currentStep==6||currentStep==7){
-            if((0..1).random()==0){
-                if((0..1).random()==0) alcoholPic else fruitsPic
-            }else{
-                if((0..1).random()==0) grimacePic else smilePic
-            }
-        }else{
-            if((0..1).random()==0) fruitsPic else alcoholPic
-        }
+    private fun chooseWordList(): List<Int> {
+        val randomIndex = (0..1).random()
 
+        return when (currentStep) {
+            1 -> if (randomIndex == 0) fruitsPic else alcoholPic
+            2 -> if (randomIndex == 0) smilePic else grimacePic
+            3, 4 -> chooseListForSteps(randomIndex, fruitsPic, alcoholPic, smilePic, grimacePic)
+            5 -> if (randomIndex == 0) smilePic else grimacePic
+            6, 7 -> chooseListForSteps(randomIndex, alcoholPic, fruitsPic, grimacePic, smilePic)
+            else -> if (randomIndex == 0) fruitsPic else alcoholPic
+        }
+    }
+
+    private fun updateWordList() {
+        currentWordList = chooseWordList()
         updateWord()
+    }
+
+    private fun chooseListForSteps(
+        randomIndex: Int,
+        list1: List<Int>,
+        list2: List<Int>,
+        list3: List<Int>,
+        list4: List<Int>
+    ): List<Int> {
+        return if (randomIndex == 0) {
+            if ((0..1).random() == 0) list1 else list2
+        } else {
+            if ((0..1).random() == 0) list3 else list4
+        }
     }
 
     @SuppressLint("SuspiciousIndentation")
@@ -176,7 +183,6 @@ class IATTest2 : Fragment() {
         }else if(currentWordList.contentEquals(grimacePic)){
             binding.imgView.setImageResource(grimacePic.random())
         }
-//        presentWord = binding.imgView.
 
         if (currentRound <= totalRounds) {
             binding.tvQuestion.text = currentRound.toString()
@@ -251,10 +257,13 @@ class IATTest2 : Fragment() {
         }else{
             touchRightCategory
         }
-//        Log.d("MyLog", "$touchStartTimeUnixTimestamp, $currentStep-${currentRound-1}, $touchDurationSeconds, $touchCategory, $touchNameCategory, $correctAnswer, $presentWord")
         val dynamicRow = mutableListOf(
-            touchStartTimeUnixTimestamp.toString(), (currentStep-(currentRound-1)).toString(),
-            touchDurationSeconds.toString(), touchCategory, touchNameCategory, correctAnswer
+            touchStartTimeUnixTimestamp.toString(),
+            (currentStep-(currentRound-1)).toString(),
+            touchDurationSeconds.toString(),
+            touchCategory,
+            touchNameCategory,
+            correctAnswer
         )
         data.add(dynamicRow)
     }
