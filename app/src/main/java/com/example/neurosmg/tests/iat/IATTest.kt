@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -28,6 +29,7 @@ import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.contentEquals
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
+import com.example.neurosmg.utils.showInfoDialog
 
 class IATTest : Fragment() {
 
@@ -41,7 +43,7 @@ class IATTest : Fragment() {
     private var patientId: Int = -1
 
     private val totalRounds = 20
-    private var currentRound = 1
+    private var currentRound = 0
     private var currentStep = 1
 
     private val drinksWords = listOf("Чай", "Лимонад", "Вода", "Сок", "Морс")
@@ -113,7 +115,7 @@ class IATTest : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvQuestion.text = currentRound.toString()
+        binding.tvQuestion.text = currentRound++.toString()
         binding.tvStep.text = currentStep.toString()
         mainActivityListener?.updateToolbarState(ToolbarState.IATTest)
     }
@@ -206,12 +208,12 @@ class IATTest : Fragment() {
 
         presentWord = binding.tvText.text as String
 
-        if (currentRound <= totalRounds) {
+        if (currentRound < totalRounds) {
             binding.tvQuestion.text = currentRound.toString()
             currentRound++
         } else {
             if (currentStep < 7) {
-                currentRound = 1
+                currentRound = 0
                 currentStep++
                 when (currentStep) {
                     2 -> {
@@ -296,12 +298,14 @@ class IATTest : Fragment() {
         val dynamicRow = mutableListOf(
             touchStartTimeUnixTimestamp.toString(),
             currentStep.toString(),
+            currentRound.toString(),
             touchDurationSeconds.toString(),
             touchCategory,
             touchNameCategory,
             correctAnswer,
             presentWord.orEmpty()
         )
+        Log.d("saveData", "saveData: $dynamicRow")
         data.add(dynamicRow)
     }
 
@@ -409,131 +413,108 @@ class IATTest : Fragment() {
     }
 
     private fun infoDialogStep1() {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.iat_step_1)
-        alertDialogBuilder.setTitle("Этап 1") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь” и “Напитки”.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            soundPlayer?.stopSound()
-            dialog.dismiss()
+        showInfoDialog(
+            title = "Этап 1",
+            message = "Сделайте выбор между “Алкоголь” и “Напитки”.",
+            buttonText = requireContext().getString(R.string.dialog_ok),
+            soundPlayer = soundPlayer,
+            soundResource = R.raw.iat_step_1,
+            context = requireContext()
+        ) {
             updateWordList()
         }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogStep2() {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.iat_step_2)
-        alertDialogBuilder.setTitle("Этап 2") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Хорошим” и “Плохим”.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            soundPlayer?.stopSound()
-            dialog.dismiss()
+        showInfoDialog(
+            title = "Этап 2",
+            message = "Сделайте выбор между “Хорошим” и “Плохим”.",
+            buttonText = requireContext().getString(R.string.dialog_ok),
+            soundPlayer = soundPlayer,
+            soundResource = R.raw.iat_step_2,
+            context = requireContext()
+        ) {
             updateWordList()
         }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogStep3() {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.iat_step_3)
-        alertDialogBuilder.setTitle("Этап 3") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Напитки + Хорошо” и “Алкоголь + Плохо”.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            soundPlayer?.stopSound()
-            dialog.dismiss()
+        showInfoDialog(
+            title = "Этап 3",
+            message = "Сделайте выбор между “Напитки + Хорошо” и “Алкоголь + Плохо”.",
+            buttonText = requireContext().getString(R.string.dialog_ok),
+            soundPlayer = soundPlayer,
+            soundResource = R.raw.iat_step_3,
+            context = requireContext()
+        ) {
             updateWordList()
         }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogStep4() {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.iat_step_4)
-        alertDialogBuilder.setTitle("Этап 4") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Напитки + Хорошо” и “Алкоголь + Плохо”.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            soundPlayer?.stopSound()
-            dialog.dismiss()
+        showInfoDialog(
+            title = "Этап 4",
+            message = "Сделайте выбор между “Напитки + Хорошо” и “Алкоголь + Плохо”.",
+            buttonText = requireContext().getString(R.string.dialog_ok),
+            soundPlayer = soundPlayer,
+            soundResource = R.raw.iat_step_4,
+            context = requireContext()
+        ) {
             updateWordList()
         }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogStep5() {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.iat_step_5)
-        alertDialogBuilder.setTitle("Этап 5") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь” и “Напитки”.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            soundPlayer?.stopSound()
-            dialog.dismiss()
+        showInfoDialog(
+            title = "Этап 5",
+            message = "Сделайте выбор между “Алкоголь” и “Напитки”.",
+            buttonText = requireContext().getString(R.string.dialog_ok),
+            soundPlayer = soundPlayer,
+            soundResource = R.raw.iat_step_5,
+            context = requireContext()
+        ) {
             updateWordList()
         }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogStep6() {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.iat_step_6)
-        alertDialogBuilder.setTitle("Этап 6") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Хорошо” и “Напитки + Плохо”.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            soundPlayer?.stopSound()
-            dialog.dismiss()
+        showInfoDialog(
+            title = "Этап 6",
+            message = "Сделайте выбор между “Алкоголь + Хорошо” и “Напитки + Плохо”.",
+            buttonText = requireContext().getString(R.string.dialog_ok),
+            soundPlayer = soundPlayer,
+            soundResource = R.raw.iat_step_6,
+            context = requireContext()
+        ) {
             updateWordList()
         }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogStep7() {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.iat_step_7)
-        alertDialogBuilder.setTitle("Этап 7") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между “Алкоголь + Хорошо” и “Напитки + Плохо”.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            soundPlayer?.stopSound()
-            dialog.dismiss()
+        showInfoDialog(
+            title = "Этап 7",
+            message = "Сделайте выбор между “Алкоголь + Хорошо” и “Напитки + Плохо”.",
+            buttonText = requireContext().getString(R.string.dialog_ok),
+            soundPlayer = soundPlayer,
+            soundResource = R.raw.iat_step_7,
+            context = requireContext()
+        ) {
             updateWordList()
         }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     private fun infoDialogEndTest(fileName: String) {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.finish)
-        alertDialogBuilder.setTitle("Тестирование пройдено!") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Данные будут сохранены в папку") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        showInfoDialog(
+            title = "Тестирование пройдено!",
+            message = "Данные будут сохранены в папку",
+            buttonText = requireContext().getString(R.string.dialog_ok),
+            soundPlayer = soundPlayer,
+            soundResource = R.raw.finish,
+            context = requireContext()
+        ) {
             viewModelUploaderFile.sendFile(idPatient = patientId, fileName, data)
             soundPlayer?.stopSound()
-            dialog.dismiss()
         }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
     }
 
     override fun onDestroy() {
