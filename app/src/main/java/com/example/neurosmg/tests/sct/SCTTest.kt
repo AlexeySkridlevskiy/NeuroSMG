@@ -128,6 +128,7 @@ class SCTTest : Fragment() {
     private fun setupTest() {
         totalAttempts = 0
         score = 0
+        binding.layoutSCT.setOnClickListener(null)
         showRandomWord()
     }
 
@@ -138,7 +139,7 @@ class SCTTest : Fragment() {
             touchBtnLRColor = getString(R.string.color_red_en)
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    buttonBlue.isEnabled = false
+                    buttonBlue.isClickable = false
                     touchStartTimeMillis = System.currentTimeMillis()
                 }
 
@@ -148,7 +149,7 @@ class SCTTest : Fragment() {
                     calculateTouchDuration()
                     binding.tvColorText.visibility = View.INVISIBLE
                     checkAnswer(Color.RED)
-                    buttonBlue.isEnabled = true
+                    buttonBlue.isClickable = true
                 }
             }
             false
@@ -159,7 +160,7 @@ class SCTTest : Fragment() {
             touchBtnLRColor = getString(R.string.color_blue_en)
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    buttonRed.isEnabled = false
+                    buttonRed.isClickable = false
                     touchStartTimeMillis = System.currentTimeMillis()
                 }
 
@@ -169,7 +170,7 @@ class SCTTest : Fragment() {
                     calculateTouchDuration()
                     binding.tvColorText.visibility = View.INVISIBLE
                     checkAnswer(Color.BLUE)
-                    buttonRed.isEnabled = true
+                    buttonRed.isClickable = true
                 }
             }
             false
