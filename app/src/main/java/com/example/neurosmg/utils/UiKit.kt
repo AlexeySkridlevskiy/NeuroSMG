@@ -8,14 +8,16 @@ import android.widget.Toast
 fun showInfoDialog(
     title: String,
     message: String,
-    soundResource: Int,
+    soundResource: Int? = null,
     buttonText: String,
     context: Context,
-    soundPlayer: SoundPlayer?,
+    soundPlayer: SoundPlayer? = null,
     positiveClickListener: () -> Unit
 ) {
     val alertDialogBuilder = AlertDialog.Builder(context)
-    soundPlayer?.playSound(soundResource)
+    soundResource?.let {
+        soundPlayer?.playSound(soundResource)
+    }
     alertDialogBuilder.setTitle(title)
     alertDialogBuilder.setMessage(message)
     alertDialogBuilder.setPositiveButton(buttonText) { dialog, _ ->

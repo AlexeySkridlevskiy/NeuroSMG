@@ -8,12 +8,13 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Point
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 
 class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs) {
+
+    private var previousLabyrinth: List<List<Int>>? = null
 
     interface LabyrinthCompletionListener {
         fun onLabyrinthCompleted(steps: Int, data: MutableList<List<String>>)
@@ -43,7 +44,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
 
     private val paint = Paint()
     private var cellSize = 0
-    private val labyrinth1 = mutableListOf(
+    private val labyrinth1 = listOf(
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
@@ -53,7 +54,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
-    private val labyrinth2 = mutableListOf(
+    private val labyrinth2 = listOf(
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
@@ -63,7 +64,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
-    private val labyrinth3 = mutableListOf(
+    private val labyrinth3 = listOf(
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
@@ -73,7 +74,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
-    private val labyrinth4 = mutableListOf(
+    private val labyrinth4 = listOf(
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0),
@@ -83,7 +84,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
-    private val labyrinth5 = mutableListOf(
+    private val labyrinth5 = listOf(
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0),
@@ -93,7 +94,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
-    private val labyrinth6 = mutableListOf(
+    private val labyrinth6 = listOf(
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0),
@@ -103,7 +104,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
 
-    private val labyrinth7 = mutableListOf(
+    private val labyrinth7 = listOf(
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
         listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
@@ -113,7 +114,16 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
     )
     private var labyrinthData = labyrinth1
-    private val labyrinthList = listOf(labyrinth1, labyrinth2, labyrinth3, labyrinth4, labyrinth5, labyrinth6, labyrinth7)
+
+    private val labyrinthList = listOf(
+        labyrinth1,
+        labyrinth2,
+        labyrinth3,
+        labyrinth4,
+        labyrinth5,
+        labyrinth6,
+        labyrinth7
+    )
 
     init {
         paint.color = Color.BLACK
@@ -139,10 +149,13 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
             isFinishMessageShown = false
             isCollisionLogged = false
         } else {
-            val randomIndex = (labyrinthList.indices).random()
-
-            labyrinthData = labyrinthList[randomIndex]
-            finishY = if (randomIndex == 0 || randomIndex == 5) {
+            var currentLabyrinth = labyrinthList.random()
+            while (currentLabyrinth == previousLabyrinth) {
+                currentLabyrinth = labyrinthList.random()
+            }
+            previousLabyrinth = currentLabyrinth
+            labyrinthData = currentLabyrinth
+            finishY = if (currentLabyrinth == labyrinth1 || currentLabyrinth == labyrinth6) {
                 3
             } else {
                 1
@@ -154,6 +167,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
             invalidate()
         }
     }
+
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -195,13 +209,11 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
                     postInvalidate()
 
                     if (!isFinishMessageShown && x / cellSize == finishX && y / cellSize == finishY) {
-                        showToast("Вы прошли лабиринт!")
                         handleLabyrinthCompletion()
                         isFinishMessageShown = true
                     }
 
                     if (!isCollisionLogged && !isValidMove(x, y)) {
-                        Log.d("MyLog", "collision")
                         isCollisionLogged = true
                     }
                 }
@@ -246,7 +258,6 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         }
 
         if (labyrinthData[row][col] == 1) {
-//            Log.d("MyLog", "collision")
             saveData("collision", x, y)
             return false
         }

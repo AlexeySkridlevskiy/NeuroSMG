@@ -16,7 +16,6 @@
     <string name="nav_close">Close</string>
     <string name="lbl_title_main">Главная</string>
     <string name="title_doctor_profile">Профиль врача</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="list_of_patients">Список пациентов</string>
@@ -111,4 +110,10 @@
     <string name="fot_dialog_subtitle_warning">Перед началом теста нажмите кнопку начать</string>
     <string name="fot_dialog_subtitle">Для начала тестирования коснитесь экрана</string>
     <string name="fot_dialog_subtitle_left_hand">Продолжите исследование для левой руки</string>
+    <string name="dialog_tmt_subtitle_rules">Проложите путь от начала лабиринта до конца, стараясь избегать ударения о стены</string>
+    <string name="dialog_tmt_title_rules">Правила тестирования</string>
+
+    //TMT
+    <string name="dialog_title_done_test">Тестирование пройдено</string>
+    <string name="dialog_subtitle_done_test">Тестирование пройдено</string>
 </resources>

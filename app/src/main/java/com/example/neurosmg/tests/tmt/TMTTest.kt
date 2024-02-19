@@ -24,6 +24,7 @@ import com.example.neurosmg.databinding.FragmentTMTTestBinding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
+import com.example.neurosmg.utils.showInfoDialog
 
 class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
@@ -162,9 +163,9 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
     private fun infoDialog() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Правила тестирования") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между напитками и алкоголем. Отнесите товар к определенной категории.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(getString(R.string.dialog_tmt_title_rules))
+        alertDialogBuilder.setMessage(getString(R.string.dialog_tmt_subtitle_rules))
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             dialog.dismiss()
             labyrinthView = binding.labyrinthView
 
@@ -177,18 +178,17 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     }
 
     private fun infoDialogEndTest(fileName: String) {
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        soundPlayer?.playSound(R.raw.finish)
-        alertDialogBuilder.setTitle("Тестирование пройдено") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Данные будут сохранены в папке.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
-            viewModelUploaderFile.sendFile(idPatient = patientId, fileName, data)
-            dialog.dismiss()
-        }
-
-        val alertDialog: AlertDialog = alertDialogBuilder.create()
-        alertDialog.show()
-        alertDialog.setCanceledOnTouchOutside(false)
+        showInfoDialog(
+            title = getString( R.string.dialog_title_done_test),
+            message = getString(R.string.dialog_subtitle_done_test),
+            buttonText = getString(R.string.dialog_ok),
+            context = requireContext(),
+            soundResource = R.raw.finish,
+            soundPlayer = soundPlayer,
+            positiveClickListener = {
+                viewModelUploaderFile.sendFile(idPatient = patientId, fileName, data)
+            }
+        )
     }
 
     override fun onDestroy() {
