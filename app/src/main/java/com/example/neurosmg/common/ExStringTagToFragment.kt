@@ -9,7 +9,7 @@ import com.example.neurosmg.tests.iat.IATTest
 import com.example.neurosmg.tests.iat2.IATTest2
 import com.example.neurosmg.tests.mrt.MRTTest
 import com.example.neurosmg.tests.rat.RATTest
-import com.example.neurosmg.tests.sct.SCTTest
+import com.example.neurosmg.tests.sct.presentation.SCTTest
 import com.example.neurosmg.tests.tmt.TMTTest
 
 fun String.toFragment(patientId: Int): Fragment =

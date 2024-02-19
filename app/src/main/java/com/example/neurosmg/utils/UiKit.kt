@@ -3,6 +3,7 @@ package com.example.neurosmg.utils
 import SoundPlayer
 import android.app.AlertDialog
 import android.content.Context
+import android.widget.Toast
 
 fun showInfoDialog(
     title: String,
@@ -26,4 +27,12 @@ fun showInfoDialog(
     val alertDialog: AlertDialog = alertDialogBuilder.create()
     alertDialog.show()
     alertDialog.setCanceledOnTouchOutside(false)
+}
+
+fun showToast(
+    context: Context,
+    message: String
+) {
+    val toast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
+    toast.show()
 }
