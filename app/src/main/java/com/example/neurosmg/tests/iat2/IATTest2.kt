@@ -25,8 +25,6 @@ import com.example.neurosmg.csvdatauploader.DataUploadCallback
 import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentIATTest2Binding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
-import com.example.neurosmg.tests.iat.IATTest
-import com.example.neurosmg.testsPage.TestsPageFragment
 import com.example.neurosmg.utils.contentEquals
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
@@ -55,7 +53,7 @@ class IATTest2 : Fragment() {
     private val grimacePic = listOf(R.drawable.grimace_1, R.drawable.grimace_2, R.drawable.grimace_3,
         R.drawable.grimace_4, R.drawable.grimace_5, R.drawable.grimace_6, R.drawable.grimace_7)
 
-    private lateinit var currentWordList: List<Int>
+    private lateinit var currentPicList: List<Int>
     private var soundPlayer: SoundPlayer? = null
 
     private var touchStartTimeUnixTimestamp: Long = 0
@@ -66,6 +64,8 @@ class IATTest2 : Fragment() {
     private var touchLeftCategory: String = "alco"
     private var touchRightCategory: String = "fruit"
     private var correctAnswer: String = ""
+    private var presentPicture: Int? = null
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -140,7 +140,7 @@ class IATTest2 : Fragment() {
         patientId = arguments?.getInt(KeyOfArgument.KEY_OF_ID_PATIENT) ?: -1
     }
 
-    private fun chooseWordList(): List<Int> {
+    private fun choosePicList(): List<Int> {
         val randomIndex = (0..1).random()
 
         return when (currentStep) {
@@ -154,7 +154,7 @@ class IATTest2 : Fragment() {
     }
 
     private fun updateWordList() {
-        currentWordList = chooseWordList()
+        currentPicList = choosePicList()
         updateWord()
     }
 
@@ -172,26 +172,53 @@ class IATTest2 : Fragment() {
         }
     }
 
+    private fun getPicture(pictures: List<Int>): Int {
+        val selectedPicture = selectRandomPicture(pictures, presentPicture)
+        presentPicture = selectedPicture
+        return selectedPicture
+    }
+
+    private fun selectRandomPicture(pictures: List<Int>, previousPicture: Int?): Int {
+        var selectedPic: Int
+        do {
+            selectedPic = pictures.random()
+        } while (selectedPic == previousPicture)
+        return selectedPic
+    }
+
     @SuppressLint("SuspiciousIndentation")
     private fun updateWord() {
-        if (currentWordList.contentEquals(fruitsPic)){
-            binding.imgView.setImageResource(fruitsPic.random())
-        }else if(currentWordList.contentEquals(alcoholPic)){
-            binding.imgView.setImageResource(alcoholPic.random())
-        }else if(currentWordList.contentEquals(smilePic)){
-            binding.imgView.setImageResource(smilePic.random())
-        }else if(currentWordList.contentEquals(grimacePic)){
-            binding.imgView.setImageResource(grimacePic.random())
-        }
+        binding.imgView.setImageResource(
+            when {
+                currentPicList.contentEquals(fruitsPic) -> {
+                    getPicture(fruitsPic)
+                }
+
+                currentPicList.contentEquals(alcoholPic) -> {
+                    getPicture(alcoholPic)
+                }
+
+                currentPicList.contentEquals(smilePic) -> {
+                    getPicture(smilePic)
+                }
+
+                currentPicList.contentEquals(grimacePic) -> {
+                    getPicture(grimacePic)
+                }
+
+                else -> getPicture(grimacePic)
+
+            }
+        )
 
         if (currentRound <= totalRounds) {
             binding.tvQuestion.text = currentRound.toString()
             currentRound++
         } else {
-            if (currentStep < 7){
+            if (currentStep < 7) {
                 currentRound = 1
                 currentStep++
-                if (currentStep==2){
+                if (currentStep == 2) {
                     infoDialogStep2()
                     touchLeftCategory = "smile"
                     touchRightCategory = "grimace"
@@ -232,11 +259,11 @@ class IATTest2 : Fragment() {
     private fun checkAnswer(selectedCategory: Int) {
         var correctCategory = -1
         correctCategory = if(currentStep==5){
-            if (currentWordList.contentEquals(smilePic)) 0 else 1
+            if (currentPicList.contentEquals(smilePic)) 0 else 1
         }else if(currentStep>=6){
-            if (currentWordList.contentEquals(fruitsPic)||currentWordList.contentEquals(smilePic)) 0 else 1
+            if (currentPicList.contentEquals(fruitsPic)||currentPicList.contentEquals(smilePic)) 0 else 1
         }else{
-            if (currentWordList.contentEquals(fruitsPic)||currentWordList.contentEquals(grimacePic)) 0 else 1
+            if (currentPicList.contentEquals(fruitsPic)||currentPicList.contentEquals(grimacePic)) 0 else 1
         }
 
         if (selectedCategory == correctCategory) {
