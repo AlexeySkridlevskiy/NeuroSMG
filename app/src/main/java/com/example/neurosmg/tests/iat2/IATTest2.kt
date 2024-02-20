@@ -6,6 +6,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -14,6 +15,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
@@ -28,6 +30,11 @@ import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.contentEquals
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.launch
 
 class IATTest2 : Fragment() {
 
@@ -40,18 +47,27 @@ class IATTest2 : Fragment() {
     private val data = mutableListOf<List<String>>()
     private var patientId: Int = -1
 
-    private val totalRounds = 20
-    private var currentRound = 1
-    private var currentStep = 1
+    private val mutableNumberOfQuestion = MutableStateFlow(1)
+    private val numberOfQuestion: StateFlow<Int> = mutableNumberOfQuestion
 
-    private val fruitsPic = listOf(R.drawable.fruit_1, R.drawable.fruit_2, R.drawable.fruit_3,
-        R.drawable.fruit_4, R.drawable.fruit_5, R.drawable.fruit_6, R.drawable.fruit_7)
-    private val alcoholPic = listOf(R.drawable.alco_1, R.drawable.alco_2, R.drawable.alco_3,
-        R.drawable.alco_4, R.drawable.alco_5, R.drawable.alco_6, R.drawable.alco_7)
-    private val smilePic = listOf(R.drawable.smile_1, R.drawable.smile_2, R.drawable.smile_3,
-        R.drawable.smile_4, R.drawable.smile_5, R.drawable.smile_6, R.drawable.smile_7)
-    private val grimacePic = listOf(R.drawable.grimace_1, R.drawable.grimace_2, R.drawable.grimace_3,
-        R.drawable.grimace_4, R.drawable.grimace_5, R.drawable.grimace_6, R.drawable.grimace_7)
+    private var currentNumberOfBlock = 1
+
+    private val fruitsPic = listOf(
+        R.drawable.fruit_1, R.drawable.fruit_2, R.drawable.fruit_3,
+        R.drawable.fruit_4, R.drawable.fruit_5, R.drawable.fruit_6, R.drawable.fruit_7
+    )
+    private val alcoholPic = listOf(
+        R.drawable.alco_1, R.drawable.alco_2, R.drawable.alco_3,
+        R.drawable.alco_4, R.drawable.alco_5, R.drawable.alco_6, R.drawable.alco_7
+    )
+    private val smilePic = listOf(
+        R.drawable.smile_1, R.drawable.smile_2, R.drawable.smile_3,
+        R.drawable.smile_4, R.drawable.smile_5, R.drawable.smile_6, R.drawable.smile_7
+    )
+    private val grimacePic = listOf(
+        R.drawable.grimace_1, R.drawable.grimace_2, R.drawable.grimace_3,
+        R.drawable.grimace_4, R.drawable.grimace_5, R.drawable.grimace_6, R.drawable.grimace_7
+    )
 
     private lateinit var currentPicList: List<Int>
     private var soundPlayer: SoundPlayer? = null
@@ -118,8 +134,14 @@ class IATTest2 : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvQuestion.text = currentRound.toString()
-        binding.tvStep.text = currentStep.toString()
+
+        lifecycleScope.launch {
+            numberOfQuestion.collect() {
+                binding.tvQuestion.text = numberOfQuestion.value.toString()
+            }
+        }
+
+        binding.tvBlock.text = currentNumberOfBlock.toString()
         mainActivityListener?.updateToolbarState(ToolbarState.IATTest)
     }
 
@@ -143,7 +165,7 @@ class IATTest2 : Fragment() {
     private fun choosePicList(): List<Int> {
         val randomIndex = (0..1).random()
 
-        return when (currentStep) {
+        return when (currentNumberOfBlock) {
             1 -> if (randomIndex == 0) fruitsPic else alcoholPic
             2 -> if (randomIndex == 0) smilePic else grimacePic
             3, 4 -> chooseListForSteps(randomIndex, fruitsPic, alcoholPic, smilePic, grimacePic)
@@ -156,6 +178,7 @@ class IATTest2 : Fragment() {
     private fun updateWordList() {
         currentPicList = choosePicList()
         updateWord()
+        updateValues()
     }
 
     private fun chooseListForSteps(
@@ -210,44 +233,44 @@ class IATTest2 : Fragment() {
 
             }
         )
+    }
 
-        if (currentRound <= totalRounds) {
-            binding.tvQuestion.text = currentRound.toString()
-            currentRound++
+    private fun updateValues() {
+        if (numberOfQuestion.value <= TOTAL_QUESTION_IN_ONE_BLOCK) {
+            mutableNumberOfQuestion.value++
         } else {
-            if (currentStep < 7) {
-                currentRound = 1
-                currentStep++
-                if (currentStep == 2) {
+            if (currentNumberOfBlock < 7) {
+                currentNumberOfBlock++
+                if (currentNumberOfBlock == 2) {
                     infoDialogStep2()
                     touchLeftCategory = "smile"
                     touchRightCategory = "grimace"
                     binding.btnLeft.text = "Улыбки"
                     binding.btnRight.text = "Гримасы"
-                }else if(currentStep==3){
+                } else if (currentNumberOfBlock == 3) {
                     infoDialogStep3()
                     touchLeftCategory = "smilealco"
                     touchRightCategory = "grimacefruit"
                     binding.btnLeft.text = "Улыбки или алкоголь"
                     binding.btnRight.text = "Гримасы или фрукты"
-                }else if(currentStep==4){
+                } else if (currentNumberOfBlock == 4) {
                     infoDialogStep4()
-                }else if(currentStep==5){
+                } else if (currentNumberOfBlock == 5) {
                     infoDialogStep5()
                     touchLeftCategory = "grimace"
                     touchRightCategory = "smile"
                     binding.btnLeft.text = "Гримасы"
                     binding.btnRight.text = "Улыбки"
-                }else if(currentStep==6){
+                } else if (currentNumberOfBlock == 6) {
                     infoDialogStep6()
                     touchLeftCategory = "grimacealco"
                     touchRightCategory = "smilefruit"
                     binding.btnLeft.text = "Гримасы или алкоголь"
                     binding.btnRight.text = "Улыбки или фрукты"
-                }else if(currentStep==7){
+                } else if (currentNumberOfBlock == 7) {
                     infoDialogStep7()
                 }
-                binding.tvStep.text = currentStep.toString()
+                binding.tvBlock.text = currentNumberOfBlock.toString()
             }else{
                 finishTest()
                 binding.btnLeft.isEnabled = false
@@ -258,12 +281,12 @@ class IATTest2 : Fragment() {
 
     private fun checkAnswer(selectedCategory: Int) {
         var correctCategory = -1
-        correctCategory = if(currentStep==5){
+        correctCategory = if (currentNumberOfBlock == 5) {
             if (currentPicList.contentEquals(smilePic)) 0 else 1
-        }else if(currentStep>=6){
-            if (currentPicList.contentEquals(fruitsPic)||currentPicList.contentEquals(smilePic)) 0 else 1
-        }else{
-            if (currentPicList.contentEquals(fruitsPic)||currentPicList.contentEquals(grimacePic)) 0 else 1
+        } else if (currentNumberOfBlock >= 6) {
+            if (currentPicList.contentEquals(fruitsPic) || currentPicList.contentEquals(smilePic)) 0 else 1
+        } else {
+            if (currentPicList.contentEquals(fruitsPic) || currentPicList.contentEquals(grimacePic)) 0 else 1
         }
 
         if (selectedCategory == correctCategory) {
@@ -286,12 +309,14 @@ class IATTest2 : Fragment() {
         }
         val dynamicRow = mutableListOf(
             touchStartTimeUnixTimestamp.toString(),
-            (currentStep-(currentRound-1)).toString(),
+            currentNumberOfBlock.toString(),
+            numberOfQuestion.value.toString(),
             touchDurationSeconds.toString(),
             touchCategory,
             touchNameCategory,
             correctAnswer
         )
+        Log.d("saveData", "saveData: $dynamicRow")
         data.add(dynamicRow)
     }
 
@@ -351,7 +376,7 @@ class IATTest2 : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun infoDialogInstructionTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Правило тестирования") // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.dialog_title_rules) // TODO: в ресурсы выноси
         alertDialogBuilder.setMessage("Сделайте выбор между фруктами и алкоголем. Отнесите товар к определенной категории.") // TODO: в ресурсы выноси
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             soundPlayer?.stopSound()
@@ -404,7 +429,9 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             soundPlayer?.stopSound()
             dialog.dismiss()
-            updateWordList()
+            currentPicList = choosePicList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -420,7 +447,9 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             soundPlayer?.stopSound()
             dialog.dismiss()
-            updateWordList()
+            currentPicList = choosePicList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -436,7 +465,9 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             soundPlayer?.stopSound()
             dialog.dismiss()
-            updateWordList()
+            currentPicList = choosePicList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -452,7 +483,9 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             soundPlayer?.stopSound()
             dialog.dismiss()
-            updateWordList()
+            currentPicList = choosePicList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -468,7 +501,9 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             soundPlayer?.stopSound()
             dialog.dismiss()
-            updateWordList()
+            currentPicList = choosePicList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -484,7 +519,9 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             soundPlayer?.stopSound()
             dialog.dismiss()
-            updateWordList()
+            currentPicList = choosePicList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -500,7 +537,9 @@ class IATTest2 : Fragment() {
         alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
             soundPlayer?.stopSound()
             dialog.dismiss()
-            updateWordList()
+            currentPicList = choosePicList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
 
         val alertDialog: AlertDialog = alertDialogBuilder.create()
@@ -531,7 +570,8 @@ class IATTest2 : Fragment() {
 
     companion object {
         private const val TEST_NAME = "IAT2"
-        private const val TEST_FILE_EXTENSION = ".csv"
+        private const val TOTAL_QUESTION_IN_ONE_BLOCK = 19
+
         @JvmStatic
         fun newInstance(patientId: Int = -1): IATTest2 {
             val fragment = IATTest2()
