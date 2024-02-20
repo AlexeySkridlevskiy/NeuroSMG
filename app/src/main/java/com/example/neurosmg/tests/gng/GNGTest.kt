@@ -40,7 +40,7 @@ class GNGTest : Fragment() {
     private var answer = false
     private var soundPlayer: SoundPlayer? = null
     private var touchStartTimeUnixTimestamp: Long = 0
-    private var indexStep: Int = 0
+    private var indexStep: Int = 1
     private var indexGoNogo: String = ""
     private var flagClickBtn: Int = 0
     private var touchStartTime: Long = 0
@@ -136,7 +136,8 @@ class GNGTest : Fragment() {
 
     private fun saveData(){
         val dynamicRow = mutableListOf(
-            touchStartTimeUnixTimestamp.toString(), indexStep.toString(),
+            touchStartTimeUnixTimestamp.toString(),
+            indexStep.toString(),
             indexGoNogo,
             flagClickBtn.toString(),
             randomTimeView.toString()
@@ -180,7 +181,7 @@ class GNGTest : Fragment() {
 
                 override fun onFinish() {}
             }.start()
-        }, 2400)
+        }, 2000)
     }
 
     private fun startGeneratingCrossesAndPluses() {
@@ -189,25 +190,24 @@ class GNGTest : Fragment() {
         handler.postDelayed({
             timer = object : CountDownTimer(TIMER_DURATION, TIMER_INTERVAL) {
                 override fun onTick(millisUntilFinished: Long) {
-                    if (indexStep == 0) {
-                        timerForData()
-                    }
+                    saveData()
+                    flagClickBtn = 0
 
                     indexStep++
                     touchStartTimeUnixTimestamp = System.currentTimeMillis()
                     val randomSquare = (1..4).random()
                     val randomCross = (0..1).random()
                     indexGoNogo = if (randomCross == 0) {
-                        "go"
+                        TAG_GO
                     } else {
-                        "nogo"
+                        TAG_NOGO
                     }
                     randomTimeView = (500..2000).random().toLong()
 
-                    if (currentStimulus == plus && randomCross == 1 && (1..100).random() <= 20) {
-                        currentStimulus = cross
+                    currentStimulus = if (currentStimulus == plus && randomCross == 1 && (1..100).random() <= 20) {
+                        cross
                     } else {
-                        currentStimulus = if (randomCross == 0) plus else cross
+                        if (randomCross == 0) plus else cross
                     }
 
                     when (randomSquare) {
@@ -270,6 +270,7 @@ class GNGTest : Fragment() {
         super.onDestroy()
         soundPlayer?.stopSound()
         if (::timer.isInitialized) {
+            timer.onFinish()
             timer.cancel()
         }
     }
@@ -347,10 +348,11 @@ class GNGTest : Fragment() {
 
     companion object {
         private const val TEST_NAME = "GNG"
-        private const val TEST_FILE_EXTENSION = ".csv"
 
-        private val TIMER_INTERVAL = 2500L
-        private val TIMER_DURATION = 127500L
+        private val TIMER_INTERVAL = 2000L
+        private val TIMER_DURATION = 100000L
+        private val TAG_GO = "go"
+        private val TAG_NOGO = "nogo"
 
         fun newInstance(patientId: Int = -1): GNGTest {
             val fragment = GNGTest()
