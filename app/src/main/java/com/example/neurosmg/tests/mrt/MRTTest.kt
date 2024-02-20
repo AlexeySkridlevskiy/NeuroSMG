@@ -60,6 +60,8 @@ class MRTTest : Fragment() {
         R.drawable.figure_2_4,
         R.drawable.figure_2_5,
         R.drawable.figure_2_6,
+        R.drawable.figure_2_7,
+        R.drawable.figure_2_8,
     )
 
     private val image3Resources = arrayOf(
@@ -69,6 +71,8 @@ class MRTTest : Fragment() {
         R.drawable.figure_3_4,
         R.drawable.figure_3_5,
         R.drawable.figure_3_6,
+        R.drawable.figure_3_7,
+        R.drawable.figure_3_8,
     )
 
     private val image4Resources = arrayOf(
@@ -78,6 +82,8 @@ class MRTTest : Fragment() {
         R.drawable.figure_4_4,
         R.drawable.figure_4_5,
         R.drawable.figure_4_6,
+        R.drawable.figure_4_7,
+        R.drawable.figure_4_8,
     )
 
     private val image5Resources = arrayOf(
@@ -87,6 +93,55 @@ class MRTTest : Fragment() {
         R.drawable.figure_5_4,
         R.drawable.figure_5_5,
         R.drawable.figure_5_6,
+        R.drawable.figure_5_7,
+        R.drawable.figure_5_8,
+    )
+
+    private val image6Resources = arrayOf(
+        R.drawable.figure_6_1,
+        R.drawable.figure_6_2,
+        R.drawable.figure_6_3,
+        R.drawable.figure_6_4,
+        R.drawable.figure_6_5,
+        R.drawable.figure_6_6,
+        R.drawable.figure_6_7,
+        R.drawable.figure_6_8,
+    )
+
+    private val image7Resources = arrayOf(
+        R.drawable.figure_7_1,
+        R.drawable.figure_7_2,
+        R.drawable.figure_7_3,
+        R.drawable.figure_7_4,
+        R.drawable.figure_7_5,
+        R.drawable.figure_7_6,
+    )
+
+    private val image9Resources = arrayOf(
+        R.drawable.figure_9_1,
+        R.drawable.figure_9_2,
+        R.drawable.figure_9_3,
+        R.drawable.figure_9_4,
+        R.drawable.figure_9_5,
+        R.drawable.figure_9_6,
+    )
+
+    private val image10Resources = arrayOf(
+        R.drawable.figure_10_1,
+        R.drawable.figure_10_2,
+        R.drawable.figure_10_3,
+        R.drawable.figure_10_4,
+        R.drawable.figure_10_5,
+        R.drawable.figure_10_6,
+    )
+
+    private val image11Resources = arrayOf(
+        R.drawable.figure_11_1,
+        R.drawable.figure_11_2,
+        R.drawable.figure_11_3,
+        R.drawable.figure_11_4,
+        R.drawable.figure_11_5,
+        R.drawable.figure_11_6,
     )
 
     override fun onAttach(context: Context) {
@@ -210,6 +265,7 @@ class MRTTest : Fragment() {
                     resource = 4
                     typeFigure = "D"
                 }
+
                 41 -> {
                     resource = 5
                     typeFigure = "E"
@@ -217,15 +273,20 @@ class MRTTest : Fragment() {
             }
 
             var randomIndex = randomImageFromResource(resource)
-            when(resource){
+            when (resource) {
                 1 -> binding.imgView1.setImageResource(image1Resources[randomIndex])
                 2 -> binding.imgView1.setImageResource(image2Resources[randomIndex])
                 3 -> binding.imgView1.setImageResource(image3Resources[randomIndex])
                 4 -> binding.imgView1.setImageResource(image4Resources[randomIndex])
                 5 -> binding.imgView1.setImageResource(image5Resources[randomIndex])
+                6 -> binding.imgView1.setImageResource(image6Resources[randomIndex])
+                7 -> binding.imgView1.setImageResource(image7Resources[randomIndex])
+                8 -> binding.imgView1.setImageResource(image9Resources[randomIndex])
+                9 -> binding.imgView1.setImageResource(image10Resources[randomIndex])
+                10 -> binding.imgView1.setImageResource(image11Resources[randomIndex])
             }
 
-            val randomIndexOne = randomIndex%2
+            val randomIndexOne = randomIndex % 2
             
             randomIndex = randomImageFromResource(resource)
             when(resource){

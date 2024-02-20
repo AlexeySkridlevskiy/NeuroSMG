@@ -8,6 +8,7 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Point
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
@@ -23,7 +24,6 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
     fun setLabyrinthCompletionListener(listener: LabyrinthCompletionListener) {
         completionListener = listener
     }
-
 
     private var completionListener: LabyrinthCompletionListener? = null
     private val data = mutableListOf<List<String>>()
@@ -44,74 +44,75 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
 
     private val paint = Paint()
     private var cellSize = 0
+
     private val labyrinth1 = listOf(
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3)
     )
 
     private val labyrinth2 = listOf(
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3)
     )
 
     private val labyrinth3 = listOf(
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3)
     )
 
     private val labyrinth4 = listOf(
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3)
     )
 
     private val labyrinth5 = listOf(
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3)
     )
 
     private val labyrinth6 = listOf(
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3)
     )
 
     private val labyrinth7 = listOf(
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0),
-        listOf(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0)
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 1, 3, 3, 3),
+        listOf(2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 3, 3)
     )
     private var labyrinthData = labyrinth1
 
@@ -187,7 +188,10 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         if (userPath.isNotEmpty()) {
             val path = Path()
             val startPoint = userPath[0]
-            path.moveTo(startPoint.x.toFloat(), startPoint.y.toFloat())
+            path.moveTo(
+                startPoint.x.toFloat(),
+                startPoint.y.toFloat()
+            )
             for (i in 1 until userPath.size) {
                 val point = userPath[i]
                 path.lineTo(point.x.toFloat(), point.y.toFloat())
@@ -218,7 +222,9 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
                     }
                 }
 
-                saveData("move", x, y)
+                if (!isStartMove(x, y) && !isEndMove(x, y)) {
+                    saveData("move", x, y)
+                }
             }
             MotionEvent.ACTION_UP -> {
                 handler.postDelayed({
@@ -241,6 +247,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
             y.toString(),
             s
         )
+        Log.d("saveData", "saveData: $dynamicRow")
         data.add(dynamicRow)
     }
 
@@ -265,4 +272,26 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
         return true
     }
 
+    private fun isStartMove(x: Int, y: Int): Boolean {
+        val row = y / cellSize
+        val col = x / cellSize
+
+        if (labyrinthData[row][col] == 2) {
+            saveData("start", x, y)
+            return true
+        }
+
+        return false
+    }
+
+    private fun isEndMove(x: Int, y: Int): Boolean {
+        val row = y / cellSize
+        val col = x / cellSize
+
+        if (labyrinthData[row][col] == 3) {
+            saveData("end", x, y)
+            return true
+        }
+        return false
+    }
 }
