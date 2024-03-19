@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,108 +42,9 @@ class MRTTest : Fragment() {
     private var flag = false
     private var typeFigure = "A"
     private var soundPlayer: SoundPlayer? = null
-    private var resource = 1
+    private var resource = 7
     private var startTime: Long = 0
     private var endTime: Long = 0
-    private val image1Resources = arrayOf(
-        R.drawable.figure_1_1,
-        R.drawable.figure_1_2,
-        R.drawable.figure_1_3,
-        R.drawable.figure_1_4,
-        R.drawable.figure_1_5,
-        R.drawable.figure_1_6,
-    )
-
-    private val image2Resources = arrayOf(
-        R.drawable.figure_2_1,
-        R.drawable.figure_2_2,
-        R.drawable.figure_2_3,
-        R.drawable.figure_2_4,
-        R.drawable.figure_2_5,
-        R.drawable.figure_2_6,
-        R.drawable.figure_2_7,
-        R.drawable.figure_2_8,
-    )
-
-    private val image3Resources = arrayOf(
-        R.drawable.figure_3_1,
-        R.drawable.figure_3_2,
-        R.drawable.figure_3_3,
-        R.drawable.figure_3_4,
-        R.drawable.figure_3_5,
-        R.drawable.figure_3_6,
-        R.drawable.figure_3_7,
-        R.drawable.figure_3_8,
-    )
-
-    private val image4Resources = arrayOf(
-        R.drawable.figure_4_1,
-        R.drawable.figure_4_2,
-        R.drawable.figure_4_3,
-        R.drawable.figure_4_4,
-        R.drawable.figure_4_5,
-        R.drawable.figure_4_6,
-        R.drawable.figure_4_7,
-        R.drawable.figure_4_8,
-    )
-
-    private val image5Resources = arrayOf(
-        R.drawable.figure_5_1,
-        R.drawable.figure_5_2,
-        R.drawable.figure_5_3,
-        R.drawable.figure_5_4,
-        R.drawable.figure_5_5,
-        R.drawable.figure_5_6,
-        R.drawable.figure_5_7,
-        R.drawable.figure_5_8,
-    )
-
-    private val image6Resources = arrayOf(
-        R.drawable.figure_6_1,
-        R.drawable.figure_6_2,
-        R.drawable.figure_6_3,
-        R.drawable.figure_6_4,
-        R.drawable.figure_6_5,
-        R.drawable.figure_6_6,
-        R.drawable.figure_6_7,
-        R.drawable.figure_6_8,
-    )
-
-    private val image7Resources = arrayOf(
-        R.drawable.figure_7_1,
-        R.drawable.figure_7_2,
-        R.drawable.figure_7_3,
-        R.drawable.figure_7_4,
-        R.drawable.figure_7_5,
-        R.drawable.figure_7_6,
-    )
-
-    private val image9Resources = arrayOf(
-        R.drawable.figure_9_1,
-        R.drawable.figure_9_2,
-        R.drawable.figure_9_3,
-        R.drawable.figure_9_4,
-        R.drawable.figure_9_5,
-        R.drawable.figure_9_6,
-    )
-
-    private val image10Resources = arrayOf(
-        R.drawable.figure_10_1,
-        R.drawable.figure_10_2,
-        R.drawable.figure_10_3,
-        R.drawable.figure_10_4,
-        R.drawable.figure_10_5,
-        R.drawable.figure_10_6,
-    )
-
-    private val image11Resources = arrayOf(
-        R.drawable.figure_11_1,
-        R.drawable.figure_11_2,
-        R.drawable.figure_11_3,
-        R.drawable.figure_11_4,
-        R.drawable.figure_11_5,
-        R.drawable.figure_11_6,
-    )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -175,11 +77,11 @@ class MRTTest : Fragment() {
         binding.buttonLeft.isVisible = false
         binding.buttonRight.isVisible = false
         binding.buttonLeft.setOnClickListener {
-            saveData("left")
+            saveData(LEFT_SIDE)
             startTest()
         }
         binding.buttonRight.setOnClickListener {
-            saveData("right")
+            saveData(RIGHT_SIDE)
             startTest()
         }
         return binding.root
@@ -252,22 +154,22 @@ class MRTTest : Fragment() {
 
             when (steps) {
                 11 -> {
-                    resource = 2
+                    resource = listOf(1, 2).random()
                     typeFigure = "B"
                 }
 
                 21 -> {
-                    resource = 3
+                    resource = listOf(3, 9).random()
                     typeFigure = "C"
                 }
 
                 31 -> {
-                    resource = 4
+                    resource = listOf(5, 6).random()
                     typeFigure = "D"
                 }
 
                 41 -> {
-                    resource = 5
+                    resource = listOf(10, 11).random()
                     typeFigure = "E"
                 }
             }
@@ -281,9 +183,9 @@ class MRTTest : Fragment() {
                 5 -> binding.imgView1.setImageResource(image5Resources[randomIndex])
                 6 -> binding.imgView1.setImageResource(image6Resources[randomIndex])
                 7 -> binding.imgView1.setImageResource(image7Resources[randomIndex])
-                8 -> binding.imgView1.setImageResource(image9Resources[randomIndex])
-                9 -> binding.imgView1.setImageResource(image10Resources[randomIndex])
-                10 -> binding.imgView1.setImageResource(image11Resources[randomIndex])
+                9 -> binding.imgView1.setImageResource(image9Resources[randomIndex])
+                10 -> binding.imgView1.setImageResource(image10Resources[randomIndex])
+                11 -> binding.imgView1.setImageResource(image11Resources[randomIndex])
             }
 
             val randomIndexOne = randomIndex % 2
@@ -295,8 +197,13 @@ class MRTTest : Fragment() {
                 3 -> binding.imgView2.setImageResource(image3Resources[randomIndex])
                 4 -> binding.imgView2.setImageResource(image4Resources[randomIndex])
                 5 -> binding.imgView2.setImageResource(image5Resources[randomIndex])
+                6 -> binding.imgView2.setImageResource(image6Resources[randomIndex])
+                7 -> binding.imgView2.setImageResource(image7Resources[randomIndex])
+                9 -> binding.imgView2.setImageResource(image9Resources[randomIndex])
+                10 -> binding.imgView2.setImageResource(image10Resources[randomIndex])
+                11 -> binding.imgView2.setImageResource(image11Resources[randomIndex])
             }
-            flag = randomIndex%2 == randomIndexOne
+            flag = randomIndex % 2 == randomIndexOne
         }
     }
 
@@ -309,6 +216,11 @@ class MRTTest : Fragment() {
             3 -> randomIndex = Random.nextInt(image3Resources.size)
             4 -> randomIndex = Random.nextInt(image4Resources.size)
             5 -> randomIndex = Random.nextInt(image5Resources.size)
+            6 -> randomIndex = Random.nextInt(image6Resources.size)
+            7 -> randomIndex = Random.nextInt(image7Resources.size)
+            9 -> randomIndex = Random.nextInt(image9Resources.size)
+            10 -> randomIndex = Random.nextInt(image10Resources.size)
+            11 -> randomIndex = Random.nextInt(image11Resources.size)
         }
 
         return randomIndex
@@ -318,10 +230,10 @@ class MRTTest : Fragment() {
         endTime = System.currentTimeMillis()
         val durationTime = endTime - startTime
         var result = ""
-        if(s == "left" && flag){
-            result = "true answer"
-        }else{
-            result = "false answer"
+        result = if (s == LEFT_SIDE && flag) {
+            "true answer"
+        } else {
+            "false answer"
         }
         val dynamicRow = mutableListOf(
             steps.toString(), typeFigure, durationTime.toString(), flag.toString(), result
@@ -358,9 +270,9 @@ class MRTTest : Fragment() {
     private fun infoDialogEndTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
-        alertDialogBuilder.setTitle("Тестирование окончено!") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Данные сохранены в папке!") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle("Тестирование окончено!")
+        alertDialogBuilder.setMessage("Данные сохранены в папке!")
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ ->
             viewModelUploaderFile.sendFile(
                 idPatient = patientId,
                 fileName = fileName,
@@ -376,9 +288,9 @@ class MRTTest : Fragment() {
 
     private fun infoDialogInstructionTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Правило тестирования") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Определите, являются ли фигуры одинаковыми. Нажмите слева, если фигуры сопадают. Нажмите справа, если фигуры не сопадают.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle("Правило тестирования")
+        alertDialogBuilder.setMessage("Определите, являются ли фигуры одинаковыми. Нажмите слева, если фигуры сопадают. Нажмите справа, если фигуры не сопадают.")
+        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ ->
             dialog.dismiss()
             binding.buttonLeft.isVisible = true
             binding.buttonRight.isVisible = true
@@ -398,6 +310,8 @@ class MRTTest : Fragment() {
     companion object {
         private const val TEST_NAME = "MRT"
         private const val TEST_FILE_EXTENSION = ".csv"
+        private const val LEFT_SIDE = "left"
+        private const val RIGHT_SIDE = "right"
         @JvmStatic
         fun newInstance(patientId: Int = -1): MRTTest{
             val fragment = MRTTest()
