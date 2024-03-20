@@ -5,10 +5,10 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -42,7 +42,7 @@ class MRTTest : Fragment() {
     private var flag = false
     private var typeFigure = "A"
     private var soundPlayer: SoundPlayer? = null
-    private var resource = 7
+    private var chosenCollection = 7
     private var startTime: Long = 0
     private var endTime: Long = 0
 
@@ -76,10 +76,12 @@ class MRTTest : Fragment() {
         binding = FragmentMRTTestBinding.inflate(inflater)
         binding.buttonLeft.isVisible = false
         binding.buttonRight.isVisible = false
+
         binding.buttonLeft.setOnClickListener {
             saveData(LEFT_SIDE)
             startTest()
         }
+
         binding.buttonRight.setOnClickListener {
             saveData(RIGHT_SIDE)
             startTest()
@@ -145,98 +147,122 @@ class MRTTest : Fragment() {
     }
 
     private fun startTest() {
-        if (steps == 50) {
-            finishTest()
-        } else {
-            startTime = System.currentTimeMillis()
-            steps++
-            binding.tvSteps.text = steps.toString()
+        when (steps) {
+            50 -> finishTest()
+            else -> {
+                startTime = System.currentTimeMillis()
+                steps++
+                binding.tvSteps.text = steps.toString()
 
-            when (steps) {
-                11 -> {
-                    resource = listOf(1, 2).random()
-                    typeFigure = "B"
-                }
+                chosenCollection = chooseNumberOfCollection(steps)
+                val indexOfImage1 = binding.imgView1.setImageResourceFromUniqueResource(
+                    chosenResource = chosenCollection
+                )
 
-                21 -> {
-                    resource = listOf(3, 9).random()
-                    typeFigure = "C"
-                }
+                val indexOfImage2 = binding.imgView2.setImageResourceFromUniqueResource(
+                    chosenResource = chosenCollection,
+                    previousIndex = indexOfImage1
+                )
 
-                31 -> {
-                    resource = listOf(5, 6).random()
-                    typeFigure = "D"
-                }
-
-                41 -> {
-                    resource = listOf(10, 11).random()
-                    typeFigure = "E"
-                }
+                flag = indexOfImage1 % 2 == indexOfImage2
             }
-
-            var randomIndex = randomImageFromResource(resource)
-            when (resource) {
-                1 -> binding.imgView1.setImageResource(image1Resources[randomIndex])
-                2 -> binding.imgView1.setImageResource(image2Resources[randomIndex])
-                3 -> binding.imgView1.setImageResource(image3Resources[randomIndex])
-                4 -> binding.imgView1.setImageResource(image4Resources[randomIndex])
-                5 -> binding.imgView1.setImageResource(image5Resources[randomIndex])
-                6 -> binding.imgView1.setImageResource(image6Resources[randomIndex])
-                7 -> binding.imgView1.setImageResource(image7Resources[randomIndex])
-                9 -> binding.imgView1.setImageResource(image9Resources[randomIndex])
-                10 -> binding.imgView1.setImageResource(image10Resources[randomIndex])
-                11 -> binding.imgView1.setImageResource(image11Resources[randomIndex])
-            }
-
-            val randomIndexOne = randomIndex % 2
-            
-            randomIndex = randomImageFromResource(resource)
-            when(resource){
-                1 -> binding.imgView2.setImageResource(image1Resources[randomIndex])
-                2 -> binding.imgView2.setImageResource(image2Resources[randomIndex])
-                3 -> binding.imgView2.setImageResource(image3Resources[randomIndex])
-                4 -> binding.imgView2.setImageResource(image4Resources[randomIndex])
-                5 -> binding.imgView2.setImageResource(image5Resources[randomIndex])
-                6 -> binding.imgView2.setImageResource(image6Resources[randomIndex])
-                7 -> binding.imgView2.setImageResource(image7Resources[randomIndex])
-                9 -> binding.imgView2.setImageResource(image9Resources[randomIndex])
-                10 -> binding.imgView2.setImageResource(image10Resources[randomIndex])
-                11 -> binding.imgView2.setImageResource(image11Resources[randomIndex])
-            }
-            flag = randomIndex % 2 == randomIndexOne
         }
     }
 
-    private fun randomImageFromResource(randomResource: Int): Int {
-        var randomIndex = 0
-
-        when(randomResource){
-            1 -> randomIndex = Random.nextInt(image1Resources.size)
-            2 -> randomIndex = Random.nextInt(image2Resources.size)
-            3 -> randomIndex = Random.nextInt(image3Resources.size)
-            4 -> randomIndex = Random.nextInt(image4Resources.size)
-            5 -> randomIndex = Random.nextInt(image5Resources.size)
-            6 -> randomIndex = Random.nextInt(image6Resources.size)
-            7 -> randomIndex = Random.nextInt(image7Resources.size)
-            9 -> randomIndex = Random.nextInt(image9Resources.size)
-            10 -> randomIndex = Random.nextInt(image10Resources.size)
-            11 -> randomIndex = Random.nextInt(image11Resources.size)
+    private fun ImageView.setImageResourceFromUniqueResource(
+        chosenResource: Int,
+        previousIndex: Int = -1
+    ): Int {
+        val randomImage = getIndexOfImageFromCollection(chosenResource, previousIndex)
+        val resource = when (chosenResource) {
+            1 -> image1Resources
+            2 -> image2Resources
+            3 -> image3Resources
+            4 -> image4Resources
+            5 -> image5Resources
+            6 -> image6Resources
+            7 -> image7Resources
+            9 -> image9Resources
+            10 -> image10Resources
+            11 -> image11Resources
+            else -> return -1
         }
+        setImageResource(resource[randomImage])
 
+        return randomImage
+    }
+
+    private fun getIndexOfImageFromCollection(
+        imageCollection: Int,
+        previousIndex: Int = -1
+    ): Int {
+        var randomIndex: Int
+        do {
+            randomIndex = Random.nextInt(getCollectionSize(imageCollection))
+        } while (randomIndex == previousIndex)
         return randomIndex
+    }
+
+    private fun getCollectionSize(resource: Int): Int {
+        return when (resource) {
+            1 -> image1Resources.size
+            2 -> image2Resources.size
+            3 -> image3Resources.size
+            4 -> image4Resources.size
+            5 -> image5Resources.size
+            6 -> image6Resources.size
+            7 -> image7Resources.size
+            9 -> image9Resources.size
+            10 -> image10Resources.size
+            11 -> image11Resources.size
+            else -> 0
+        }
+    }
+
+    private fun chooseNumberOfCollection(step: Int): Int {
+        return when (step) {
+            in 11..20 -> {
+                typeFigure = "B"
+                listOf(1, 2).random()
+            }
+
+            in 21..30 -> {
+                typeFigure = "C"
+                listOf(3, 9).random()
+            }
+
+            in 31..40 -> {
+                typeFigure = "D"
+                listOf(5, 6).random()
+            }
+
+            in 41..50 -> {
+                typeFigure = "E"
+                listOf(10, 11).random()
+            }
+
+            else -> {
+                7
+            }
+        }
     }
 
     private fun saveData(s: String) {
         endTime = System.currentTimeMillis()
+
         val durationTime = endTime - startTime
-        var result = ""
-        result = if (s == LEFT_SIDE && flag) {
-            "true answer"
-        } else {
-            "false answer"
+
+        val result = when (s == LEFT_SIDE && flag) {
+            true -> TRUE_ANSWER
+            false -> FALSE_ANSWER
         }
-        val dynamicRow = mutableListOf(
-            steps.toString(), typeFigure, durationTime.toString(), flag.toString(), result
+
+        val dynamicRow = listOf(
+            steps.toString(),
+            typeFigure,
+            durationTime.toString(),
+            flag.toString(),
+            result
         )
         data.add(dynamicRow)
     }
@@ -272,7 +298,7 @@ class MRTTest : Fragment() {
         soundPlayer?.playSound(R.raw.finish)
         alertDialogBuilder.setTitle("Тестирование окончено!")
         alertDialogBuilder.setMessage("Данные сохранены в папке!")
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ ->
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             viewModelUploaderFile.sendFile(
                 idPatient = patientId,
                 fileName = fileName,
@@ -290,7 +316,7 @@ class MRTTest : Fragment() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         alertDialogBuilder.setTitle("Правило тестирования")
         alertDialogBuilder.setMessage("Определите, являются ли фигуры одинаковыми. Нажмите слева, если фигуры сопадают. Нажмите справа, если фигуры не сопадают.")
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ ->
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             dialog.dismiss()
             binding.buttonLeft.isVisible = true
             binding.buttonRight.isVisible = true
@@ -312,6 +338,8 @@ class MRTTest : Fragment() {
         private const val TEST_FILE_EXTENSION = ".csv"
         private const val LEFT_SIDE = "left"
         private const val RIGHT_SIDE = "right"
+        private const val TRUE_ANSWER = "true answer"
+        private const val FALSE_ANSWER = "false answer"
         @JvmStatic
         fun newInstance(patientId: Int = -1): MRTTest{
             val fragment = MRTTest()
