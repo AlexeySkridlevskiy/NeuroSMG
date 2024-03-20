@@ -86,6 +86,17 @@ class MRTTest : Fragment() {
             saveData(RIGHT_SIDE)
             startTest()
         }
+
+        binding.leftArea.setOnClickListener {
+            saveData(LEFT_SIDE)
+            startTest()
+        }
+
+        binding.rightArea.setOnClickListener {
+            saveData(RIGHT_SIDE)
+            startTest()
+        }
+
         return binding.root
     }
 
