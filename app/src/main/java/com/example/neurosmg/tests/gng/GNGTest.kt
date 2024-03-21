@@ -7,8 +7,6 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -28,24 +26,27 @@ import com.example.neurosmg.databinding.FragmentGNGTestBinding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class GNGTest : Fragment() {
 
     private lateinit var binding: FragmentGNGTestBinding
     private var mainActivityListener: MainActivityListener? = null
-    private val cross = "cross"
-    private val plus = "plus"
-    private lateinit var timer: CountDownTimer
-    val handler = Handler()
+    private lateinit var job: Job
+
     private var answer = false
     private var soundPlayer: SoundPlayer? = null
-    private var touchStartTimeUnixTimestamp: Long = 0
+    private var timeStartGenerateNewStimulus: Long = 0
+    private var timeTapOnStimulus: Long = 0
     private var indexStep: Int = 1
     private var indexGoNogo: String = ""
     private var flagClickBtn: Int = 0
-    private var touchStartTime: Long = 0
-    private var touchEndTime: Long = 0
-    private var randomTimeView: Long = 0
+
+    private var durationForShowingView: Long = DURATION_MIN
     private var currentStimulus: String = ""
 
     private val viewModelUploaderFile by lazy {
@@ -115,18 +116,17 @@ class GNGTest : Fragment() {
             startGeneratingCrossesAndPluses()
         }
 
-        binding.btnCross.setOnTouchListener { view, event ->
+        binding.btnCross.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     binding.btnCross.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF7260A3"))
-                    touchStartTime = System.currentTimeMillis()
+
+                    timeTapOnStimulus = System.currentTimeMillis() - timeStartGenerateNewStimulus
+
                     return@setOnTouchListener true
                 }
                 MotionEvent.ACTION_UP -> {
                     binding.btnCross.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF6750A4"))
-                    touchEndTime = System.currentTimeMillis()
-                    val pressDuration = touchEndTime - touchStartTime
-                    flagClickBtn = pressDuration.toInt()
                     return@setOnTouchListener true
                 }
             }
@@ -136,18 +136,17 @@ class GNGTest : Fragment() {
 
     private fun saveData(){
         val dynamicRow = mutableListOf(
-            touchStartTimeUnixTimestamp.toString(),
+            timeStartGenerateNewStimulus.toString(),
             indexStep.toString(),
             indexGoNogo,
-            flagClickBtn.toString(),
-            randomTimeView.toString()
+            timeTapOnStimulus.toString(),
+            durationForShowingView.toString()
         )
         data.add(dynamicRow)
     }
 
     private fun finishTest() {
         binding.constraintMain.visibility = View.INVISIBLE
-
         saveDataToFileCSV()
     }
 
@@ -171,95 +170,78 @@ class GNGTest : Fragment() {
         }
     }
 
-    private fun timerForData(){
-        handler.postDelayed({
-            timer = object : CountDownTimer(TIMER_DURATION, TIMER_INTERVAL) {
-                override fun onTick(millisUntilFinished: Long) {
-                    saveData()
-                    flagClickBtn = 0
-                }
-
-                override fun onFinish() {}
-            }.start()
-        }, 2000)
-    }
-
     private fun startGeneratingCrossesAndPluses() {
         binding.btnStart.visibility = View.INVISIBLE
         binding.btnCross.visibility = View.VISIBLE
-        handler.postDelayed({
-            timer = object : CountDownTimer(TIMER_DURATION, TIMER_INTERVAL) {
-                override fun onTick(millisUntilFinished: Long) {
-                    saveData()
-                    flagClickBtn = 0
 
-                    indexStep++
-                    touchStartTimeUnixTimestamp = System.currentTimeMillis()
-                    val randomSquare = (1..4).random()
-                    val randomCross = (0..1).random()
-                    indexGoNogo = if (randomCross == 0) {
-                        TAG_GO
-                    } else {
-                        TAG_NOGO
-                    }
-                    randomTimeView = (500..2000).random().toLong()
+        job = CoroutineScope(Dispatchers.Main.immediate).launch {
+            delay(2000)
 
-                    currentStimulus = if (currentStimulus == plus && randomCross == 1 && (1..100).random() <= 20) {
-                        cross
-                    } else {
-                        if (randomCross == 0) plus else cross
-                    }
-
-                    when (randomSquare) {
-                        1 -> {
-                            binding.square1.setImageResource(
-                                if (currentStimulus == plus) R.drawable.plus else R.drawable.cross
-                            )
-                            answer = currentStimulus == plus
-                            handler.postDelayed({
-                                binding.square1.setImageResource(R.drawable.zoom)
-                            }, randomTimeView)
-                        }
-
-                        2 -> {
-                            binding.square2.setImageResource(
-                                if (currentStimulus == plus) R.drawable.plus else R.drawable.cross
-                            )
-                            answer = currentStimulus == plus
-                            handler.postDelayed({
-                                binding.square2.setImageResource(R.drawable.zoom)
-                            }, randomTimeView)
-                        }
-
-                        3 -> {
-                            binding.square3.setImageResource(
-                                if (currentStimulus == plus) R.drawable.plus else R.drawable.cross
-                            )
-                            answer = currentStimulus == plus
-                            handler.postDelayed({
-                                binding.square3.setImageResource(R.drawable.zoom)
-                            }, randomTimeView)
-                        }
-
-                        4 -> {
-                            binding.square4.setImageResource(
-                                if (currentStimulus == plus) R.drawable.plus else R.drawable.cross
-                            )
-                            answer = currentStimulus == plus
-                            handler.postDelayed({
-                                binding.square4.setImageResource(R.drawable.zoom)
-                            }, randomTimeView)
-                        }
-                    }
-                }
-
-                override fun onFinish() {
-                    finishTest()
-                }
-            }.start()
-        }, 2000)
+            repeat(50) {
+                generateStimulusAndDisplay()
+                delay(durationForShowingView)
+            }
+        }
     }
 
+    private fun generateStimulusAndDisplay() {
+        val randomSquare = (1..4).random()
+        val randomCross = (0..1).random()
+        indexGoNogo = if (randomCross == 0) {
+            TAG_GO
+        } else {
+            TAG_NO_GO
+        }
+
+        timeStartGenerateNewStimulus = System.currentTimeMillis()
+
+        updateValues()
+
+        indexStep++
+
+        currentStimulus = if (
+            currentStimulus == PLUS &&
+            randomCross == 1 &&
+            (1..100).random() <= 20
+        ) {
+            CROSS
+        } else {
+            if (randomCross == 0) PLUS else CROSS
+        }
+
+        displayStimulus(randomSquare)
+        durationForShowingView = randomDurationForShowingView()
+    }
+
+    private fun updateValues() {
+        saveData()
+        flagClickBtn = 0
+        timeTapOnStimulus = 0
+    }
+
+    private fun displayStimulus(square: Int) {
+        val imageView = when (square) {
+            1 -> binding.square1
+            2 -> binding.square2
+            3 -> binding.square3
+            4 -> binding.square4
+            else -> null
+        }
+
+        imageView?.let {
+            it.setImageResource(if (currentStimulus == PLUS) R.drawable.plus else R.drawable.cross)
+            answer = currentStimulus == PLUS
+
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(500)
+                it.setImageResource(R.drawable.zoom)
+            }
+        }
+    }
+
+    private fun randomDurationForShowingView(): Long {
+        return (DURATION_MIN..DURATION_MAX).random()
+    }
 
     override fun onDetach() {
         super.onDetach()
@@ -269,9 +251,8 @@ class GNGTest : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         soundPlayer?.stopSound()
-        if (::timer.isInitialized) {
-            timer.onFinish()
-            timer.cancel()
+        if (::job.isInitialized) {
+            job.cancel()
         }
     }
 
@@ -349,10 +330,13 @@ class GNGTest : Fragment() {
     companion object {
         private const val TEST_NAME = "GNG"
 
-        private val TIMER_INTERVAL = 2000L
-        private val TIMER_DURATION = 100000L
-        private val TAG_GO = "go"
-        private val TAG_NOGO = "nogo"
+        private const val DURATION_MAX = 2000L
+        private const val DURATION_MIN = 1000L
+        private const val TIMER_DURATION = 100_000L
+        private const val TAG_GO = "go"
+        private const val TAG_NO_GO = "nogo"
+        private const val PLUS = "plus"
+        private const val CROSS = "cross"
 
         fun newInstance(patientId: Int = -1): GNGTest {
             val fragment = GNGTest()
