@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,6 @@ import com.example.neurosmg.databinding.FragmentMRTTestBinding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
-import kotlin.random.Random
 
 class MRTTest : Fragment() {
     lateinit var binding: FragmentMRTTestBinding
@@ -166,26 +166,46 @@ class MRTTest : Fragment() {
                 binding.tvSteps.text = steps.toString()
 
                 chosenCollection = chooseNumberOfCollection(steps)
-                val indexOfImage1 = binding.imgView1.setImageResourceFromUniqueResource(
-                    chosenResource = chosenCollection
+                val imageOfFirstView = binding.imgView1.setImageResourceFromUniqueResource(
+                    chosenCollection = chosenCollection
                 )
 
                 val indexOfImage2 = binding.imgView2.setImageResourceFromUniqueResource(
-                    chosenResource = chosenCollection,
-                    previousIndex = indexOfImage1
+                    chosenCollection = chosenCollection,
+                    imageOfFirstView = imageOfFirstView
                 )
 
-                flag = indexOfImage1 % 2 == indexOfImage2
+                //flag = imageOfFirstView % 2 == indexOfImage2 //тут понятнее нужно сделать
             }
         }
     }
 
     private fun ImageView.setImageResourceFromUniqueResource(
-        chosenResource: Int,
-        previousIndex: Int = -1
-    ): Int {
-        val randomImage = getIndexOfImageFromCollection(chosenResource, previousIndex)
-        val resource = when (chosenResource) {
+        chosenCollection: Int,
+        imageOfFirstView: Image? = null
+    ): Image {
+        val randomImage = getImageFromCollection(chosenCollection, imageOfFirstView)
+        setImageResource(randomImage.resource)
+
+        return randomImage
+    }
+
+    private fun getImageFromCollection(
+        chosenCollection: Int,
+        imageOfFirstView: Image? = null,
+    ): Image {
+        val collection = getCollection(chosenCollection)
+        val filteredCollection = collection.filterNot { it == imageOfFirstView }
+
+        return if (filteredCollection.isEmpty()) {
+            collection.random()
+        } else {
+            filteredCollection.filter { it.group != imageOfFirstView?.group }.randomOrNull()
+        } ?: collection.random()
+    }
+
+    private fun getCollection(resource: Int): List<Image> {
+        return when (resource) {
             1 -> image1Resources
             2 -> image2Resources
             3 -> image3Resources
@@ -196,37 +216,7 @@ class MRTTest : Fragment() {
             9 -> image9Resources
             10 -> image10Resources
             11 -> image11Resources
-            else -> return -1
-        }
-        setImageResource(resource[randomImage])
-
-        return randomImage
-    }
-
-    private fun getIndexOfImageFromCollection(
-        imageCollection: Int,
-        previousIndex: Int = -1
-    ): Int {
-        var randomIndex: Int
-        do {
-            randomIndex = Random.nextInt(getCollectionSize(imageCollection))
-        } while (randomIndex == previousIndex)
-        return randomIndex
-    }
-
-    private fun getCollectionSize(resource: Int): Int {
-        return when (resource) {
-            1 -> image1Resources.size
-            2 -> image2Resources.size
-            3 -> image3Resources.size
-            4 -> image4Resources.size
-            5 -> image5Resources.size
-            6 -> image6Resources.size
-            7 -> image7Resources.size
-            9 -> image9Resources.size
-            10 -> image10Resources.size
-            11 -> image11Resources.size
-            else -> 0
+            else -> image7Resources
         }
     }
 
