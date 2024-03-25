@@ -1,4 +1,4 @@
-package com.example.neurosmg.tests.sct
+package com.example.neurosmg.tests.sct.presentation
 
 import SoundPlayer
 import android.annotation.SuppressLint
@@ -139,7 +139,7 @@ class SCTTest : Fragment() {
             touchBtnLRColor = getString(R.string.color_red_en)
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    buttonBlue.isClickable = false
+                    buttonBlue.isActivated = false
                     touchStartTimeMillis = System.currentTimeMillis()
                 }
 
@@ -149,7 +149,7 @@ class SCTTest : Fragment() {
                     calculateTouchDuration()
                     binding.tvColorText.visibility = View.INVISIBLE
                     checkAnswer(Color.RED)
-                    buttonBlue.isClickable = true
+                    buttonBlue.isActivated = true
                 }
             }
             false
@@ -160,7 +160,7 @@ class SCTTest : Fragment() {
             touchBtnLRColor = getString(R.string.color_blue_en)
             when (motionEvent.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    buttonRed.isClickable = false
+                    buttonRed.isActivated = false
                     touchStartTimeMillis = System.currentTimeMillis()
                 }
 
@@ -170,7 +170,7 @@ class SCTTest : Fragment() {
                     calculateTouchDuration()
                     binding.tvColorText.visibility = View.INVISIBLE
                     checkAnswer(Color.BLUE)
-                    buttonRed.isClickable = true
+                    buttonRed.isActivated = true
                 }
             }
             false
@@ -227,8 +227,12 @@ class SCTTest : Fragment() {
         }
 
         val dynamicRow = mutableListOf(
-            touchStartTimeUnixTimestamp.toString(), touchDurationSeconds.toString(), touchBtnLR,
-            randomColorView, touchBtnLRColor, totalAttempts.toString()
+            touchStartTimeUnixTimestamp.toString(),
+            touchDurationSeconds.toString(),
+            touchBtnLR,
+            randomColorView,
+            touchBtnLRColor,
+            totalAttempts.toString()
         )
         data.add(dynamicRow)
     }

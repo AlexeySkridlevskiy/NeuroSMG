@@ -16,7 +16,7 @@ import android.widget.Toast
 class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     interface LabyrinthCompletionListener {
-        fun onLabyrinthCompleted(steps: Int, data: MutableList<MutableList<String>>)
+        fun onLabyrinthCompleted(steps: Int, data: MutableList<List<String>>)
     }
 
     fun setLabyrinthCompletionListener(listener: LabyrinthCompletionListener) {
@@ -25,7 +25,7 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
 
 
     private var completionListener: LabyrinthCompletionListener? = null
-    private val data = mutableListOf<MutableList<String>>()
+    private val data = mutableListOf<List<String>>()
 
     private val userPath = mutableListOf<Point>()
     private var tvLabSteps = 1
@@ -40,9 +40,6 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
     private var finishY = 3
     private var isFinishMessageShown = false
     private var isCollisionLogged = false
-
-    private val updateInterval = 50L // 50 миллисекунд (20 раз в секунду)
-    private var lastUpdateTime = 0L
 
     private val paint = Paint()
     private var cellSize = 0
@@ -137,17 +134,17 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
     private fun handleLabyrinthCompletion() {
         tvLabSteps++
         completionListener?.onLabyrinthCompleted(tvLabSteps, data)
-        if(tvLabSteps==21){
+        if (tvLabSteps > 20) {
             userPath.clear()
             isFinishMessageShown = false
             isCollisionLogged = false
-        }else{
+        } else {
             val randomIndex = (labyrinthList.indices).random()
 
             labyrinthData = labyrinthList[randomIndex]
-            finishY = if(randomIndex==0||randomIndex==5){
+            finishY = if (randomIndex == 0 || randomIndex == 5) {
                 3
-            }else{
+            } else {
                 1
             }
 
@@ -197,7 +194,6 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
 
                     postInvalidate()
 
-                    // Проверяем, достиг ли пользователь финишной точки
                     if (!isFinishMessageShown && x / cellSize == finishX && y / cellSize == finishY) {
                         showToast("Вы прошли лабиринт!")
                         handleLabyrinthCompletion()
@@ -210,7 +206,6 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
                     }
                 }
 
-//                Log.d("MyLog", "move")
                 saveData("move", x, y)
             }
             MotionEvent.ACTION_UP -> {
@@ -228,8 +223,11 @@ class LabyrinthView(context: Context, attrs: AttributeSet) : View(context, attrs
     private fun saveData(s: String, x: Int, y: Int) {
         val unixTimestamp = System.currentTimeMillis()
         val dynamicRow = mutableListOf(
-            unixTimestamp.toString(), tvLabSteps.toString(),
-            x.toString(), y.toString(), s
+            unixTimestamp.toString(),
+            tvLabSteps.toString(),
+            x.toString(),
+            y.toString(),
+            s
         )
         data.add(dynamicRow)
     }

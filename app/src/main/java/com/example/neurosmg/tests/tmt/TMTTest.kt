@@ -35,7 +35,7 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
     private val viewModelUploaderFile by lazy {
         ViewModelProvider(requireActivity())[CbtTestViewModel::class.java]
     }
-    private var data = mutableListOf<MutableList<String>>()
+    private var data = mutableListOf<List<String>>()
     private var patientId: Int = -1
 
     override fun onAttach(context: Context) {
@@ -99,11 +99,11 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
         educationAnimation()
     }
 
-    override fun onLabyrinthCompleted(steps: Int, data: MutableList<MutableList<String>>) {
-        if(steps==21){
+    override fun onLabyrinthCompleted(steps: Int, data: MutableList<List<String>>) {
+        if (steps > 20) {
             this.data = data
             finishTest()
-        }else{
+        } else {
             binding.tvLabSteps.text = steps.toString()
         }
     }
@@ -198,7 +198,6 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
     companion object {
         private const val TEST_NAME = "TMT"
-        private const val TEST_FILE_EXTENSION = ".csv"
         @JvmStatic
         fun newInstance(patientId: Int = -1): TMTTest{
             val fragment = TMTTest()
