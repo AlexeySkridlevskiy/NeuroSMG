@@ -5,9 +5,11 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -24,7 +26,6 @@ import com.example.neurosmg.databinding.FragmentMRTTestBinding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
-import kotlin.random.Random
 
 class MRTTest : Fragment() {
     lateinit var binding: FragmentMRTTestBinding
@@ -41,53 +42,9 @@ class MRTTest : Fragment() {
     private var flag = false
     private var typeFigure = "A"
     private var soundPlayer: SoundPlayer? = null
-    private var resource = 1
+    private var chosenCollection = 7
     private var startTime: Long = 0
     private var endTime: Long = 0
-    private val image1Resources = arrayOf(
-        R.drawable.figure_1_1,
-        R.drawable.figure_1_2,
-        R.drawable.figure_1_3,
-        R.drawable.figure_1_4,
-        R.drawable.figure_1_5,
-        R.drawable.figure_1_6,
-    )
-
-    private val image2Resources = arrayOf(
-        R.drawable.figure_2_1,
-        R.drawable.figure_2_2,
-        R.drawable.figure_2_3,
-        R.drawable.figure_2_4,
-        R.drawable.figure_2_5,
-        R.drawable.figure_2_6,
-    )
-
-    private val image3Resources = arrayOf(
-        R.drawable.figure_3_1,
-        R.drawable.figure_3_2,
-        R.drawable.figure_3_3,
-        R.drawable.figure_3_4,
-        R.drawable.figure_3_5,
-        R.drawable.figure_3_6,
-    )
-
-    private val image4Resources = arrayOf(
-        R.drawable.figure_4_1,
-        R.drawable.figure_4_2,
-        R.drawable.figure_4_3,
-        R.drawable.figure_4_4,
-        R.drawable.figure_4_5,
-        R.drawable.figure_4_6,
-    )
-
-    private val image5Resources = arrayOf(
-        R.drawable.figure_5_1,
-        R.drawable.figure_5_2,
-        R.drawable.figure_5_3,
-        R.drawable.figure_5_4,
-        R.drawable.figure_5_5,
-        R.drawable.figure_5_6,
-    )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -119,14 +76,27 @@ class MRTTest : Fragment() {
         binding = FragmentMRTTestBinding.inflate(inflater)
         binding.buttonLeft.isVisible = false
         binding.buttonRight.isVisible = false
+
         binding.buttonLeft.setOnClickListener {
-            saveData("left")
+            saveData(LEFT_SIDE)
             startTest()
         }
+
         binding.buttonRight.setOnClickListener {
-            saveData("right")
+            saveData(RIGHT_SIDE)
             startTest()
         }
+
+        binding.leftArea.setOnClickListener {
+            saveData(LEFT_SIDE)
+            startTest()
+        }
+
+        binding.rightArea.setOnClickListener {
+            saveData(RIGHT_SIDE)
+            startTest()
+        }
+
         return binding.root
     }
 
@@ -188,82 +158,112 @@ class MRTTest : Fragment() {
     }
 
     private fun startTest() {
-        if (steps == 50) {
-            finishTest()
-        } else {
-            startTime = System.currentTimeMillis()
-            steps++
-            binding.tvSteps.text = steps.toString()
+        when (steps) {
+            50 -> finishTest()
+            else -> {
+                startTime = System.currentTimeMillis()
+                steps++
+                binding.tvSteps.text = steps.toString()
 
-            when (steps) {
-                11 -> {
-                    resource = 2
-                    typeFigure = "B"
-                }
+                chosenCollection = chooseNumberOfCollection(steps)
+                val imageOfFirstView = binding.imgView1.setImageResourceFromUniqueResource(
+                    chosenCollection = chosenCollection
+                )
 
-                21 -> {
-                    resource = 3
-                    typeFigure = "C"
-                }
+                val indexOfImage2 = binding.imgView2.setImageResourceFromUniqueResource(
+                    chosenCollection = chosenCollection,
+                    imageOfFirstView = imageOfFirstView
+                )
 
-                31 -> {
-                    resource = 4
-                    typeFigure = "D"
-                }
-                41 -> {
-                    resource = 5
-                    typeFigure = "E"
-                }
+                //flag = imageOfFirstView % 2 == indexOfImage2 //тут понятнее нужно сделать
             }
-
-            var randomIndex = randomImageFromResource(resource)
-            when(resource){
-                1 -> binding.imgView1.setImageResource(image1Resources[randomIndex])
-                2 -> binding.imgView1.setImageResource(image2Resources[randomIndex])
-                3 -> binding.imgView1.setImageResource(image3Resources[randomIndex])
-                4 -> binding.imgView1.setImageResource(image4Resources[randomIndex])
-                5 -> binding.imgView1.setImageResource(image5Resources[randomIndex])
-            }
-
-            val randomIndexOne = randomIndex%2
-            
-            randomIndex = randomImageFromResource(resource)
-            when(resource){
-                1 -> binding.imgView2.setImageResource(image1Resources[randomIndex])
-                2 -> binding.imgView2.setImageResource(image2Resources[randomIndex])
-                3 -> binding.imgView2.setImageResource(image3Resources[randomIndex])
-                4 -> binding.imgView2.setImageResource(image4Resources[randomIndex])
-                5 -> binding.imgView2.setImageResource(image5Resources[randomIndex])
-            }
-            flag = randomIndex%2 == randomIndexOne
         }
     }
 
-    private fun randomImageFromResource(randomResource: Int): Int {
-        var randomIndex = 0
+    private fun ImageView.setImageResourceFromUniqueResource(
+        chosenCollection: Int,
+        imageOfFirstView: Image? = null
+    ): Image {
+        val randomImage = getImageFromCollection(chosenCollection, imageOfFirstView)
+        setImageResource(randomImage.resource)
 
-        when(randomResource){
-            1 -> randomIndex = Random.nextInt(image1Resources.size)
-            2 -> randomIndex = Random.nextInt(image2Resources.size)
-            3 -> randomIndex = Random.nextInt(image3Resources.size)
-            4 -> randomIndex = Random.nextInt(image4Resources.size)
-            5 -> randomIndex = Random.nextInt(image5Resources.size)
+        return randomImage
+    }
+
+    private fun getImageFromCollection(
+        chosenCollection: Int,
+        imageOfFirstView: Image? = null,
+    ): Image {
+        val collection = getCollection(chosenCollection)
+        val filteredCollection = collection.filterNot { it == imageOfFirstView }
+
+        return if (filteredCollection.isEmpty()) {
+            collection.random()
+        } else {
+            filteredCollection.filter { it.group != imageOfFirstView?.group }.randomOrNull()
+        } ?: collection.random()
+    }
+
+    private fun getCollection(resource: Int): List<Image> {
+        return when (resource) {
+            1 -> image1Resources
+            2 -> image2Resources
+            3 -> image3Resources
+            4 -> image4Resources
+            5 -> image5Resources
+            6 -> image6Resources
+            7 -> image7Resources
+            9 -> image9Resources
+            10 -> image10Resources
+            11 -> image11Resources
+            else -> image7Resources
         }
+    }
 
-        return randomIndex
+    private fun chooseNumberOfCollection(step: Int): Int {
+        return when (step) {
+            in 11..20 -> {
+                typeFigure = "B"
+                listOf(1, 2).random()
+            }
+
+            in 21..30 -> {
+                typeFigure = "C"
+                listOf(3, 9).random()
+            }
+
+            in 31..40 -> {
+                typeFigure = "D"
+                listOf(5, 6).random()
+            }
+
+            in 41..50 -> {
+                typeFigure = "E"
+                listOf(10, 11).random()
+            }
+
+            else -> {
+                7
+            }
+        }
     }
 
     private fun saveData(s: String) {
         endTime = System.currentTimeMillis()
+
         val durationTime = endTime - startTime
-        var result = ""
-        if(s == "left" && flag){
-            result = "true answer"
-        }else{
-            result = "false answer"
+
+        val result = when (s == LEFT_SIDE && flag) {
+            true -> TRUE_ANSWER
+            false -> FALSE_ANSWER
         }
-        val dynamicRow = mutableListOf(
-            steps.toString(), typeFigure, durationTime.toString(), flag.toString(), result
+
+        val dynamicRow = listOf(
+            steps.toString(),
+            typeFigure,
+            durationTime.toString(),
+            flag.toString(),
+            result
         )
         data.add(dynamicRow)
     }
@@ -297,9 +297,9 @@ class MRTTest : Fragment() {
     private fun infoDialogEndTest(fileName: String) {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.finish)
-        alertDialogBuilder.setTitle("Тестирование окончено!") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Данные сохранены в папке!") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle("Тестирование окончено!")
+        alertDialogBuilder.setMessage("Данные сохранены в папке!")
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             viewModelUploaderFile.sendFile(
                 idPatient = patientId,
                 fileName = fileName,
@@ -315,9 +315,9 @@ class MRTTest : Fragment() {
 
     private fun infoDialogInstructionTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle("Правило тестирования") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Определите, являются ли фигуры одинаковыми. Нажмите слева, если фигуры сопадают. Нажмите справа, если фигуры не сопадают.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle("Правило тестирования")
+        alertDialogBuilder.setMessage("Определите, являются ли фигуры одинаковыми. Нажмите слева, если фигуры сопадают. Нажмите справа, если фигуры не сопадают.")
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             dialog.dismiss()
             binding.buttonLeft.isVisible = true
             binding.buttonRight.isVisible = true
@@ -337,6 +337,10 @@ class MRTTest : Fragment() {
     companion object {
         private const val TEST_NAME = "MRT"
         private const val TEST_FILE_EXTENSION = ".csv"
+        private const val LEFT_SIDE = "left"
+        private const val RIGHT_SIDE = "right"
+        private const val TRUE_ANSWER = "true answer"
+        private const val FALSE_ANSWER = "false answer"
         @JvmStatic
         fun newInstance(patientId: Int = -1): MRTTest{
             val fragment = MRTTest()

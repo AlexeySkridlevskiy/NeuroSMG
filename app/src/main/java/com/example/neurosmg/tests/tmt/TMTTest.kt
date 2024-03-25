@@ -163,7 +163,7 @@ class TMTTest : Fragment(), LabyrinthView.LabyrinthCompletionListener {
 
     private fun infoDialog() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
-        alertDialogBuilder.setTitle(getString(R.string.dialog_tmt_title_rules))
+        alertDialogBuilder.setTitle(getString(R.string.dialog_title_rules))
         alertDialogBuilder.setMessage(getString(R.string.dialog_tmt_subtitle_rules))
         alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             dialog.dismiss()

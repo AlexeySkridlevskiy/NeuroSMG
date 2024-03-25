@@ -86,7 +86,7 @@
     <string name="gng_dialog_subtitle_start">"Для начала тестирования нажмите кнопку Начать"</string>
 
 
-    <string name="gng_dialog_message">Перед вами на экране будет представлен шар определенного цвета, который при касании экрана увеличивается в размере. По прошествии определенного количества касаний шар лопается. Каждое касание приносит</string>
+    <string name="gng_dialog_message">Перед вами находятся 4 квадрата, в каждом из которых может появиться или крестик, или плюсик. Как только вы увидите крестик в одном из квадратов, нажмите на кнопку с крестиком ниже. Если появляется плюсик  — нажимать ничего не нужно.</string>
     <string name="gng_dialog_save">Данные будут сохранены в папку</string>
 
     //SCT
@@ -111,9 +111,18 @@
     <string name="fot_dialog_subtitle">Для начала тестирования коснитесь экрана</string>
     <string name="fot_dialog_subtitle_left_hand">Продолжите исследование для левой руки</string>
     <string name="dialog_tmt_subtitle_rules">Проложите путь от начала лабиринта до конца, стараясь избегать ударения о стены</string>
-    <string name="dialog_tmt_title_rules">Правила тестирования</string>
 
     //TMT
     <string name="dialog_title_done_test">Тестирование пройдено</string>
     <string name="dialog_subtitle_done_test">Тестирование пройдено</string>
+
+    //IAT
+    <string name="dialog_iat_subtitle">Сделайте выбор между напитками и алкоголем. Отнесите товар к определенной категории.</string>
+
+    //AIT2
+    //COMMON
+    <string name="dialog_title_rules">Правила тестирования</string>
+    <string name="stage_by_step">Этап %s</string>
+    <string name="dialog_title_test_done_title">Тестирование пройдено</string>
+    <string name="dialog_title_test_done_subtitle">Данные будут сохранены в папку</string>
 </resources>

@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.neurosmg.KeyOfArgument
 import com.example.neurosmg.MainActivityListener
 import com.example.neurosmg.R
@@ -30,6 +31,10 @@ import com.example.neurosmg.utils.contentEquals
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
 import com.example.neurosmg.utils.showInfoDialog
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class IATTest : Fragment() {
 
@@ -42,9 +47,10 @@ class IATTest : Fragment() {
     private val data = mutableListOf<MutableList<String>>()
     private var patientId: Int = -1
 
-    private val totalRounds = 20
-    private var currentRound = 0
-    private var currentStep = 1
+    private val mutableNumberOfQuestion = MutableStateFlow(1)
+    private val numberOfQuestion: StateFlow<Int> = mutableNumberOfQuestion
+
+    private var numberCurrentOfBlock = 1
 
     private val drinksWords = listOf("Чай", "Лимонад", "Вода", "Сок", "Морс")
     private val alcoholWords = listOf("Водка", "Виски", "Вино", "Пиво", "Коньяк")
@@ -115,8 +121,13 @@ class IATTest : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.tvQuestion.text = currentRound++.toString()
-        binding.tvStep.text = currentStep.toString()
+
+        lifecycleScope.launch {
+            numberOfQuestion.collect {
+                binding.tvQuestion.text = it.toString()
+            }
+        }
+        binding.tvBlock.text = numberCurrentOfBlock.toString()
         mainActivityListener?.updateToolbarState(ToolbarState.IATTest)
     }
 
@@ -140,7 +151,7 @@ class IATTest : Fragment() {
     private fun chooseWordList(): List<String> {
         val randomIndex = (0..1).random()
 
-        return when (currentStep) {
+        return when (numberCurrentOfBlock) {
             1 -> if (randomIndex == 0) drinksWords else alcoholWords
             2 -> if (randomIndex == 0) goodWords else badWords
             3, 4 -> chooseListForSteps(randomIndex, drinksWords, alcoholWords, goodWords, badWords)
@@ -167,6 +178,7 @@ class IATTest : Fragment() {
     private fun updateWordList() {
         currentWordList = chooseWordList()
         updateWord()
+        updateValues()
     }
 
     private fun selectRandomWord(words: List<String>, previousWord: String?): String {
@@ -207,15 +219,15 @@ class IATTest : Fragment() {
         }
 
         presentWord = binding.tvText.text as String
+    }
 
-        if (currentRound < totalRounds) {
-            binding.tvQuestion.text = currentRound.toString()
-            currentRound++
+    private fun updateValues() {
+        if (numberOfQuestion.value < TOTAL_QUESTION_IN_ONE_BLOCK) {
+            mutableNumberOfQuestion.value++
         } else {
-            if (currentStep < 7) {
-                currentRound = 0
-                currentStep++
-                when (currentStep) {
+            if (numberCurrentOfBlock < 7) {
+                numberCurrentOfBlock++
+                when (numberCurrentOfBlock) {
                     2 -> {
                         infoDialogStep2()
                         touchLeftCategory = "good"
@@ -251,7 +263,7 @@ class IATTest : Fragment() {
                         infoDialogStep7()
                     }
                 }
-                binding.tvStep.text = currentStep.toString()
+                binding.tvBlock.text = numberCurrentOfBlock.toString()
             } else {
                 finishTest()
                 binding.btnLeft.isEnabled = false
@@ -262,9 +274,9 @@ class IATTest : Fragment() {
 
     private fun checkAnswer(selectedCategory: Int) {
         var correctCategory = -1
-        correctCategory = if (currentStep == 5) {
+        correctCategory = if (numberCurrentOfBlock == 5) {
             if (currentWordList.contentEquals(alcoholWords)) 0 else 1
-        } else if (currentStep >= 6) {
+        } else if (numberCurrentOfBlock >= 6) {
             if (currentWordList.contentEquals(alcoholWords) || currentWordList.contentEquals(
                     goodWords
                 )
@@ -289,7 +301,7 @@ class IATTest : Fragment() {
 
     private fun saveData(){
         var touchNameCategory = ""
-        touchNameCategory = if (touchCategory=="left") {
+        touchNameCategory = if (touchCategory == "left") {
             touchLeftCategory
         } else {
             touchRightCategory
@@ -297,8 +309,8 @@ class IATTest : Fragment() {
 
         val dynamicRow = mutableListOf(
             touchStartTimeUnixTimestamp.toString(),
-            currentStep.toString(),
-            currentRound.toString(),
+            numberCurrentOfBlock.toString(),
+            numberOfQuestion.value.toString(),
             touchDurationSeconds.toString(),
             touchCategory,
             touchNameCategory,
@@ -367,9 +379,9 @@ class IATTest : Fragment() {
     private fun infoDialogInstructionTest() {
         val alertDialogBuilder = AlertDialog.Builder(requireContext())
         soundPlayer?.playSound(R.raw.iat_ready_btn_ok)
-        alertDialogBuilder.setTitle("Правило тестирования") // TODO: в ресурсы выноси
-        alertDialogBuilder.setMessage("Сделайте выбор между напитками и алкоголем. Отнесите товар к определенной категории.") // TODO: в ресурсы выноси
-        alertDialogBuilder.setPositiveButton("Окей") { dialog, _ -> // TODO: в ресурсы выноси
+        alertDialogBuilder.setTitle(R.string.dialog_title_rules)
+        alertDialogBuilder.setMessage(R.string.dialog_iat_subtitle)
+        alertDialogBuilder.setPositiveButton(R.string.dialog_ok) { dialog, _ ->
             soundPlayer?.stopSound()
             dialog.dismiss()
 
@@ -421,7 +433,9 @@ class IATTest : Fragment() {
             soundResource = R.raw.iat_step_1,
             context = requireContext()
         ) {
-            updateWordList()
+            currentWordList = chooseWordList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
     }
 
@@ -434,7 +448,9 @@ class IATTest : Fragment() {
             soundResource = R.raw.iat_step_2,
             context = requireContext()
         ) {
-            updateWordList()
+            currentWordList = chooseWordList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
     }
 
@@ -447,7 +463,9 @@ class IATTest : Fragment() {
             soundResource = R.raw.iat_step_3,
             context = requireContext()
         ) {
-            updateWordList()
+            currentWordList = chooseWordList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
     }
 
@@ -460,7 +478,9 @@ class IATTest : Fragment() {
             soundResource = R.raw.iat_step_4,
             context = requireContext()
         ) {
-            updateWordList()
+            currentWordList = chooseWordList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
     }
 
@@ -473,7 +493,9 @@ class IATTest : Fragment() {
             soundResource = R.raw.iat_step_5,
             context = requireContext()
         ) {
-            updateWordList()
+            currentWordList = chooseWordList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
     }
 
@@ -486,7 +508,9 @@ class IATTest : Fragment() {
             soundResource = R.raw.iat_step_6,
             context = requireContext()
         ) {
-            updateWordList()
+            currentWordList = chooseWordList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
     }
 
@@ -499,7 +523,9 @@ class IATTest : Fragment() {
             soundResource = R.raw.iat_step_7,
             context = requireContext()
         ) {
-            updateWordList()
+            currentWordList = chooseWordList()
+            updateWord()
+            mutableNumberOfQuestion.value = 1
         }
     }
 
@@ -524,7 +550,7 @@ class IATTest : Fragment() {
 
     companion object {
         private const val TEST_NAME = "IAT"
-        private const val TEST_FILE_EXTENSION = ".csv"
+        private const val TOTAL_QUESTION_IN_ONE_BLOCK = 20
         @JvmStatic
         fun newInstance(patientId: Int = -1): IATTest{
             val fragment = IATTest()
