@@ -4,9 +4,9 @@ import SoundPlayer
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -24,6 +24,7 @@ import com.example.neurosmg.csvdatauploader.DataUploadCallback
 import com.example.neurosmg.csvdatauploader.UploadState
 import com.example.neurosmg.databinding.FragmentGNGTestBinding
 import com.example.neurosmg.tests.cbt.CbtTestViewModel
+import com.example.neurosmg.utils.NroThemeColor
 import com.example.neurosmg.utils.exitFullScreenMode
 import com.example.neurosmg.utils.generateName
 import kotlinx.coroutines.CoroutineScope
@@ -42,8 +43,7 @@ class GNGTest : Fragment() {
     private var soundPlayer: SoundPlayer? = null
     private var timeStartGenerateNewStimulus: Long = 0
     private var timeTapOnStimulus: Long = 0
-    private var indexStep: Int = 1
-    private var indexGoNogo: String = ""
+    private var indexStep: Int = 0
     private var flagClickBtn: Int = 0
 
     private var durationForShowingView: Long = DURATION_MIN
@@ -119,14 +119,14 @@ class GNGTest : Fragment() {
         binding.btnCross.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    binding.btnCross.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF7260A3"))
+                    binding.btnCross.setBackgroundColor(Color.GRAY)
 
                     timeTapOnStimulus = System.currentTimeMillis() - timeStartGenerateNewStimulus
 
                     return@setOnTouchListener true
                 }
                 MotionEvent.ACTION_UP -> {
-                    binding.btnCross.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#FF6750A4"))
+                    binding.btnCross.setBackgroundColor(NroThemeColor.VIOLET.colorInt.toInt())
                     return@setOnTouchListener true
                 }
             }
@@ -138,10 +138,11 @@ class GNGTest : Fragment() {
         val dynamicRow = mutableListOf(
             timeStartGenerateNewStimulus.toString(),
             indexStep.toString(),
-            indexGoNogo,
+            currentStimulus,
             timeTapOnStimulus.toString(),
             durationForShowingView.toString()
         )
+        Log.d("TAG_MRT", "saveData: $dynamicRow")
         data.add(dynamicRow)
     }
 
@@ -177,37 +178,26 @@ class GNGTest : Fragment() {
         job = CoroutineScope(Dispatchers.Main.immediate).launch {
             delay(2000)
 
-            repeat(50) {
+            repeat(51) {
                 generateStimulusAndDisplay()
                 delay(durationForShowingView)
             }
+            finishTest()
         }
     }
 
     private fun generateStimulusAndDisplay() {
         val randomSquare = (1..4).random()
-        val randomCross = (0..1).random()
-        indexGoNogo = if (randomCross == 0) {
-            TAG_GO
-        } else {
-            TAG_NO_GO
-        }
+        val shouldShowCross = (currentStimulus == PLUS && (1..5).random() == 1)
+        currentStimulus = if (shouldShowCross) CROSS else PLUS
 
         timeStartGenerateNewStimulus = System.currentTimeMillis()
 
-        updateValues()
+        if (indexStep != 0) {
+            updateValues()
+        }
 
         indexStep++
-
-        currentStimulus = if (
-            currentStimulus == PLUS &&
-            randomCross == 1 &&
-            (1..100).random() <= 20
-        ) {
-            CROSS
-        } else {
-            if (randomCross == 0) PLUS else CROSS
-        }
 
         displayStimulus(randomSquare)
         durationForShowingView = randomDurationForShowingView()
@@ -233,7 +223,7 @@ class GNGTest : Fragment() {
             answer = currentStimulus == PLUS
 
             CoroutineScope(Dispatchers.Main).launch {
-                delay(500)
+                delay(200)
                 it.setImageResource(R.drawable.zoom)
             }
         }
